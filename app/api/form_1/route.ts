@@ -75,7 +75,12 @@ export async function GET() {
           FROM INFORMATION_SCHEMA.COLUMNS x
           INNER JOIN tabla_campos_etiquetas z
           ON x.TABLE_NAME = z.nombre_tabla
-          AND x.COLUMN_NAME = z.nombre_campo) w
+          AND (
+            (x.COLUMN_NAME LIKE 'cod_%' AND SUBSTRING(x.COLUMN_NAME, 5) = z.nombre_campo)
+            OR
+            (x.COLUMN_NAME NOT LIKE 'cod_%' AND x.COLUMN_NAME = z.nombre_campo)
+            )
+          ) w
       WHERE
           TABLE_NAME = 'feminicidios_tentativas' AND
           COLUMN_NAME IN ('nombre_victima', 'direccion_vivienda_victima', 'cod_mujer_gestante_madre', 'mujer_gestante_madre', 'cod_num_hijos', 'num_hijos', 'cod_nacionalidad', 'nacionalidad', 'cod_oficio_victima', 'oficio_victima', 'edad_victima',
