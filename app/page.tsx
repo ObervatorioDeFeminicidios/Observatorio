@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CheckIcon } from '@heroicons/react/24/solid';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import { steps } from './libs/multistep-form';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
@@ -14,6 +14,20 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const [previousStep, setPreviousStep] = React.useState(0);
@@ -94,29 +108,101 @@ export default function Home() {
 
       {/* Form */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-2 gap-4'>
-          {steps[currentStep].fields.map((formField, index) => (
-            <FormField
-              key={formField.id}
-              control={form.control}
-              name={formField.id}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{formField.label}</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid grid-cols-2 gap-8"
+        >
+          {steps[currentStep].fields.map((formField, index) =>
+            formField.type !== 'select' ? (
+              <FormField
+                key={formField.id}
+                control={form.control}
+                name={formField.id}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{formField.label}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <FormField
+                key={formField.id}
+                control={form.control}
+                name={formField.id}
+                render={({ field }) => (
+                  <FormItem className='flex items-center justify-between'>
+                    <FormLabel>{formField.label}</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                              'w-[300px] justify-between !m-0',
+                              !field.value && 'text-muted-foreground',
+                            )}
+                          >
+                            {field.value
+                              ? formField.options.find(
+                                  (option) => option.label === field.value,
+                                )?.label
+                              : 'Select option...'}
+                            <ChevronUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search option..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No option found.</CommandEmpty>
+                          <CommandGroup>
+                            {formField.options.map((option) => (
+                              <CommandItem
+                                key={option.value}
+                                value={option.label}
+                                onSelect={() => {
+                                  form.setValue(formField.id, option.label);
+                                }}
+                              >
+                                {option.label}
+                                <CheckIcon
+                                  className={cn(
+                                    'ml-auto h-4 w-4',
+                                    option.label === field.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ),
+          )}
         </form>
       </Form>
 
       {/* Navigation */}
       <div className="flex justify-end gap-4">
-        <Button variant="ghost" onClick={handlePrevious} disabled={currentStep === 0}>
+        <Button
+          variant="ghost"
+          onClick={handlePrevious}
+          disabled={currentStep === 0}
+        >
           Atrás
         </Button>
         <Button
