@@ -1,15 +1,22 @@
-type Field = {
+type BaseField = {
   id: string;
   label: string;
-  type: 'text' | 'int' | 'date';
   nullable: boolean;
-}
+};
+
+type SelectField = {
+  type: 'select';
+  options: { value: number; label: string }[];
+};
+
+type Field =
+  | (BaseField & { type: 'text' | 'int' | 'date' })
+  | (BaseField & SelectField);
 
 export type Step = {
   id: number;
   name: string;
   href: string;
-  status: 'complete' | 'current' | 'upcoming';
   fields: Array<Field>;
 };
 
@@ -18,7 +25,6 @@ export const steps: Array<Step> = [
     id: 1,
     name: 'Información de la Víctima',
     href: '#',
-    status: 'complete',
     fields: [
       {
         id: 'nombre_victima',
@@ -47,25 +53,97 @@ export const steps: Array<Step> = [
       {
         id: 'identidad_genero',
         label: 'Identidad de Género',
-        type: 'text',
+        type: 'select',
+        options: [
+          {
+            value: 1,
+            label: 'Mujer Cis'
+          },
+          {
+            value: 2,
+            label: 'Mujer Trans'
+          },
+          {
+            value: 3,
+            label: 'Hombre Trans'
+          },
+          {
+            value: 4,
+            label: 'Sin información'
+          }
+        ],
         nullable: false,
       },
       {
         id: 'orientacion_sexual',
         label: 'Orientación Sexual',
-        type: 'text',
+        type: 'select',
+        options: [
+          {
+            value: 1,
+            label: 'Bisexual'
+          },
+          {
+            value: 2,
+            label: 'Heterosexual'
+          },
+          {
+            value: 3,
+            label: 'Lesbiana'
+          },
+          {
+            value: 4,
+            label: 'No aplica'
+          }
+        ],
         nullable: false,
       },
       {
         id: 'identidad_social',
         label: 'Identidad Social',
-        type: 'text',
+        type: 'select',
+        options: [
+          {
+            value: 1,
+            label: 'Campesina'
+          },
+          {
+            value: 2,
+            label: 'Reclamante de tierras'
+          },
+          {
+            value: 3,
+            label: 'Migrante'
+          },
+          {
+            value: 4,
+            label: 'Sin información'
+          }
+        ],
         nullable: false,
       },
       {
         id: 'identidad_politica',
         label: 'Identidad Política',
-        type: 'text',
+        type: 'select',
+        options: [
+          {
+            value: 1,
+            label: 'Lideresa sindicalista'
+          },
+          {
+            value: 2,
+            label: 'Lideresa política'
+          },
+          {
+            value: 3,
+            label: 'Mujeres firmantes de la paz'
+          },
+          {
+            value: 4,
+            label: 'Sin información'
+          }
+        ],
         nullable: false,
       },
       {
@@ -80,7 +158,6 @@ export const steps: Array<Step> = [
     id: 2,
     name: 'Información del Feminicidio',
     href: '#',
-    status: 'current',
     fields: [
       {
         id: 'ano',
@@ -109,7 +186,21 @@ export const steps: Array<Step> = [
       {
         id: 'tipo_violencia',
         label: 'Tipo de Violencia',
-        type: 'text',
+        type: 'select',
+        options: [
+          {
+            value: 1,
+            label: 'Feminicidio'
+          },
+          {
+            value: 2,
+            label: 'Feminicidio en grado de tentativa'
+          },
+          {
+            value: 3,
+            label: 'Transfeminicidio'
+          }
+        ],
         nullable: false,
       },
       {
@@ -142,7 +233,6 @@ export const steps: Array<Step> = [
     id: 3,
     name: 'Información del Agresor',
     href: '#',
-    status: 'upcoming',
     fields: [
       {
         id: 'nombre_sujeto_feminicida',
@@ -204,7 +294,6 @@ export const steps: Array<Step> = [
     id: 4,
     name: 'Información Adicional',
     href: '#',
-    status: 'upcoming',
     fields: [
       {
         id: 'causal_atribuido_feminicidio',
