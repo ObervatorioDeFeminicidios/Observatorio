@@ -4,12 +4,12 @@ type BaseField = {
   nullable: boolean;
 };
 
-type SelectField = {
+export type SelectField = {
   type: 'select';
   options: { value: number; label: string }[];
 };
 
-type Field =
+export type Field =
   | (BaseField & { type: 'text' | 'int' | 'date' })
   | (BaseField & SelectField);
 
