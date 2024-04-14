@@ -1,10 +1,15 @@
 type BaseField = {
   id: string;
   label: string;
-  nullable: boolean;
+  nullable: 'YES' | 'NO';
 };
 
-type BaseFieldType = 'text' | 'int' | 'date';
+interface Option {
+  value: number;
+  label: string;
+}
+
+type BaseFieldType = 'text' | 'int' | 'date' | 'select';
 
 type DataBaseField = BaseField & {
   type: BaseFieldType;
@@ -13,9 +18,23 @@ type DataBaseField = BaseField & {
 
 type SelectField = {
   type: 'select';
-  options: {value: number, label: string}[];
+  options: Option[];
+};
+
+type Field = (BaseField & { type: BaseFieldType }) | (BaseField & SelectField);
+
+interface DBObject {
+  id: string;
+  type: string;
+  nullable: 'YES' | 'NO';
+  label: string;
+  options: string;
 }
 
-type Field =
-  | (BaseField & {type: BaseFieldType})
-  | (BaseField & SelectField);
+type TransformedObject = {
+  id: string;
+  label: string;
+  nullable: boolean;
+  type: BaseFieldType;
+  options?: Option[];
+};
