@@ -1,11 +1,12 @@
+import { env } from '@/config/env';
 import mysql from 'serverless-mysql';
 
 export const conn = mysql({
   config: {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT,
-    database: process.env.DB_DATABASE,
+    host: env.DB_HOST,
+    user: env.DB_USER,
+    password: env.DB_PASS,
+    port: env.DB_PORT,
+    database: env.DB_DATABASE,
   },
 });
