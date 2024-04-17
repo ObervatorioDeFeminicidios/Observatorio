@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@/components/ui/button';
 
 type NavigationProps = {
@@ -6,7 +5,6 @@ type NavigationProps = {
   totalSteps: number;
   handlePrevious: () => void;
   handleNext: () => void;
-  onSubmit: (data: any) => void;
 };
 
 export const Navigation = ({
@@ -14,7 +12,6 @@ export const Navigation = ({
   totalSteps,
   handlePrevious,
   handleNext,
-  onSubmit,
 }: NavigationProps) => {
   return (
     <div className="flex justify-end gap-4">
@@ -25,12 +22,20 @@ export const Navigation = ({
       >
         Atrás
       </Button>
-      <Button
-        className="bg-indigo-600 hover:bg-indigo-700"
-        onClick={currentStep === totalSteps - 1 ? onSubmit : handleNext}
-      >
-        {currentStep === totalSteps - 1 ? 'Registrar' : 'Siguiente'}
-      </Button>
+
+      {currentStep !== totalSteps - 1 ? (
+        <Button
+          className="bg-indigo-600 hover:bg-indigo-700"
+          type="button"
+          onClick={handleNext}
+        >
+          Siguiente
+        </Button>
+      ) : (
+        <Button className="bg-indigo-600 hover:bg-indigo-700" type="submit">
+          Registrar
+        </Button>
+      )}
     </div>
   );
 };
