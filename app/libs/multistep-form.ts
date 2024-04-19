@@ -1,25 +1,3 @@
-type BaseField = {
-  id: string;
-  label: string;
-  nullable: boolean;
-};
-
-export type SelectField = {
-  type: 'select';
-  options: { value: number; label: string }[];
-};
-
-export type Field =
-  | (BaseField & { type: 'text' | 'int' | 'date' })
-  | (BaseField & SelectField);
-
-export type Step = {
-  id: number;
-  name: string;
-  href: string;
-  fields: Array<Field>;
-};
-
 export const steps: Array<Step> = [
   {
     id: 1,
