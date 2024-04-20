@@ -1,6 +1,5 @@
 'use client';
 
-import { Step } from '@/app/libs/multistep-form';
 import { Form } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -8,6 +7,7 @@ import { z } from 'zod';
 import { FieldInput } from './field/input';
 import { FieldSelect } from './field/select';
 import { Navigation } from './navigation';
+import { getDefaultValues, getSchema } from '@/lib/form';
 
 type RegistrationFormProps = {
   steps: Step[];
@@ -23,38 +23,8 @@ export const RegistrationForm = ({
   handleNext,
 }: RegistrationFormProps) => {
   const totalSteps = steps.length;
-
-  const formSchema = z.object(
-    steps.reduce((schema: { [key: string]: any }, step) => {
-      step.fields.forEach((field) => {
-        switch (field.type) {
-          case 'text':
-          case 'select':
-            schema[field.id] = z.string();
-            break;
-          case 'int':
-            schema[field.id] = z.string();
-            break;
-          case 'date':
-            schema[field.id] = z.string();
-            break;
-          default:
-            break;
-        }
-      });
-      return schema;
-    }, {}),
-  );
-
-  const defaultValues = steps.reduce(
-    (values: { [key: string]: string }, step) => {
-      step.fields.forEach((field) => {
-        values[field.id] = '';
-      });
-      return values;
-    },
-    {},
-  );
+  const formSchema = getSchema(steps);
+  const defaultValues = getDefaultValues(steps);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
