@@ -1,23 +1,18 @@
 import { Button } from '@/components/ui/button';
+import { useStepState } from '@/store/registration-form';
 
 type NavigationProps = {
-  currentStep: number;
   totalSteps: number;
-  handlePrevious: () => void;
-  handleNext: () => void;
 };
 
-export const Navigation = ({
-  currentStep,
-  totalSteps,
-  handlePrevious,
-  handleNext,
-}: NavigationProps) => {
+export const Navigation = ({ totalSteps }: NavigationProps) => {
+  const { currentStep, handlePreviousStep, handleNextStep } = useStepState();
+
   return (
     <div className="flex justify-end gap-4">
       <Button
         variant="ghost"
-        onClick={handlePrevious}
+        onClick={handlePreviousStep}
         disabled={currentStep === 0}
       >
         Atrás
@@ -27,7 +22,7 @@ export const Navigation = ({
         <Button
           className="bg-indigo-600 hover:bg-indigo-700"
           type="button"
-          onClick={handleNext}
+          onClick={handleNextStep}
         >
           Siguiente
         </Button>

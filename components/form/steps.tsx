@@ -1,13 +1,15 @@
-import { Step } from '@/app/libs/multistep-form';
-import React from 'react';
+'use client';
+
+import { useStepState } from '@/store/registration-form';
 import { CurrentStep, NextStep, PreviousStep } from './step';
 
 type StepProps = {
   steps: Step[];
-  currentStep: number;
 };
 
-export const Steps = ({ steps, currentStep }: StepProps) => {
+export const Steps = ({ steps }: StepProps) => {
+  const { currentStep } = useStepState();
+
   return (
     <nav aria-label="Progress">
       <ol role="list" className="md:flex">
