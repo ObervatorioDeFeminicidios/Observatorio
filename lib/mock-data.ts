@@ -1615,13 +1615,6 @@ export const formData2: TransformedObject[] = [
     ],
   },
   {
-    id: 'lugar_encuentra_cadaver',
-    type: 'int',
-    nullable: false,
-    label: 'Lugar Encuentra Cadaver',
-    options: [],
-  },
-  {
     id: 'metodo_eliminacion',
     type: 'select',
     nullable: false,

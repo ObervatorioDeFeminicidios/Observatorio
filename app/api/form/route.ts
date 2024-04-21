@@ -60,7 +60,7 @@ export async function GET() {
     }
 
     // Adding the necessary info of the each step
-    const multiStepFormData = [
+    const formData = [
       {
         id: 1,
         name: 'Información de la Víctima',
@@ -84,7 +84,7 @@ export async function GET() {
     ];
 
     // Return the result in JSON format
-    return NextResponse.json(multiStepFormData);
+    return NextResponse.json(formData);
   } catch (error) {
     const errorMessage =
       typeof error === 'string'
