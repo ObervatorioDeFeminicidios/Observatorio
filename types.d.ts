@@ -38,3 +38,9 @@ type TransformedObject = {
   type: BaseFieldType;
   options?: Option[];
 };
+
+type Step = {
+  id: number;
+  name: string;
+  fields: Array<TransformedObject>;
+};

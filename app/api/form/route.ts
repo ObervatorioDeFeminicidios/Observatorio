@@ -1,4 +1,102 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { transformObject } from '@/app/utils/transform-object';
+import { env } from '@/config/env';
+import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
+import { conn, queries } from '@/lib/mysql';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    let stepOne: TransformedObject[] = [];
+    let stepTwo: TransformedObject[] = [];
+    let stepThree: TransformedObject[] = [];
+    let stepFour: TransformedObject[] = [];
+
+    // Handling the environments to test with mocked data if we are in the dev environment
+    if (env.ENV !== 'dev') {
+      // Getting the data from the database
+      const stepOneReponse = await conn.query<DataBaseField[]>(
+        queries.get.stepOne,
+      );
+      const stepTwoReponse = await conn.query<DataBaseField[]>(
+        queries.get.stepTwo,
+      );
+      const stepThreeReponse = await conn.query<DataBaseField[]>(
+        queries.get.stepThree,
+      );
+      const stepFourReponse = await conn.query<DataBaseField[]>(
+        queries.get.stepFour,
+      );
+
+      // Mutated the reponses so we get the correct type
+      const stepOneMutated: DataBaseField[] = stepOneReponse.map((field) => ({
+        ...field,
+        type: field.options !== null ? 'select' : field.type,
+      }));
+      const stepTwoMutated: DataBaseField[] = stepTwoReponse.map((field) => ({
+        ...field,
+        type: field.options !== null ? 'select' : field.type,
+      }));
+      const stepThreeMutated: DataBaseField[] = stepThreeReponse.map(
+        (field) => ({
+          ...field,
+          type: field.options !== null ? 'select' : field.type,
+        }),
+      );
+      const stepFourMutated: DataBaseField[] = stepFourReponse.map((field) => ({
+        ...field,
+        type: field.options !== null ? 'select' : field.type,
+      }));
+
+      // Transformed the objects so we get the correct list of options
+      stepOne = transformObject(stepOneMutated);
+      stepTwo = transformObject(stepTwoMutated);
+      stepThree = transformObject(stepThreeMutated);
+      stepFour = transformObject(stepFourMutated);
+    } else {
+      stepOne = formData1;
+      stepTwo = formData2;
+      stepThree = formData3;
+      stepFour = formData4;
+    }
+
+    // Adding the necessary info of the each step
+    const formData = [
+      {
+        id: 1,
+        name: 'Información de la Víctima',
+        fields: stepOne,
+      },
+      {
+        id: 2,
+        name: 'Información del Feminicidio',
+        fields: stepTwo,
+      },
+      {
+        id: 3,
+        name: 'Información del Agresor',
+        fields: stepThree,
+      },
+      {
+        id: 4,
+        name: 'Información Adicional',
+        fields: stepFour,
+      },
+    ];
+
+    // Return the result in JSON format
+    return NextResponse.json(formData);
+  } catch (error) {
+    const errorMessage =
+      typeof error === 'string'
+        ? error
+        : error instanceof Error
+          ? error.message
+          : 'Error Unknown';
+
+    // Return the error message
+    return NextResponse.json({ error: errorMessage, status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,12 +139,17 @@ export async function POST(request: NextRequest) {
       identidad_politica: data.identidad_politica,
       cod_identidad_etnica: data.cod_identidad_etnica,
       identidad_etnica: data.identidad_etnica,
-      cod_perte_etnica_o_racial_victima_mc: data.cod_perte_etnica_o_racial_victima_mc,
+      cod_perte_etnica_o_racial_victima_mc:
+        data.cod_perte_etnica_o_racial_victima_mc,
       perte_etnica_o_racial_victima_mc: data.perte_etnica_o_racial_victima_mc,
-      cod_perte_etnica_o_racial_victima_in_ao: data.cod_perte_etnica_o_racial_victima_in_ao,
-      perte_etnica_o_racial_victima_in_ao: data.perte_etnica_o_racial_victima_in_ao,
-      cod_comunidad_o_territ_colect_victima_in: data.cod_comunidad_o_territ_colect_victima_in,
-      comunidad_o_territ_colect_victima_in: data.comunidad_o_territ_colect_victima_in,
+      cod_perte_etnica_o_racial_victima_in_ao:
+        data.cod_perte_etnica_o_racial_victima_in_ao,
+      perte_etnica_o_racial_victima_in_ao:
+        data.perte_etnica_o_racial_victima_in_ao,
+      cod_comunidad_o_territ_colect_victima_in:
+        data.cod_comunidad_o_territ_colect_victima_in,
+      comunidad_o_territ_colect_victima_in:
+        data.comunidad_o_territ_colect_victima_in,
       cod_pueblo_indigena_victima: data.cod_pueblo_indigena_victima,
       pueblo_indigena_victima: data.pueblo_indigena_victima,
       nombre_pueblo_indigena_victima: data.nombre_pueblo_indigena_victima,
@@ -73,9 +176,11 @@ export async function POST(request: NextRequest) {
       rango_edad_victima: data.rango_edad_victima,
       cod_clasifica_edad_victima: data.cod_clasifica_edad_victima,
       clasifica_edad_victima: data.clasifica_edad_victima,
-      cod_antecedentes_criminales_victima: data.cod_antecedentes_criminales_victima,
+      cod_antecedentes_criminales_victima:
+        data.cod_antecedentes_criminales_victima,
       antecedentes_criminales_victima: data.antecedentes_criminales_victima,
-      cod_situacion_discapacidad_victima: data.cod_situacion_discapacidad_victima,
+      cod_situacion_discapacidad_victima:
+        data.cod_situacion_discapacidad_victima,
       situacion_discapacidad_victima: data.situacion_discapacidad_victima,
       nombre_sujeto_feminicida: data.nombre_sujeto_feminicida,
       alias_sujeto_feminicida: data.alias_sujeto_feminicida,
@@ -88,8 +193,10 @@ export async function POST(request: NextRequest) {
       sujeto_feminicida: data.sujeto_feminicida,
       cod_parentesco_o_relacion: data.cod_parentesco_o_relacion,
       parentesco_o_relacion: data.parentesco_o_relacion,
-      cod_sujeto_feminicida_momento_feminicidio: data.cod_sujeto_feminicida_momento_feminicidio,
-      sujeto_feminicida_momento_feminicidio: data.sujeto_feminicida_momento_feminicidio,
+      cod_sujeto_feminicida_momento_feminicidio:
+        data.cod_sujeto_feminicida_momento_feminicidio,
+      sujeto_feminicida_momento_feminicidio:
+        data.sujeto_feminicida_momento_feminicidio,
       cod_situacion_juridica_sf: data.cod_situacion_juridica_sf,
       situacion_juridica_sf: data.situacion_juridica_sf,
       cod_actividad_economica_sf: data.cod_actividad_economica_sf,
@@ -100,9 +207,11 @@ export async function POST(request: NextRequest) {
       continuum_violencia_sf: data.continuum_violencia_sf,
       cod_perte_etnica_o_racial_sf_mc: data.cod_perte_etnica_o_racial_sf_mc,
       perte_etnica_o_racial_sf_mc: data.perte_etnica_o_racial_sf_mc,
-      cod_perte_etnica_o_racial_sf_in_ao: data.cod_perte_etnica_o_racial_sf_in_ao,
+      cod_perte_etnica_o_racial_sf_in_ao:
+        data.cod_perte_etnica_o_racial_sf_in_ao,
       perte_etnica_o_racial_sf_in_ao: data.perte_etnica_o_racial_sf_in_ao,
-      cod_comunidad_o_territ_colect_sf_in: data.cod_comunidad_o_territ_colect_sf_in,
+      cod_comunidad_o_territ_colect_sf_in:
+        data.cod_comunidad_o_territ_colect_sf_in,
       comunidad_o_territ_colect_sf_in: data.comunidad_o_territ_colect_sf_in,
       cod_nacionalidad_sf_migrante: data.cod_nacionalidad_sf_migrante,
       nacionalidad_sf_migrante: data.nacionalidad_sf_migrante,
@@ -115,7 +224,7 @@ export async function POST(request: NextRequest) {
       link_noticia: data.link_noticia,
       url_corto_noticia: data.url_corto_noticia,
       observaciones: data.observaciones,
-      observaciones_comision_cspm: data.observaciones_comision_cspm
+      observaciones_comision_cspm: data.observaciones_comision_cspm,
     };
 
     // Logear los datos para verificar
@@ -123,10 +232,9 @@ export async function POST(request: NextRequest) {
 
     // Devolver la respuesta en formato JSON con los datos procesados
     return NextResponse.json(newdata);
-
   } catch (error) {
     // Manejar errores si ocurren durante el proceso
     console.error(error);
-    return NextResponse.error()
+    return NextResponse.error();
   }
 }
