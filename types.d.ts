@@ -42,6 +42,5 @@ type TransformedObject = {
 type Step = {
   id: number;
   name: string;
-  href: string;
   fields: Array<TransformedObject>;
 };
