@@ -1,4 +1,3 @@
-import { Step } from '@/app/libs/multistep-form';
 import React from 'react';
 import { CheckIcon } from '@heroicons/react/24/solid';
 
@@ -8,7 +7,7 @@ type StepProps = {
 
 export const PreviousStep = ({ step }: StepProps) => {
   return (
-    <a href={step.href} className="group flex w-full items-center">
+    <a href='#' className="group flex w-full items-center">
       <span className="flex items-center px-6 py-4 text-sm font-medium">
         <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 group-hover:bg-indigo-800 dark:group-hover:bg-indigo-700">
           <CheckIcon aria-hidden="true" className="h-6 w-6 text-white" />
@@ -24,7 +23,7 @@ export const PreviousStep = ({ step }: StepProps) => {
 export const CurrentStep = ({ step }: StepProps) => {
   return (
     <a
-      href={step.href}
+      href='#'
       aria-current="step"
       className="flex items-center px-6 py-4 text-sm font-medium"
     >
@@ -40,7 +39,7 @@ export const CurrentStep = ({ step }: StepProps) => {
 
 export const NextStep = ({ step }: StepProps) => {
   return (
-    <a href={step.href} className="group flex items-center">
+    <a href='#' className="group flex items-center">
       <span className="flex items-center px-6 py-4 text-sm font-medium">
         <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 group-hover:bg-indigo-800 dark:group-hover:bg-indigo-700">
           <span className="text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-500">

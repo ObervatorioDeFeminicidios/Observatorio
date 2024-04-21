@@ -1,7 +1,8 @@
 'use client';
 
-import { Step } from '@/app/libs/multistep-form';
 import { Form } from '@/components/ui/form';
+import { getDefaultValues, getSchema } from '@/lib/form';
+import { useStepState } from '@/store/registration-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,50 +12,13 @@ import { Navigation } from './navigation';
 
 type RegistrationFormProps = {
   steps: Step[];
-  currentStep: number;
-  handlePrevious: () => void;
-  handleNext: () => void;
 };
 
-export const RegistrationForm = ({
-  steps,
-  currentStep,
-  handlePrevious,
-  handleNext,
-}: RegistrationFormProps) => {
+export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
+  const { currentStep } = useStepState();
+  const formSchema = getSchema(steps);
+  const defaultValues = getDefaultValues(steps);
   const totalSteps = steps.length;
-
-  const formSchema = z.object(
-    steps.reduce((schema: { [key: string]: any }, step) => {
-      step.fields.forEach((field) => {
-        switch (field.type) {
-          case 'text':
-          case 'select':
-            schema[field.id] = z.string();
-            break;
-          case 'int':
-            schema[field.id] = z.string();
-            break;
-          case 'date':
-            schema[field.id] = z.string();
-            break;
-          default:
-            break;
-        }
-      });
-      return schema;
-    }, {}),
-  );
-
-  const defaultValues = steps.reduce(
-    (values: { [key: string]: string }, step) => {
-      step.fields.forEach((field) => {
-        values[field.id] = '';
-      });
-      return values;
-    },
-    {},
-  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,12 +53,7 @@ export const RegistrationForm = ({
           )}
         </div>
 
-        <Navigation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          handlePrevious={handlePrevious}
-          handleNext={handleNext}
-        />
+        <Navigation totalSteps={totalSteps} />
       </form>
     </Form>
   );
