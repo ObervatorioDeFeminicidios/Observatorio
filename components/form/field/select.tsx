@@ -1,4 +1,3 @@
-import { Field, SelectField } from '@/app/libs/multistep-form';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -21,22 +20,25 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
+import React from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 
 type FieldProps = {
-  formField: Field;
+  formField: TransformedObject;
   form: UseFormReturn<FieldValues, any, undefined>;
 };
 
 export const FieldSelect = ({ formField, form }: FieldProps) => {
+  const [open, setOpen] = React.useState(false);
+
   return (
     <FormField
       control={form.control}
       name={formField.id}
       render={({ field }) => (
         <FormItem className="flex items-center justify-between">
-          <FormLabel>{formField.label}</FormLabel>
-          <Popover>
+          <FormLabel className="max-w-[40%]">{formField.label}</FormLabel>
+          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -46,6 +48,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                     '!m-0 w-[300px] justify-between',
                     !field.value && 'text-muted-foreground',
                   )}
+                  aria-expanded={open}
                 >
                   {field.value
                     ? (formField as SelectField).options.find(
@@ -67,6 +70,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                       value={option.label}
                       onSelect={() => {
                         form.setValue(formField.id, option.label);
+                        setOpen(false);
                       }}
                     >
                       {option.label}

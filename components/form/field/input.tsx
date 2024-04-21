@@ -1,6 +1,4 @@
-import React from 'react'
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -8,15 +6,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Field } from '@/app/libs/multistep-form';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 
 type FieldProps = {
-  formField: Field;
+  formField: TransformedObject;
   form: UseFormReturn<FieldValues, any, undefined>;
-}
+};
 
-export const FieldInput = ({formField, form}: FieldProps) => {
+export const FieldInput = ({ formField, form }: FieldProps) => {
   return (
     <FormField
       control={form.control}
@@ -31,5 +28,5 @@ export const FieldInput = ({formField, form}: FieldProps) => {
         </FormItem>
       )}
     />
-  )
-}
+  );
+};
