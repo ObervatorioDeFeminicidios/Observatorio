@@ -1,6 +1,6 @@
 'use server';
 
-import { transformObject } from '@/app/utils/transform-object';
+import { compareByType, transformObject } from '@/app/utils/transform-object';
 import { env } from '@/config/env';
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
 import { conn, queries } from '@/lib/mysql';
@@ -65,22 +65,22 @@ export async function getFormData() {
       {
         id: 1,
         name: 'Información de la Víctima',
-        fields: stepOne,
+        fields: stepOne.sort(compareByType),
       },
       {
         id: 2,
         name: 'Información del Feminicidio',
-        fields: stepTwo,
+        fields: stepTwo.sort(compareByType),
       },
       {
         id: 3,
         name: 'Información del Agresor',
-        fields: stepThree,
+        fields: stepThree.sort(compareByType),
       },
       {
         id: 4,
         name: 'Información Adicional',
-        fields: stepFour,
+        fields: stepFour.sort(compareByType),
       },
     ];
 
