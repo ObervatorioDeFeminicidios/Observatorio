@@ -31,21 +31,21 @@ export async function getFormData() {
       // Mutated the reponses so we get the correct type
       const stepOneMutated: DataBaseField[] = stepOneReponse.map((field) => ({
         ...field,
-        type: field.options !== null ? 'select' : field.type,
+        type: !!field?.options ? 'select' : field.type,
       }));
       const stepTwoMutated: DataBaseField[] = stepTwoReponse.map((field) => ({
         ...field,
-        type: field.options !== null ? 'select' : field.type,
+        type: !!field?.options ? 'select' : field.type,
       }));
       const stepThreeMutated: DataBaseField[] = stepThreeReponse.map(
         (field) => ({
           ...field,
-          type: field.options !== null ? 'select' : field.type,
+          type: !!field?.options ? 'select' : field.type,
         }),
       );
       const stepFourMutated: DataBaseField[] = stepFourReponse.map((field) => ({
         ...field,
-        type: field.options !== null ? 'select' : field.type,
+        type: !!field?.options ? 'select' : field.type,
       }));
 
       // Transformed the objects so we get the correct list of options
