@@ -1,6 +1,7 @@
 type BaseField = {
   id: string;
   label: string;
+  length: number | null;
   nullable: 'YES' | 'NO';
 };
 
