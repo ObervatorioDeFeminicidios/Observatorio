@@ -6,14 +6,20 @@ export function getSchema(steps: Step[]) {
       step.fields.forEach((field) => {
         switch (field.type) {
           case 'text':
+            schema[field.id] = z.string().trim();
+            break;
           case 'select':
+            // schema[field.id] = z.object({
+            //   value: z.number(),
+            //   label: z.string(),
+            // });
             schema[field.id] = z.string();
             break;
           case 'int':
             schema[field.id] = z.string();
             break;
           case 'date':
-            schema[field.id] = z.string();
+            schema[field.id] = z.date();
             break;
           default:
             break;

@@ -61,8 +61,8 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
             </PopoverTrigger>
             <PopoverContent className="w-[300px] p-0">
               <Command>
-                <CommandInput placeholder="Search option..." className="h-9" />
-                <CommandEmpty>No option found.</CommandEmpty>
+                <CommandInput placeholder="Buscar..." className="h-9" />
+                <CommandEmpty>Ninguna opción se encontró.</CommandEmpty>
                 <CommandGroup>
                   {(formField as SelectField).options.map((option) => (
                     <CommandItem
