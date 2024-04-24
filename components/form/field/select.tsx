@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import React from 'react';
@@ -64,26 +65,30 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                 <CommandInput placeholder="Buscar..." className="h-9" />
                 <CommandEmpty>Ninguna opción se encontró.</CommandEmpty>
                 <CommandGroup>
-                  {(formField as SelectField).options.map((option) => (
-                    <CommandItem
-                      key={option.value}
-                      value={option.label}
-                      onSelect={() => {
-                        form.setValue(formField.id, option.label);
-                        setOpen(false);
-                      }}
-                    >
-                      {option.label}
-                      <CheckIcon
-                        className={cn(
-                          'ml-auto h-4 w-4',
-                          option.label === field.value
-                            ? 'opacity-100'
-                            : 'opacity-0',
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
+                  <ScrollArea className="w-auto h-72">
+                    {(formField as SelectField).options.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        value={option.label}
+                        onSelect={() => {
+                          form.setValue(formField.id, option.label);
+                          form.setValue(`cod_${formField.id}`, option.value);
+                          console.log(form.getValues())
+                          setOpen(false);
+                        }}
+                      >
+                        {option.label}
+                        <CheckIcon
+                          className={cn(
+                            'ml-auto h-4 w-4',
+                            option.label === field.value
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </ScrollArea>
                 </CommandGroup>
               </Command>
             </PopoverContent>
