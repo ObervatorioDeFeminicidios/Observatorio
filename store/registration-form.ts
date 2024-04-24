@@ -1,6 +1,16 @@
+import { z } from 'zod';
 import { create } from 'zustand';
 
+type FormSchemas = {
+  firstSchema: z.Schema | null;
+  secondSchema: z.Schema | null;
+  thirdSchema: z.Schema | null;
+  fourthSchema: z.Schema | null;
+};
+
 interface StepState {
+  formSchemas: FormSchemas;
+  updateFormSchemas: (formSchemas: FormSchemas) => void;
   previousStep: number;
   currentStep: number;
   handlePreviousStep: () => void;
@@ -10,6 +20,13 @@ interface StepState {
 const TOTAL_STEPS = 4;
 
 export const useStepState = create<StepState>()((set) => ({
+  formSchemas: {
+    firstSchema: null,
+    secondSchema: null,
+    thirdSchema: null,
+    fourthSchema: null,
+  },
+  updateFormSchemas: (formSchemas) => set(() => ({ formSchemas })),
   previousStep: 0,
   currentStep: 0,
   handlePreviousStep: () =>
