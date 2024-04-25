@@ -39,3 +39,29 @@ export function transformObject(fields: DataBaseField[]): TransformedObject[] {
 
   return transfomedObjects;
 }
+
+export function getLatestId(data: DBResponse): number {
+  let latestId = null;
+
+  for (let key in data) {
+    if (key.startsWith('cod_')) {
+      latestId = data[key] as number;
+      break;
+    }
+  }
+
+  console.log("El valor de la clave que empieza con 'cod_' es:", latestId);
+
+  return latestId || 0;
+}
+
+const capitalize = (str) =>
+  str.split(' ')
+    .map(([first, ...rest]) => [first.toUpperCase(), ...rest].join(''))
+    .join(' ');
+
+export const capitalizeEachWord = (text: string) => {
+  const words = text.toLocaleLowerCase().split(" ");
+  const wordsCapitalized = words.map(word => capitalize(word));
+  return wordsCapitalized.join(" ");
+}
