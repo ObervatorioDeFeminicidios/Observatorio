@@ -2,6 +2,16 @@ import { Button } from '@/components/ui/button';
 import { useStepState } from '@/store/registration-form';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '../ui/drawer';
 
 type NavigationProps = {
   totalSteps: number;
@@ -38,8 +48,6 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
   };
 
   const handleNextOnClick = () => {
-    console.log('Navigation currentStep ::: ', currentStep);
-
     switch (currentStep) {
       case 0:
         if (firstSchema) validateSchema(firstSchema);
@@ -77,9 +85,28 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
           Siguiente
         </Button>
       ) : (
-        <Button className="bg-indigo-600 hover:bg-indigo-700" type="submit">
-          Registrar
-        </Button>
+        <Drawer direction='right'>
+          <DrawerTrigger asChild>
+            <Button variant="outline">Registrar</Button>
+          </DrawerTrigger>
+          <DrawerContent className="h-screen top-0 right-0 left-auto mt-0 w-[500px] rounded-none">
+              <DrawerHeader>
+                <DrawerTitle>Registro de Feminicidio</DrawerTitle>
+                <DrawerDescription>
+                  Revisa la información registrada:
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="p-4 pb-0">
+                <pre>{JSON.stringify(getValues(), null, 2)}</pre>
+              </div>
+              <DrawerFooter>
+                <Button>Confirmar</Button>
+                <DrawerClose asChild>
+                  <Button variant="outline">Cancelar</Button>
+                </DrawerClose>
+              </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       )}
     </div>
   );
