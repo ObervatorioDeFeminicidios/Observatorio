@@ -2,16 +2,8 @@ import { Button } from '@/components/ui/button';
 import { useStepState } from '@/store/registration-form';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '../ui/drawer';
+import { Drawer, DrawerTrigger } from '../ui/drawer';
+import { Confirmation } from './confirmation';
 
 type NavigationProps = {
   totalSteps: number;
@@ -85,27 +77,17 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
           Siguiente
         </Button>
       ) : (
-        <Drawer direction='right'>
+        <Drawer direction="right">
           <DrawerTrigger asChild>
-            <Button variant="outline">Registrar</Button>
+            <Button
+              variant="outline"
+              className="border-indigo-600 hover:border-indigo-700"
+              type="button"
+            >
+              Registrar
+            </Button>
           </DrawerTrigger>
-          <DrawerContent className="h-screen top-0 right-0 left-auto mt-0 w-[500px] rounded-none">
-              <DrawerHeader>
-                <DrawerTitle>Registro de Feminicidio</DrawerTitle>
-                <DrawerDescription>
-                  Revisa la información registrada:
-                </DrawerDescription>
-              </DrawerHeader>
-              <div className="p-4 pb-0">
-                <pre>{JSON.stringify(getValues(), null, 2)}</pre>
-              </div>
-              <DrawerFooter>
-                <Button>Confirmar</Button>
-                <DrawerClose asChild>
-                  <Button variant="outline">Cancelar</Button>
-                </DrawerClose>
-              </DrawerFooter>
-          </DrawerContent>
+          <Confirmation data={getValues()} />
         </Drawer>
       )}
     </div>

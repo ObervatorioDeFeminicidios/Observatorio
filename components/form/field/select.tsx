@@ -66,7 +66,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                   <CommandInput placeholder="Buscar..." className="h-9" />
                   <CommandEmpty>Ninguna opción se encontró.</CommandEmpty>
                   <CommandGroup>
-                    <ScrollArea className="w-auto max-h-72 overflow-scroll">
+                    <ScrollArea className="w-auto max-h-72 overflow-y-auto">
                       {(formField as SelectField).options.map((option) => (
                         <CommandItem
                           key={option.value}
