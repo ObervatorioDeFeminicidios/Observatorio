@@ -2,8 +2,11 @@
 
 import { compareByType, transformObject } from '@/app/utils/transform-object';
 import { env } from '@/config/env';
+import { getSchema } from '@/lib/form';
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
 import { conn, queries } from '@/lib/mysql';
+import { FieldValues } from 'react-hook-form';
+import { z } from 'zod';
 
 export async function getFormData() {
   try {
@@ -96,5 +99,58 @@ export async function getFormData() {
 
     console.log('Database Error: ', errorMessage);
     throw new Error('Error al cargar el formulario');
+  }
+}
+
+export async function postFormData(data: FieldValues) {
+  try {
+    // Getting the form schema
+    const formData = await getFormData();
+    const formSchema: z.Schema = getSchema(formData);
+
+    // Validating the data against the zod schema
+    const validationResult = formSchema.safeParse(data);
+
+    const firstQuery = queries.post.registry('feminicidios_tentativas', data);
+
+    const secondData = {
+      'cod_violencia_asociada': 1,
+      'violencia_asociada': 'Violencia física',
+    }
+    const secondQuery = queries.post.registry('feminicidios_violencia_asociada', secondData);
+
+    if (validationResult.success) {
+      // Handling the environments to test with mocked data if we are in the dev environment
+      if (env.ENV !== 'dev') {
+        const response1 = await conn.query(firstQuery);
+        const response2 = await conn.query(secondQuery);
+        return {
+          success: true,
+          errors: null,
+          result: response2,
+        };
+      } else {
+        return {
+          success: true,
+          errors: null,
+          result: {
+            firstQuery,
+            secondQuery,
+          }
+        }
+      }
+    } else {
+      throw new Error(validationResult.error.message);
+    }
+  } catch (error) {
+    const errorMessage =
+      typeof error === 'string'
+        ? error
+        : error instanceof Error
+          ? error.message
+          : 'Error Unknown';
+
+    console.log('Database Error: ', errorMessage);
+    throw new Error('Error al insertar el registro en la base de datos');
   }
 }
