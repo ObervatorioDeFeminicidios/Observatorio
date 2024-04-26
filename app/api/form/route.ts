@@ -1,4 +1,4 @@
-import { transformObject } from '@/app/utils/transform-object';
+import { capitalizeEachWord, getLatestId, transformObject } from '@/app/utils/transform-object';
 import { env } from '@/config/env';
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
 import { conn, queries } from '@/lib/mysql';
@@ -470,6 +470,49 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response);
   } catch (error) {
     // Manejar errores si ocurren durante el proceso
+    console.error(error);
+    return NextResponse.error();
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    // Extract data from the body of the request
+    const data = await request.json();
+
+    // Make newdata mandatory and contain all variables in the database
+    const newData = {
+      id: data.id,
+      value: capitalizeEachWord(data.value),
+    };
+
+    // Log data to verify
+    console.log(newData);
+
+    // Query para extraer el ultimo id en la tabla de referencia
+    const query1 = `
+      SELECT * FROM ${newData.id}
+      ORDER BY cod_${newData.id} DESC
+      LIMIT 1
+    `
+    const response1: Array<DBResponse> = await conn.query(query1);
+    const newId = getLatestId(response1[0]) + 1;
+
+    // Query to insert the new item in the reference table
+    const query2 = `
+      INSERT INTO ${newData.id} (
+        cod_${newData.id},
+        ${newData.id})
+          VALUES (
+            ${newId},
+            '${newData.value}');
+    `
+    const response2 = await conn.query(query2);
+
+    // Return the format JSON response with the data process
+    return NextResponse.json(response2);
+  } catch (error) {
+    //Handle error in the process
     console.error(error);
     return NextResponse.error();
   }
