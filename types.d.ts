@@ -45,3 +45,5 @@ type Step = {
   name: string;
   fields: Array<TransformedObject>;
 };
+
+type DBResponse = { [key: string]: string | number };
