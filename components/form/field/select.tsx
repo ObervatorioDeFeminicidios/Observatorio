@@ -24,7 +24,6 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { SelectEmpty } from './select-empty';
-import { useCommandState } from 'cmdk';
 
 type FieldProps = {
   formField: TransformedObject;
@@ -65,12 +64,15 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
               </PopoverTrigger>
               <PopoverContent className="w-[300px] p-0">
                 <Command>
-                  <CommandInput placeholder="Buscar..." className="h-9"  />
+                  <CommandInput placeholder="Buscar..." className="h-9" />
                   <CommandEmpty>
-                    <SelectEmpty closePopover={() => setOpen(false)} />
+                    <SelectEmpty
+                      fieldId={formField.id}
+                      closePopover={() => setOpen(false)}
+                    />
                   </CommandEmpty>
                   <CommandGroup>
-                    <ScrollArea className="w-auto max-h-72 overflow-y-auto">
+                    <ScrollArea className="max-h-72 w-auto overflow-y-auto">
                       {(formField as SelectField).options.map((option) => (
                         <CommandItem
                           key={option.value}
@@ -78,7 +80,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                           onSelect={() => {
                             form.setValue(formField.id, option.label);
                             form.setValue(`cod_${formField.id}`, option.value);
-                            console.log(form.getValues())
+                            console.log(form.getValues());
                             setOpen(false);
                           }}
                         >

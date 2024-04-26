@@ -1,3 +1,4 @@
+import { putListOption } from '@/actions/_form';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,11 +14,21 @@ import {
 import { useCommandState } from 'cmdk';
 
 type SelectEmptyProps = {
+  fieldId: string;
   closePopover: () => void;
 };
 
-export const SelectEmpty = ({ closePopover }: SelectEmptyProps) => {
+export const SelectEmpty = ({ fieldId, closePopover }: SelectEmptyProps) => {
   const search = useCommandState((state) => state.search);
+
+  const handlePutListOption = async () => {
+    const data: OptionIntoList = {
+      id: fieldId,
+      value: search,
+    };
+    const response = await putListOption(data);
+    console.log('response ::: ', response);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -25,16 +36,16 @@ export const SelectEmpty = ({ closePopover }: SelectEmptyProps) => {
         Ninguna opción se encontró
       </p>
       <div className="flex flex-col gap-4">
-        <p>
-          {`Desea crear la opción: `}
+        <div className="flex justify-center gap-2">
+          <span>Desea crear la opción:</span>
           <Badge variant="outline">{search}</Badge>
-        </p>
+        </div>
         <div className="flex justify-center gap-2">
           <Button variant="ghost" size="sm" onClick={closePopover}>
             Cancelar
           </Button>
           <Dialog>
-            <DialogTrigger>
+            <DialogTrigger asChild>
               <Button className="bg-indigo-600 hover:bg-indigo-700" size="sm">
                 Crear
               </Button>
@@ -58,7 +69,10 @@ export const SelectEmpty = ({ closePopover }: SelectEmptyProps) => {
                 <DialogClose asChild>
                   <Button variant="ghost">Cancelar</Button>
                 </DialogClose>
-                <Button className="bg-indigo-600 hover:bg-indigo-700">
+                <Button
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                  onClick={handlePutListOption}
+                >
                   Crear
                 </Button>
               </DialogFooter>

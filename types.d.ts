@@ -10,6 +10,11 @@ interface Option {
   label: string;
 }
 
+interface OptionIntoList {
+  id: string;
+  value: string;
+}
+
 type BaseFieldType = 'text' | 'int' | 'date' | 'select';
 
 type DataBaseField = BaseField & {

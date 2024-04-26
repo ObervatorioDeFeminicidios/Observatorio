@@ -1,6 +1,11 @@
 'use server';
 
-import { compareByType, transformObject } from '@/app/utils/transform-object';
+import {
+  capitalizeEachWord,
+  compareByType,
+  getLatestId,
+  transformObject,
+} from '@/app/utils/transform-object';
 import { env } from '@/config/env';
 import { getSchema } from '@/lib/form';
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
@@ -114,16 +119,81 @@ export async function postFormData(data: FieldValues) {
     const firstQuery = queries.post.registry('feminicidios_tentativas', data);
 
     const secondData = {
-      'cod_violencia_asociada': 1,
-      'violencia_asociada': 'Violencia física',
-    }
-    const secondQuery = queries.post.registry('feminicidios_violencia_asociada', secondData);
+      cod_violencia_asociada: 1,
+      violencia_asociada: 'Violencia física',
+    };
+    const secondQuery = queries.post.registry(
+      'feminicidios_violencia_asociada',
+      secondData,
+    );
 
     if (validationResult.success) {
       // Handling the environments to test with mocked data if we are in the dev environment
       if (env.ENV !== 'dev') {
-        const response1 = await conn.query(firstQuery);
+        const firstResponse = await conn.query(firstQuery);
+        const secondResponse = await conn.query(secondQuery);
+        return {
+          success: true,
+          errors: null,
+          result: secondResponse,
+        };
+      } else {
+        return {
+          success: true,
+          errors: null,
+          result: {
+            firstQuery,
+            secondQuery,
+          },
+        };
+      }
+    } else {
+      throw new Error(validationResult.error.message);
+    }
+  } catch (error) {
+    const errorMessage =
+      typeof error === 'string'
+        ? error
+        : error instanceof Error
+          ? error.message
+          : 'Error Unknown';
+
+    console.log('Database Error: ', errorMessage);
+    throw new Error('Error al insertar el registro en la base de datos');
+  }
+}
+
+export async function putListOption(data: OptionIntoList) {
+  try {
+    // Getting the form schema
+    const dataSchema: z.Schema = z.object({
+      id: z.string().trim().min(1, { message: `id no puede estar vacío` }),
+      value: z
+        .string()
+        .trim()
+        .min(1, { message: `value no puede estar vacío` }),
+    });
+
+    // Validating the data against the zod schema
+    const validationResult = dataSchema.safeParse(data);
+
+    // Query to extract the latest id from the reference table
+    const firstQuery = queries.get.lastestIdFromList(data.id);
+    // Query to insert the new item in the reference table
+    const secondQuery = queries.put.listOption(data.id, 16, capitalizeEachWord(data.value));
+
+    if (validationResult.success) {
+      // Handling the environments to test with mocked data if we are in the dev environment
+      if (env.ENV !== 'dev') {
+        // Query to extract the latest id from the reference table
+        const firstQuery = queries.get.lastestIdFromList(data.id);
+        const firstResponse: Array<DBResponse> = await conn.query(firstQuery);
+        const newId = getLatestId(firstResponse[0]) + 1;
+
+        // Query to insert the new item in the reference table
+        const secondQuery = queries.put.listOption(data.id, newId, capitalizeEachWord(data.value));
         const response2 = await conn.query(secondQuery);
+
         return {
           success: true,
           errors: null,
@@ -134,10 +204,11 @@ export async function postFormData(data: FieldValues) {
           success: true,
           errors: null,
           result: {
+            data,
             firstQuery,
             secondQuery,
-          }
-        }
+          },
+        };
       }
     } else {
       throw new Error(validationResult.error.message);
