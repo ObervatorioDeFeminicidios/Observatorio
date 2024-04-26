@@ -11,6 +11,7 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { useFormContext } from 'react-hook-form';
+import { postFormData } from '@/actions/_form';
 
 type ConfirmationProps = {
   data: any;
@@ -20,8 +21,12 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
   const { handleSubmit } = useFormContext();
 
   const handleDataSubmit = () => {
-    handleSubmit(formData => {
+    handleSubmit(async (formData) => {
       console.log(formData)
+
+      const response = await postFormData(formData);
+
+      console.log('response ::: ', response);
     })()
   }
 
