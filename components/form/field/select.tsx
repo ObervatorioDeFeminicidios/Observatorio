@@ -22,13 +22,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import React from 'react';
-import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { SelectEmpty } from './select-empty';
-
-type FieldProps = {
-  formField: TransformedObject;
-  form: UseFormReturn<FieldValues, any, undefined>;
-};
 
 export const FieldSelect = ({ formField, form }: FieldProps) => {
   const [open, setOpen] = React.useState(false);
