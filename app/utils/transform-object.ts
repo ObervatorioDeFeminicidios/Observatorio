@@ -42,16 +42,25 @@ export function transformObject(fields: DataBaseField[]): TransformedObject[] {
 
 // Custom comparison object to sort by type
 export function compareByType(a: TransformedObject, b: TransformedObject) {
-  if (a.type === 'text' && b.type === 'select') {
-    // Field comes before select
+  const typePriority: { [key: string]: number } = {
+    date: 0,
+    int: 1,
+    text: 2,
+    select: 3
+  };
+
+  const priorityA = typePriority[a.type];
+  const priorityB = typePriority[b.type];
+
+  // Compare based on priority
+  if (priorityA < priorityB) {
     return -1;
-  }
-  if (a.type === 'select' && b.type === 'text') {
-    // Field comes after text
+  } else if (priorityA > priorityB) {
     return 1;
+  } else {
+    // Equal priorities, maintain the original order
+    return 0;
   }
-  // Equal types, or other types, maintain the original order
-  return 0;
 }
 
 export function getLatestId(data: DBResponse): number {
