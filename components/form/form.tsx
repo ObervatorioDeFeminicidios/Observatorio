@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { FieldInput } from './field/input';
 import { FieldSelect } from './field/select';
 import { Navigation } from './navigation';
+import { FieldDate } from './field/date';
 
 type RegistrationFormProps = {
   steps: Step[];
@@ -40,9 +41,15 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     <Form {...form}>
       <form className="flex flex-col gap-10">
         <div className="grid grid-cols-2 gap-8">
-          {steps[currentStep].fields.map((formField, index) =>
-            formField.type !== 'select' ? (
+          {steps[currentStep].fields.map((formField) =>
+            formField.type === 'text' || formField.type === 'int' ? (
               <FieldInput
+                key={formField.id}
+                formField={formField}
+                form={form}
+              />
+            ) : formField.type === 'date' ? (
+              <FieldDate
                 key={formField.id}
                 formField={formField}
                 form={form}
