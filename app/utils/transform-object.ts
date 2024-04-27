@@ -78,7 +78,7 @@ export function getLatestId(data: DBResponse): number {
   return latestId || 0;
 }
 
-const capitalize = (str) =>
+const capitalize = (str: string) =>
   str.split(' ')
     .map(([first, ...rest]) => [first.toUpperCase(), ...rest].join(''))
     .join(' ');
