@@ -1015,6 +1015,27 @@ export const formData2: TransformedObject[] = [
       },
     ],
   },
+  {
+    id: 'ano',
+    type: 'int',
+    nullable: false,
+    label: 'Año',
+    options: [],
+  },
+  {
+    id: 'fecha_feminicidio',
+    type: 'date',
+    nullable: false,
+    label: 'Fecha Feminicidio',
+    options: [],
+  },
+  {
+    id: 'mes',
+    type: 'int',
+    nullable: false,
+    label: 'Mes',
+    options: [],
+  },
 ];
 
 // export const formData2: TransformedObject[] = [
