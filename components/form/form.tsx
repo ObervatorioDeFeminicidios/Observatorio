@@ -36,16 +36,9 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     defaultValues,
   });
 
-  const onSubmit = (values) => {
-    console.log('onSubmit values ::: ', values);
-  };
-
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-10"
-      >
+      <form className="flex flex-col gap-10">
         <div className="grid grid-cols-2 gap-8">
           {steps[currentStep].fields.map((formField, index) =>
             formField.type !== 'select' ? (

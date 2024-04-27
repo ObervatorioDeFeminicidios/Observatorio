@@ -23,9 +23,7 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
   const handleDataSubmit = () => {
     handleSubmit(async (formData) => {
       console.log(formData)
-
       const response = await postFormData(formData);
-
       console.log('response ::: ', response);
     })()
   }
