@@ -16,11 +16,17 @@ export function getSchemaByStep(fields: TransformedObject[]) {
           break;
         case 'int':
           schema[field.id] = field.nullable
-            ? z.string().optional()
-            : z.string();
+            ? z.string().optional().transform(v => Number(v) || 0)
+            : z.string({
+              required_error: `${field.label} no puede estar vacío`,
+              invalid_type_error: `Se esperaba un número`,
+            }).transform(v => Number(v) || 0);
           break;
         case 'date':
-          schema[field.id] = field.nullable ? z.date().optional() : z.date();
+          schema[field.id] = field.nullable ? z.date().optional() : z.date({
+            required_error: `${field.label} no puede estar vacío`,
+            invalid_type_error: `Se esperaba una fecha`,
+          });
           break;
         default:
           break;

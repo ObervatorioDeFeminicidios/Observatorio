@@ -22,7 +22,7 @@ export const FieldInput = ({ formField, form }: FieldProps) => {
         <FormItem>
           <FormLabel>{formField.label}</FormLabel>
           <FormControl>
-            <Input {...field} />
+            <Input {...field} type={formField.type !== 'int' ? formField.type : 'number'} />
           </FormControl>
           <FormMessage />
         </FormItem>
