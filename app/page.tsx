@@ -4,7 +4,6 @@ import { Steps } from '@/components/form/steps';
 
 export default async function Home() {
   const multiStepFormData = await getFormData();
-  console.log('Home multiStepFormData ::: ', multiStepFormData);
 
   return (
     <section className="m-4 flex flex-col gap-10 divide-y divide-gray-300 rounded-md border border-gray-300 p-6 md:divide-y-0">

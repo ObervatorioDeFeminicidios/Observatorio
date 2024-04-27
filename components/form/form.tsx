@@ -1,9 +1,10 @@
 'use client';
 
 import { Form } from '@/components/ui/form';
-import { getDefaultValues, getSchema } from '@/lib/form';
+import { getDefaultValues, getSchema, getSchemaByStep } from '@/lib/form';
 import { useStepState } from '@/store/registration-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FieldInput } from './field/input';
@@ -15,10 +16,20 @@ type RegistrationFormProps = {
 };
 
 export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
-  const { currentStep } = useStepState();
+  const { currentStep, updateFormSchemas } = useStepState();
   const formSchema = getSchema(steps);
   const defaultValues = getDefaultValues(steps);
   const totalSteps = steps.length;
+
+  // Getting the multi step form schema by step
+  React.useEffect(() => {
+    updateFormSchemas({
+      firstSchema: getSchemaByStep(steps[0].fields),
+      secondSchema: getSchemaByStep(steps[1].fields),
+      thirdSchema: getSchemaByStep(steps[2].fields),
+      fourthSchema: getSchemaByStep(steps[3].fields),
+    });
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

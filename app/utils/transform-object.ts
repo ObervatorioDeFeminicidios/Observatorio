@@ -40,6 +40,20 @@ export function transformObject(fields: DataBaseField[]): TransformedObject[] {
   return transfomedObjects;
 }
 
+// Custom comparison object to sort by type
+export function compareByType(a: TransformedObject, b: TransformedObject) {
+  if (a.type === 'text' && b.type === 'select') {
+    // Field comes before select
+    return -1;
+  }
+  if (a.type === 'select' && b.type === 'text') {
+    // Field comes after text
+    return 1;
+  }
+  // Equal types, or other types, maintain the original order
+  return 0;
+}
+
 export function getLatestId(data: DBResponse): number {
   let latestId = null;
 

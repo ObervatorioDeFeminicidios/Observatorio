@@ -1,4 +1,5 @@
 import { env } from '@/config/env';
+import { FieldValues } from 'react-hook-form';
 import mysql from 'serverless-mysql';
 
 export const conn = mysql({
@@ -6,7 +7,7 @@ export const conn = mysql({
     host: env.DB_HOST,
     user: env.DB_USER,
     password: env.DB_PASS,
-    port: env.DB_PORT,
+    port: env.DB_PORT as unknown as number,
     database: env.DB_DATABASE,
   },
 });
@@ -124,7 +125,7 @@ export const queries = {
         ) w
       WHERE
         TABLE_NAME = 'feminicidios_tentativas' AND
-        COLUMN_NAME IN ('cod_departamento', 'departamento','cod_municipio', 'municipio','barrio', 'direccion_hecho', 'cod_comuna','comuna', 
+        COLUMN_NAME IN ('cod_departamento', 'departamento','cod_municipio', 'municipio','barrio', 'direccion_hecho', 'cod_comuna','comuna',
         'cod_zona_geografica', 'zona_geografica','cod_arma_utilizada','arma_utilizada', 'cod_lugar', 'lugar', 'cod_metodo_eliminacion', 'metodo_eliminacion',
         'cod_lugar_encuentra_cadaver','lugar_encuentra_cadaver', 'mes','ano','fecha_violencia', 'tipo_violencia','cod_tipo_violencia');
     `,
@@ -210,6 +211,31 @@ export const queries = {
       WHERE
         TABLE_NAME = 'feminicidios_tentativas' AND
         COLUMN_NAME IN ('desaparecida', 'causal_atribuido_feminicidio', 'fuente', 'descripcion_informacion_noticia','hipotesis','titular','link_noticia','url_corto_noticia','observaciones','observaciones_comision_cspm', 'fecha_en_prensa');
-      `,
+    `,
+    lastestIdFromList: (table: string) => `
+      SELECT * FROM ${table}
+      ORDER BY cod_${table} DESC
+      LIMIT 1
+    `
   },
+  post: {
+    registry: (table: string, data: FieldValues) => `
+      INSERT INTO ${table} (
+        ${Object.keys(data).join(',')}
+      ) VALUES (
+        ${Object.values(data).join(',')}
+      )
+    `,
+  },
+  put: {
+    listOption: (table: string, id: number, value: string) => `
+      INSERT INTO ${table} (
+        cod_${table},
+        ${table}
+      ) VALUES (
+        ${id},
+        '${value}'
+      );
+    `
+  }
 };
