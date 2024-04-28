@@ -1,4 +1,6 @@
+import { postFormData } from '@/actions/_form';
 import { titleCase } from '@/lib/utils';
+import { useFormContext } from 'react-hook-form';
 import { Button } from '../ui/button';
 import {
   DrawerClose,
@@ -10,28 +12,27 @@ import {
 } from '../ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
-import { useFormContext } from 'react-hook-form';
-import { postFormData } from '@/actions/_form';
 
 type ConfirmationProps = {
   data: any;
 };
 
 export const Confirmation = ({ data }: ConfirmationProps) => {
-  const { handleSubmit } = useFormContext();
+  const { formState, getValues } = useFormContext();
 
-  const handleDataSubmit = () => {
-    handleSubmit(async (formData) => {
-      console.log(formData)
-      const response = await postFormData(formData);
-      console.log('response ::: ', response);
-    })()
-  }
+  const handleDataSubmit = async () => {
+    const formData = getValues();
+    console.log(formData);
+    const response = await postFormData(formData);
+    console.log('response ::: ', response);
+  };
 
   return (
     <DrawerContent className="left-auto right-0 top-0 mt-0 h-screen w-[500px] rounded-none">
       <DrawerHeader>
-        <DrawerTitle className='text-indigo-600'>Registro de Feminicidio</DrawerTitle>
+        <DrawerTitle className="text-indigo-600">
+          Registro de Feminicidio
+        </DrawerTitle>
         <DrawerDescription>Revisa la información registrada:</DrawerDescription>
       </DrawerHeader>
       <ScrollArea className="m-4">
@@ -39,8 +40,8 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
           (label, index) =>
             !label.startsWith('cod_') && (
               <div key={`${label}-${index}`}>
-                <div className="text-sm flex items-center justify-between p-4">
-                  <span className="font-light text-muted-foreground">
+                <div className="flex items-center justify-between p-4 text-sm">
+                  <span className="font-normal text-muted-foreground">
                     {titleCase(label)}
                   </span>
                   <span className="font-extralight">{data[label]}</span>
@@ -51,7 +52,10 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
         )}
       </ScrollArea>
       <DrawerFooter>
-        <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={handleDataSubmit}>
+        <Button
+          className="bg-indigo-600 hover:bg-indigo-700"
+          onClick={handleDataSubmit}
+        >
           Confirmar
         </Button>
         <DrawerClose asChild>

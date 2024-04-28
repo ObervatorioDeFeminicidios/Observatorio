@@ -119,8 +119,8 @@ export async function postFormData(data: FieldValues) {
     const firstQuery = queries.post.registry('feminicidios_tentativas', data);
 
     const secondData = {
-      cod_violencia_asociada: 1,
-      violencia_asociada: 'Violencia física',
+      cod_violencia_asociada: 27,
+      violencia_asociada: 'Sin información',
     };
     const secondQuery = queries.post.registry(
       'feminicidios_violencia_asociada',
@@ -180,7 +180,11 @@ export async function putListOption(data: OptionIntoList) {
     // Query to extract the latest id from the reference table
     const firstQuery = queries.get.lastestIdFromList(data.id);
     // Query to insert the new item in the reference table
-    const secondQuery = queries.put.listOption(data.id, 16, capitalizeEachWord(data.value));
+    const secondQuery = queries.put.listOption(
+      data.id,
+      16,
+      capitalizeEachWord(data.value),
+    );
 
     if (validationResult.success) {
       // Handling the environments to test with mocked data if we are in the dev environment
@@ -191,7 +195,11 @@ export async function putListOption(data: OptionIntoList) {
         const newId = getLatestId(firstResponse[0]) + 1;
 
         // Query to insert the new item in the reference table
-        const secondQuery = queries.put.listOption(data.id, newId, capitalizeEachWord(data.value));
+        const secondQuery = queries.put.listOption(
+          data.id,
+          newId,
+          capitalizeEachWord(data.value),
+        );
         const response2 = await conn.query(secondQuery);
 
         return {

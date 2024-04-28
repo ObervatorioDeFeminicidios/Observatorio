@@ -6,7 +6,7 @@ export default async function Home() {
   const multiStepFormData = await getFormData();
 
   return (
-    <section className="m-4 flex flex-col gap-10 divide-y divide-gray-300 rounded-md border border-gray-300 p-6 md:divide-y-0">
+    <section className="m-4 flex flex-col gap-8 md:gap-10 rounded-md border border-gray-300 p-4 md:p-6 ">
       <Steps steps={multiStepFormData} />
       <RegistrationForm steps={multiStepFormData} />
     </section>

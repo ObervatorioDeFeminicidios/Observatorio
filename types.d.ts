@@ -51,4 +51,9 @@ type Step = {
   fields: Array<TransformedObject>;
 };
 
+type FieldProps = {
+  formField: TransformedObject;
+  form: UseFormReturn<FieldValues, any, undefined>;
+};
+
 type DBResponse = { [key: string]: string | number };

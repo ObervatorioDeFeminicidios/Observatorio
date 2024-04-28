@@ -22,7 +22,17 @@ export const FieldInput = ({ formField, form }: FieldProps) => {
         <FormItem>
           <FormLabel>{formField.label}</FormLabel>
           <FormControl>
-            <Input {...field} />
+            <Input
+              {...field}
+              onChange={(e) =>
+                field.onChange(
+                  formField.type !== 'int'
+                    ? e.target.value
+                    : Number(e.target.value),
+                )
+              }
+              type={formField.type !== 'int' ? formField.type : 'number'}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
