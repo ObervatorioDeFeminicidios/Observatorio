@@ -216,14 +216,16 @@ export const queries = {
       SELECT * FROM ${table}
       ORDER BY cod_${table} DESC
       LIMIT 1
-    `
+    `,
   },
   post: {
     registry: (table: string, data: FieldValues) => `
       INSERT INTO ${table} (
         ${Object.keys(data).join(',')}
       ) VALUES (
-        ${Object.values(data).join(',')}
+        ${Object.values(data)
+          .map((value) => (typeof value === 'string' ? `'${value}'` : value))
+          .join(',')}
       )
     `,
   },
@@ -236,6 +238,6 @@ export const queries = {
         ${id},
         '${value}'
       );
-    `
-  }
+    `,
+  },
 };
