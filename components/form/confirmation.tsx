@@ -30,10 +30,12 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
   return (
     <DrawerContent className="left-auto right-0 top-0 mt-0 h-screen w-[500px] rounded-none">
       <DrawerHeader>
-        <DrawerTitle className="text-indigo-600">
+        <DrawerTitle className="text-primary">
           Registro de Feminicidio
         </DrawerTitle>
-        <DrawerDescription>Revisa la información registrada:</DrawerDescription>
+        <DrawerDescription className="text-secondary-foreground">
+          Revisa la información registrada:
+        </DrawerDescription>
       </DrawerHeader>
       <ScrollArea className="m-4">
         {Object.keys(data).map(
@@ -41,10 +43,12 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
             !label.startsWith('cod_') && (
               <div key={`${label}-${index}`}>
                 <div className="flex items-center justify-between p-4 text-sm">
-                  <span className="font-normal text-muted-foreground">
+                  <span className="font-medium text-muted-foreground">
                     {titleCase(label)}
                   </span>
-                  <span className="font-extralight">{data[label]}</span>
+                  <span className="max-w-[45%] text-right font-extralight">
+                    {data[label]}
+                  </span>
                 </div>
                 <Separator />
               </div>
@@ -52,14 +56,13 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
         )}
       </ScrollArea>
       <DrawerFooter>
-        <Button
-          className="bg-indigo-600 hover:bg-indigo-700"
-          onClick={handleDataSubmit}
-        >
+        <Button className="bg-primary" onClick={handleDataSubmit}>
           Confirmar
         </Button>
         <DrawerClose asChild>
-          <Button variant="outline">Cancelar</Button>
+          <Button variant="outline" className="text-secondary-foreground">
+            Cancelar
+          </Button>
         </DrawerClose>
       </DrawerFooter>
     </DrawerContent>

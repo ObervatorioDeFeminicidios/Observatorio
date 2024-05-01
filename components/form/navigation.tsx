@@ -62,6 +62,7 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
     <div className="flex justify-end gap-4">
       <Button
         variant="ghost"
+        className='text-secondary-foreground'
         onClick={handlePreviousStep}
         disabled={currentStep === 0}
       >
@@ -70,7 +71,7 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
 
       {currentStep !== totalSteps - 1 ? (
         <Button
-          className="bg-indigo-600 hover:bg-indigo-700"
+          className="bg-primary"
           type="button"
           onClick={handleNextOnClick}
         >
@@ -81,7 +82,7 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
           <DrawerTrigger asChild>
             <Button
               variant="outline"
-              className="border-indigo-600 hover:border-indigo-700"
+              className="border-primary text-primary"
               type="button"
             >
               Registrar
