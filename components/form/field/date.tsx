@@ -26,7 +26,9 @@ export const FieldDate = ({ formField, form }: FieldProps) => {
       name={formField.id}
       render={({ field }) => (
         <FormItem className="flex flex-col justify-end gap-2">
-          <FormLabel>{formField.label}</FormLabel>
+          <FormLabel className="text-secondary-foreground">
+            {formField.label}
+          </FormLabel>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>
@@ -42,7 +44,7 @@ export const FieldDate = ({ formField, form }: FieldProps) => {
                   ) : (
                     <span>YYYY-MM-DD</span>
                   )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-60" />
                 </Button>
               </FormControl>
             </PopoverTrigger>

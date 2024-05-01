@@ -39,6 +39,7 @@ export const SelectEmpty = ({ fieldId, closePopover }: SelectEmptyProps) => {
         <div className="flex justify-center gap-2">
           <span>Desea crear la opción:</span>
           <Badge variant="outline">{search}</Badge>
+          <span>?</span>
         </div>
         <div className="flex justify-center gap-2">
           <Button variant="ghost" size="sm" onClick={closePopover}>
@@ -46,22 +47,22 @@ export const SelectEmpty = ({ fieldId, closePopover }: SelectEmptyProps) => {
           </Button>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-indigo-600 hover:bg-indigo-700" size="sm">
+              <Button className="bg-primary" size="sm">
                 Crear
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle className="text-indigo-600">
+                <DialogTitle className="text-primary">
                   ¿Está completamente seguro?
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription className='text-secondary-foreground'>
                   Tenga en cuenta que esta acción es irreversible. Asegúrese de
                   que la ortografía es correcta antes de continuar.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex">
-                <Badge variant="default" className="text-lg">
+                <Badge variant="outline" className="text-lg border-primary text-primary">
                   {search}
                 </Badge>
               </div>
@@ -70,10 +71,10 @@ export const SelectEmpty = ({ fieldId, closePopover }: SelectEmptyProps) => {
                   <Button variant="ghost">Cancelar</Button>
                 </DialogClose>
                 <Button
-                  className="bg-indigo-600 hover:bg-indigo-700"
+                  className="bg-primary"
                   onClick={handlePutListOption}
                 >
-                  Crear
+                  Confirmar
                 </Button>
               </DialogFooter>
             </DialogContent>

@@ -20,7 +20,9 @@ export const FieldInput = ({ formField, form }: FieldProps) => {
       name={formField.id}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{formField.label}</FormLabel>
+          <FormLabel className="text-secondary-foreground">
+            {formField.label}
+          </FormLabel>
           <FormControl>
             <Input
               {...field}
