@@ -57,12 +57,13 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0">
+            <PopoverContent className="w-[300px] p-0" align="start">
               <Command>
                 <CommandInput placeholder="Buscar..." className="h-9" />
                 <CommandEmpty>
                   <SelectEmpty
                     fieldId={formField.id}
+                    isUpdatable={formField.updatable}
                     closePopover={() => setOpen(false)}
                   />
                 </CommandEmpty>
