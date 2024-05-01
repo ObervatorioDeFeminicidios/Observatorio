@@ -6,12 +6,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { FieldValues, UseFormReturn } from 'react-hook-form';
-
-type FieldProps = {
-  formField: TransformedObject;
-  form: UseFormReturn<FieldValues, any, undefined>;
-};
 
 export const FieldInput = ({ formField, form }: FieldProps) => {
   return (
