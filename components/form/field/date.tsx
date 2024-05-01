@@ -16,9 +16,11 @@ import { cn } from '@/lib/utils';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export const FieldDate = ({ formField, form }: FieldProps) => {
   const [open, setOpen] = React.useState(false);
+  const { setValue } = useFormContext();
 
   return (
     <FormField
@@ -53,7 +55,13 @@ export const FieldDate = ({ formField, form }: FieldProps) => {
                 mode="single"
                 selected={field.value}
                 onSelect={(value) => {
-                  value && field.onChange(value.toISOString().split('T')[0]);
+                  const formattedValue =
+                    value && value.toISOString().split('T')[0];
+                  field.onChange(formattedValue);
+                  if (formField.id === 'fecha_feminicidio') {
+                    setValue('ano', Number(formattedValue?.split('-')[0]));
+                    setValue('mes', Number(formattedValue?.split('-')[1]));
+                  }
                   setOpen(false);
                 }}
                 disabled={(date) =>
