@@ -31,7 +31,7 @@ export const Steps = ({ steps }: StepProps) => {
       </nav>
 
       {!isDesktop && (
-        <span className="self-center text-lg font-medium text-indigo-600">
+        <span className="self-center text-lg font-medium text-primary">
           {steps[currentStep].name}
         </span>
       )}

@@ -3,6 +3,7 @@ type BaseField = {
   label: string;
   length: number | null;
   nullable: 'YES' | 'NO';
+  updatable: boolean,
 };
 
 interface Option {
@@ -41,6 +42,7 @@ type TransformedObject = {
   id: string;
   label: string;
   nullable: boolean;
+  updatable: boolean;
   type: BaseFieldType;
   options?: Option[];
 };

@@ -21,6 +21,7 @@ export function transformObject(fields: DataBaseField[]): TransformedObject[] {
         id: item.id.replace('cod_', ''),
         type: item.type as BaseFieldType,
         nullable: item.nullable === 'YES' ? true : false,
+        updatable: item.updatable,
         label: item.label,
         options,
       };

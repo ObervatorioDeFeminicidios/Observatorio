@@ -3,6 +3,7 @@ export const formData1: TransformedObject[] = [
     id: 'identidad_etnica',
     type: 'select',
     nullable: false,
+    updatable: true,
     label: 'Identidad Etnica',
     options: [
       {
@@ -27,6 +28,7 @@ export const formData1: TransformedObject[] = [
     id: 'edad_victima',
     type: 'text',
     nullable: false,
+    updatable: false,
     label: 'Edad Victima',
     options: [],
   },
@@ -34,6 +36,7 @@ export const formData1: TransformedObject[] = [
     id: 'nombre_victima',
     type: 'text',
     nullable: false,
+    updatable: false,
     label: 'Nombre Victima',
     options: [],
   },
@@ -892,6 +895,7 @@ export const formData2: TransformedObject[] = [
     id: 'barrio',
     type: 'text',
     nullable: false,
+    updatable: false,
     label: 'Barrio',
     options: [],
   },
@@ -899,6 +903,7 @@ export const formData2: TransformedObject[] = [
     id: 'comuna',
     type: 'select',
     nullable: false,
+    updatable: false,
     label: 'Comuna',
     options: [
       {
@@ -999,6 +1004,7 @@ export const formData2: TransformedObject[] = [
     id: 'zona_geografica',
     type: 'select',
     nullable: false,
+    updatable: true,
     label: 'Zona Geografica',
     options: [
       {
@@ -1016,24 +1022,11 @@ export const formData2: TransformedObject[] = [
     ],
   },
   {
-    id: 'ano',
-    type: 'int',
-    nullable: false,
-    label: 'Año',
-    options: [],
-  },
-  {
     id: 'fecha_feminicidio',
     type: 'date',
     nullable: false,
+    updatable: false,
     label: 'Fecha Feminicidio',
-    options: [],
-  },
-  {
-    id: 'mes',
-    type: 'int',
-    nullable: false,
-    label: 'Mes',
     options: [],
   },
 ];
@@ -1927,6 +1920,7 @@ export const formData3: TransformedObject[] = [
     id: 'alias_sujeto_feminicida',
     type: 'text',
     nullable: false,
+    updatable: false,
     label: 'Alias Sujeto Feminicida',
     options: [],
   },
@@ -1934,6 +1928,7 @@ export const formData3: TransformedObject[] = [
     id: 'actividad_economica_sf',
     type: 'select',
     nullable: false,
+    updatable: true,
     label: 'Actividad Economica SF',
     options: [
       {
@@ -2010,6 +2005,7 @@ export const formData3: TransformedObject[] = [
     id: 'edad_sujeto_feminicida',
     type: 'text',
     nullable: false,
+    updatable: false,
     label: 'Edad Sujeto Feminicida',
     options: [],
   },
@@ -2537,6 +2533,7 @@ export const formData4: TransformedObject[] = [
     id: 'causal_atribuido_feminicidio',
     type: 'text',
     nullable: false,
+    updatable: false,
     label: 'Causal Atribuido Feminicidio',
     options: [],
   },
@@ -2544,6 +2541,7 @@ export const formData4: TransformedObject[] = [
     id: 'desaparecida',
     type: 'text',
     nullable: false,
+    updatable: false,
     label: 'Desaparecida',
     options: [],
   },

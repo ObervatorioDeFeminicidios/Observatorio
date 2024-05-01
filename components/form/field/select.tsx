@@ -33,7 +33,9 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
       name={formField.id}
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>{formField.label}</FormLabel>
+          <FormLabel className="text-secondary-foreground">
+            {formField.label}
+          </FormLabel>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>
@@ -50,17 +52,18 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                     ? (formField as SelectField).options.find(
                         (option) => option.label === field.value,
                       )?.label
-                    : 'Select option...'}
-                  <ChevronUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    : 'Selecione una opción...'}
+                  <ChevronUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-60" />
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0">
+            <PopoverContent className="w-[300px] p-0" align="start">
               <Command>
                 <CommandInput placeholder="Buscar..." className="h-9" />
                 <CommandEmpty>
                   <SelectEmpty
                     fieldId={formField.id}
+                    isUpdatable={formField.updatable}
                     closePopover={() => setOpen(false)}
                   />
                 </CommandEmpty>
