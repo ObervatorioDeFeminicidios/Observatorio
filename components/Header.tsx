@@ -1,3 +1,4 @@
+import { signOut } from '@/auth';
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,9 +25,16 @@ export const Header = () => {
         </div>
 
         <div className="flex lg:flex-1 lg:justify-end">
-          <Button className="bg-primary">
-            Logout <ArrowRightStartOnRectangleIcon className="ml-2 h-4 w-4" />
-          </Button>
+          <form
+            action={async () => {
+              'use server';
+              await signOut();
+            }}
+          >
+            <Button className="bg-primary">
+              Logout <ArrowRightStartOnRectangleIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </form>
         </div>
       </nav>
     </header>
