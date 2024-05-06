@@ -5,7 +5,7 @@ export const Background = ({
 }>) => {
   return (
     <div>
-      <div className="relative isolate max-h-screen">
+      <div className="relative isolate">
         <div
           className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
           aria-hidden="true"
@@ -19,7 +19,7 @@ export const Background = ({
           />
         </div>
 
-        <div className="flex h-screen flex-col">{children}</div>
+        <div className="flex min-h-screen flex-col">{children}</div>
 
         <div
           className="absolute inset-x-0 bottom-0 -z-10 transform-gpu overflow-hidden blur-3xl"
