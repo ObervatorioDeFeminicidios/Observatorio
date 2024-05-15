@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { FieldDate } from './field/date';
 import { FieldInput } from './field/input';
 import { FieldSelect } from './field/select';
+import { FieldSelectMultiple } from './field/select-multiple';
 import { Navigation } from './navigation';
 
 type RegistrationFormProps = {
@@ -50,6 +51,12 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
               />
             ) : formField.type === 'date' ? (
               <FieldDate key={formField.id} formField={formField} form={form} />
+            ) : formField.type === 'select-multiple' ? (
+              <FieldSelectMultiple
+                key={formField.id}
+                formField={formField}
+                form={form}
+              />
             ) : (
               <FieldSelect
                 key={formField.id}

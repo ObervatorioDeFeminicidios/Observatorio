@@ -12,7 +12,7 @@ export const Header = () => {
         aria-label="navigation"
       >
         <div className="flex lg:flex-1">
-          <Link href="#" className="p-1.5">
+          <Link href="/" className="p-1.5">
             <span className="sr-only">Red Feminista Antimilitarista</span>
             <Image
               className="h-12 w-auto md:h-16"

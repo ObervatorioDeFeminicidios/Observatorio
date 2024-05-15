@@ -1,5 +1,70 @@
 export const formData1: TransformedObject[] = [
   {
+    id: 'violencia_asociada',
+    type: 'select-multiple',
+    nullable: false,
+    updatable: false,
+    label: 'Violencia Asociada',
+    options: [
+      {
+        value: 1,
+        label: 'Opción 1',
+      },
+      {
+        value: 2,
+        label: 'Opción 2',
+      },
+      {
+        value: 3,
+        label: 'Opción 3',
+      },
+      {
+        value: 4,
+        label: 'Opción 4',
+      },
+      {
+        value: 5,
+        label: 'Opción 5',
+      },
+      {
+        value: 6,
+        label: 'Opción 6',
+      },
+      {
+        value: 7,
+        label: 'Opción 7',
+      },
+      {
+        value: 8,
+        label: 'Opción 8',
+      },
+      {
+        value: 9,
+        label: 'Opción 9',
+      },
+      {
+        value: 10,
+        label: 'Opción 10',
+      },
+      {
+        value: 11,
+        label: 'Opción 11',
+      },
+      {
+        value: 12,
+        label: 'Opción 12',
+      },
+      {
+        value: 13,
+        label: 'Opción 13',
+      },
+      {
+        value: 14,
+        label: 'Opción 14',
+      },
+    ],
+  },
+  {
     id: 'actividad_economica_victima',
     type: 'select',
     nullable: false,
@@ -2227,6 +2292,71 @@ export const formData3: TransformedObject[] = [
 ];
 
 export const formData4: TransformedObject[] = [
+  {
+    id: 'violencia_asociada',
+    type: 'select-multiple',
+    nullable: false,
+    updatable: false,
+    label: 'Violencia Asociada',
+    options: [
+      {
+        value: 1,
+        label: 'Opción 1',
+      },
+      {
+        value: 2,
+        label: 'Opción 2',
+      },
+      {
+        value: 3,
+        label: 'Opción 3',
+      },
+      {
+        value: 4,
+        label: 'Opción 4',
+      },
+      {
+        value: 5,
+        label: 'Opción 5',
+      },
+      {
+        value: 6,
+        label: 'Opción 6',
+      },
+      {
+        value: 7,
+        label: 'Opción 7',
+      },
+      {
+        value: 8,
+        label: 'Opción 8',
+      },
+      {
+        value: 9,
+        label: 'Opción 9',
+      },
+      {
+        value: 10,
+        label: 'Opción 10',
+      },
+      {
+        value: 11,
+        label: 'Opción 11',
+      },
+      {
+        value: 12,
+        label: 'Opción 12',
+      },
+      {
+        value: 13,
+        label: 'Opción 13',
+      },
+      {
+        value: 14,
+        label: 'Opción 14',
+      },
+    ],
+  },
   {
     id: 'causal_atribuido_feminicidio',
     type: 'text',

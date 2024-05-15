@@ -16,7 +16,7 @@ interface OptionIntoList {
   value: string;
 }
 
-type BaseFieldType = 'text' | 'int' | 'date' | 'select';
+type BaseFieldType = 'text' | 'int' | 'date' | 'select' | 'select-multiple';
 
 type DataBaseField = BaseField & {
   type: BaseFieldType;

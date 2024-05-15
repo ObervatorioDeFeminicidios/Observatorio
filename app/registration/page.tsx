@@ -2,7 +2,7 @@ import { getFormData } from '@/actions/_form';
 import { RegistrationForm } from '@/components/form/form';
 import { Steps } from '@/components/form/steps';
 
-export default async function Home() {
+export default async function Registration() {
   const multiStepFormData = await getFormData();
 
   return (
