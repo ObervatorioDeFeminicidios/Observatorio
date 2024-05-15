@@ -69,13 +69,23 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                 </CommandEmpty>
                 <CommandGroup>
                   <ScrollArea className="max-h-72 w-auto overflow-y-auto">
-                    {(formField as SelectField).options.map((option) => (
+                    {(formField as SelectField).options.map((option, index) => (
                       <CommandItem
-                        key={option.value}
+                        key={option.value + '-' + index}
                         value={option.label}
                         onSelect={() => {
                           form.setValue(formField.id, option.label);
-                          form.setValue(`cod_${formField.id}`, option.value);
+                          switch (formField.id) {
+                            case 'departamento':
+                              form.setValue(`cod_${formField.id}`, (option.value + '').padStart(2, '0'));
+                              break;
+                            case 'municipio':
+                              form.setValue(`cod_${formField.id}`, (option.value + '').padStart(3, '0'));
+                              break;
+                            default:
+                              form.setValue(`cod_${formField.id}`, option.value);
+                              break;
+                          }
                           console.log(form.getValues());
                           setOpen(false);
                         }}
