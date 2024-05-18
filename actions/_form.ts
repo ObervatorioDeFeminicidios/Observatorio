@@ -1,18 +1,23 @@
 'use server';
 
+import { env } from '@/config/env';
 import {
-  capitalizeEachWord,
   compareByType,
   getLatestId,
+  getSchema,
+  mutateRawData,
   transformObject,
-} from '@/app/utils/transform-object';
-import { env } from '@/config/env';
-import { getSchema } from '@/lib/form';
+} from '@/lib/form';
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
 import { conn, queries } from '@/lib/mysql';
+import { capitalizeEachWord } from '@/lib/utils';
 import { FieldValues } from 'react-hook-form';
 import { z } from 'zod';
 
+const FIRST_TABLE = 'feminicidios_tentativas';
+const SECOND_TABLE = 'feminicidios_violencia_asociada';
+
+// Getting the form fields from the database schema
 export async function getFormData() {
   try {
     let stepOne: TransformedObject[] = [];
@@ -23,38 +28,24 @@ export async function getFormData() {
     // Handling the environments to test with mocked data if we are in the dev environment
     if (env.ENV !== 'dev') {
       // Getting the data from the database
-      const stepOneReponse = await conn.query<DataBaseField[]>(
+      const stepOneResponse = await conn.query<DataBaseField[]>(
         queries.get.stepOne,
       );
-      const stepTwoReponse = await conn.query<DataBaseField[]>(
+      const stepTwoResponse = await conn.query<DataBaseField[]>(
         queries.get.stepTwo,
       );
-      const stepThreeReponse = await conn.query<DataBaseField[]>(
+      const stepThreeResponse = await conn.query<DataBaseField[]>(
         queries.get.stepThree,
       );
-      const stepFourReponse = await conn.query<DataBaseField[]>(
+      const stepFourResponse = await conn.query<DataBaseField[]>(
         queries.get.stepFour,
       );
 
       // Mutated the reponses so we get the correct type
-      const stepOneMutated: DataBaseField[] = stepOneReponse.map((field) => ({
-        ...field,
-        type: !!field?.options ? 'select' : field.type,
-      }));
-      const stepTwoMutated: DataBaseField[] = stepTwoReponse.map((field) => ({
-        ...field,
-        type: !!field?.options ? 'select' : field.type,
-      }));
-      const stepThreeMutated: DataBaseField[] = stepThreeReponse.map(
-        (field) => ({
-          ...field,
-          type: !!field?.options ? 'select' : field.type,
-        }),
-      );
-      const stepFourMutated: DataBaseField[] = stepFourReponse.map((field) => ({
-        ...field,
-        type: !!field?.options ? 'select' : field.type,
-      }));
+      const stepOneMutated = mutateRawData(stepOneResponse);
+      const stepTwoMutated = mutateRawData(stepTwoResponse);
+      const stepThreeMutated = mutateRawData(stepThreeResponse);
+      const stepFourMutated = mutateRawData(stepFourResponse);
 
       // Transformed the objects so we get the correct list of options
       stepOne = transformObject(stepOneMutated);
@@ -107,6 +98,7 @@ export async function getFormData() {
   }
 }
 
+// Inserting a new register into the database
 export async function postFormData(data: FieldValues) {
   try {
     // Getting the form schema
@@ -116,26 +108,39 @@ export async function postFormData(data: FieldValues) {
     // Validating the data against the zod schema
     const validationResult = formSchema.safeParse(data);
 
-    const firstQuery = queries.post.registry('feminicidios_tentativas', data);
-
-    const secondData = {
-      cod_violencia_asociada: 27,
-      violencia_asociada: 'Sin información',
-    };
-    const secondQuery = queries.post.registry(
-      'feminicidios_violencia_asociada',
-      secondData,
-    );
-
+    // Validating wether the data has the correct values
     if (validationResult.success) {
+      // Separating the data as required
+      const { cod_violencia_asociada, violencia_asociada, ...firstData } = data;
+      const secondData = { cod_violencia_asociada, violencia_asociada };
+      console.log('ACT form firstData ::: ', firstData);
+      console.log('ACT form secondData ::: ', secondData);
+
+      // Getting the neccessary queries
+      const firstQuery = queries.post.registry(FIRST_TABLE, firstData);
+      console.log('ACT form firstQuery ::: ', firstQuery);
+      const secondQuery = queries.post.registry(SECOND_TABLE, secondData);
+      console.log('ACT form secondQuery ::: ', secondQuery);
+
       // Handling the environments to test with mocked data if we are in the dev environment
       if (env.ENV !== 'dev') {
-        const firstResponse = await conn.query(firstQuery);
-        const secondResponse = await conn.query(secondQuery);
+        let result = await conn
+          .transaction()
+          .query(firstQuery)
+          .query((r: { insertId: number }) =>
+            queries.post.registry(SECOND_TABLE, {
+              numero_violencia: r.insertId,
+              ...secondData,
+            }),
+          )
+          .commit();
+
+        console.log('ACT form result ::: ', result);
+
         return {
           success: true,
           errors: null,
-          result: secondResponse,
+          result,
         };
       } else {
         return {
@@ -163,6 +168,7 @@ export async function postFormData(data: FieldValues) {
   }
 }
 
+// Adding a new option list
 export async function putListOption(data: OptionIntoList) {
   try {
     // Getting the form schema
@@ -176,15 +182,6 @@ export async function putListOption(data: OptionIntoList) {
 
     // Validating the data against the zod schema
     const validationResult = dataSchema.safeParse(data);
-
-    // Query to extract the latest id from the reference table
-    const firstQuery = queries.get.lastestIdFromList(data.id);
-    // Query to insert the new item in the reference table
-    const secondQuery = queries.put.listOption(
-      data.id,
-      16,
-      capitalizeEachWord(data.value),
-    );
 
     if (validationResult.success) {
       // Handling the environments to test with mocked data if we are in the dev environment
@@ -213,8 +210,6 @@ export async function putListOption(data: OptionIntoList) {
           errors: null,
           result: {
             data,
-            firstQuery,
-            secondQuery,
           },
         };
       }
