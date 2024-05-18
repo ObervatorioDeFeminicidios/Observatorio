@@ -1,7 +1,10 @@
 'use server';
 
 import { env } from '@/config/env';
+import { InsertDataResult, OkPacket } from '@/lib/definitions';
 import {
+  FIRST_TABLE,
+  SECOND_TABLE,
   compareByType,
   getLatestId,
   getSchema,
@@ -13,9 +16,6 @@ import { conn, queries } from '@/lib/mysql';
 import { capitalizeEachWord } from '@/lib/utils';
 import { FieldValues } from 'react-hook-form';
 import { z } from 'zod';
-
-const FIRST_TABLE = 'feminicidios_tentativas';
-const SECOND_TABLE = 'feminicidios_violencia_asociada';
 
 // Getting the form fields from the database schema
 export async function getFormData() {
@@ -99,72 +99,141 @@ export async function getFormData() {
 }
 
 // Inserting a new register into the database
-export async function postFormData(data: FieldValues) {
-  try {
-    // Getting the form schema
-    const formData = await getFormData();
-    const formSchema: z.Schema = getSchema(formData);
+export async function postFormData(
+  data: FieldValues,
+): Promise<InsertDataResult> {
+  // Getting the form schema
+  const formData = await getFormData();
+  const formSchema: z.Schema = getSchema(formData);
 
-    // Validating the data against the zod schema
-    const validationResult = formSchema.safeParse(data);
+  // Validating the data against the zod schema
+  const validationResult = formSchema.safeParse(data);
 
-    // Validating wether the data has the correct values
-    if (validationResult.success) {
-      // Separating the data as required
-      const { cod_violencia_asociada, violencia_asociada, ...firstData } = data;
-      const secondData = { cod_violencia_asociada, violencia_asociada };
-      console.log('ACT form firstData ::: ', firstData);
-      console.log('ACT form secondData ::: ', secondData);
+  // Validating wether the data has the correct values
+  if (validationResult.success) {
+    // Separating the data as required
+    const { violencia_asociada, ...registerData } = data;
+    const associatedViolences: Array<Option> = violencia_asociada;
+    console.log('ACT form registerData ::: ', registerData);
+    console.log('ACT form associatedViolences ::: ', associatedViolences);
 
-      // Getting the neccessary queries
-      const firstQuery = queries.post.registry(FIRST_TABLE, firstData);
-      console.log('ACT form firstQuery ::: ', firstQuery);
-      const secondQuery = queries.post.registry(SECOND_TABLE, secondData);
-      console.log('ACT form secondQuery ::: ', secondQuery);
+    // Getting the neccessary queries
+    const firstQuery = queries.post.registry(FIRST_TABLE, registerData);
+    console.log('ACT form firstQuery ::: ', firstQuery);
 
-      // Handling the environments to test with mocked data if we are in the dev environment
-      if (env.ENV !== 'dev') {
-        let result = await conn
-          .transaction()
-          .query(firstQuery)
-          .query((r: { insertId: number }) =>
-            queries.post.registry(SECOND_TABLE, {
-              numero_violencia: r.insertId,
-              ...secondData,
-            }),
-          )
-          .commit();
+    // Handling the environments to test with mocked data if we are in the dev environment
+    if (env.ENV !== 'dev') {
+      try {
+        // Start the transaction
+        await conn.query('START TRANSACTION');
 
-        console.log('ACT form result ::: ', result);
+        // Insert the first record
+        const firstResult: OkPacket = await conn.query(firstQuery);
+        console.log('ACT form firstResult ::: ', firstResult);
+
+        if (firstResult.affectedRows > 0 && firstResult.insertId) {
+          // Insert multiple associated violences
+          const associatedViolencesPromises = associatedViolences.map(
+            async (associatedViolence) => {
+              try {
+                const result = (await conn.query(
+                  queries.post.registry(SECOND_TABLE, {
+                    numero_violencia: firstResult.insertId,
+                    cod_violencia_asociada: associatedViolence.value,
+                    violencia_asociada: associatedViolence.label,
+                  }),
+                )) as OkPacket;
+                return result;
+              } catch (error) {
+                // Setting the right error message
+                const errorMessage =
+                  typeof error === 'string'
+                    ? error
+                    : error instanceof Error
+                      ? error.message
+                      : 'Error Unknown';
+
+                console.log('Database associated violence Error: ', errorMessage);
+
+                return {
+                  error: errorMessage,
+                  associatedViolence,
+                };
+              }
+            },
+          );
+
+          const associatedViolencesResults = await Promise.all(
+            associatedViolencesPromises,
+          );
+          console.log('ACT form associatedViolencesResults ::: ', associatedViolencesResults);
+
+          // Check for errors in the associated violences insertions
+          const failedInserts = associatedViolencesResults.filter(
+            (result) => result?.error,
+          );
+          console.log('ACT form failedInserts ::: ', failedInserts);
+
+          if (failedInserts.length > 0) {
+            // Rollback the transaction if any insert failed
+            await conn.query('ROLLBACK');
+            return {
+              success: false,
+              errors: failedInserts.map((failed) => ({
+                associatedViolence: failed?.associatedViolence,
+                error: failed?.error,
+              })),
+            };
+          }
+
+          // Commit the transaction if all inserts succeeded
+          await conn.query('COMMIT');
+          return {
+            success: true,
+            message:
+              'Se insertó el registro y las violencias asociadas exitosamente',
+          };
+        } else {
+          // Rollback the transaction if the first insert failed
+          await conn.query('ROLLBACK');
+          return {
+            success: false,
+            errors:
+              'Se produjo un error al intentar insertar un registro en la base de datos',
+          };
+        }
+      } catch (error) {
+        // Rollback the transaction on any error
+        await conn.query('ROLLBACK');
+
+        // Setting the right error message
+        const errorMessage =
+          typeof error === 'string'
+            ? error
+            : error instanceof Error
+              ? error.message
+              : 'Error Unknown';
+
+        console.log('Database Error: ', errorMessage);
 
         return {
-          success: true,
-          errors: null,
-          result,
+          success: false,
+          errors: errorMessage,
         };
-      } else {
-        return {
-          success: true,
-          errors: null,
-          result: {
-            firstQuery,
-            secondQuery,
-          },
-        };
+      } finally {
+        // Close the connection
+        await conn.end();
       }
     } else {
-      throw new Error(validationResult.error.message);
+      return {
+        success: true,
+        result: {
+          firstQuery,
+        },
+      };
     }
-  } catch (error) {
-    const errorMessage =
-      typeof error === 'string'
-        ? error
-        : error instanceof Error
-          ? error.message
-          : 'Error Unknown';
-
-    console.log('Database Error: ', errorMessage);
-    throw new Error('Error al insertar el registro en la base de datos');
+  } else {
+    throw new Error(validationResult.error.message);
   }
 }
 
