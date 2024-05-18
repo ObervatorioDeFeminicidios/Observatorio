@@ -237,8 +237,7 @@ export const queries = {
   post: {
     registry: (table: string, data: FieldValues) => `
       INSERT INTO ${table} (
-        cod_violencia_asociada,
-        violencia_asociada
+        ${Object.keys(data).join(',')}
       ) VALUES (
         ${Object.values(data)
           .map((value) => (typeof value === 'string' ? `'${value}'` : value))
