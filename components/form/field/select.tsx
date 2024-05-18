@@ -32,7 +32,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
       control={form.control}
       name={formField.id}
       render={({ field }) => (
-        <FormItem className="flex flex-col">
+        <FormItem className="flex flex-col justify-between">
           <FormLabel className="text-secondary-foreground">
             {formField.label}
           </FormLabel>
@@ -44,6 +44,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                   role="combobox"
                   className={cn(
                     'justify-between',
+                    'font-light',
                     !field.value && 'text-muted-foreground',
                   )}
                   aria-expanded={open}
@@ -81,6 +82,9 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                               break;
                             case 'municipio':
                               form.setValue(`cod_${formField.id}`, (option.value + '').padStart(3, '0'));
+                              break;
+                            case 'postal':
+                              form.setValue(`cod_${formField.id}`, (option.value + '').padStart(6, '0'));
                               break;
                             default:
                               form.setValue(`cod_${formField.id}`, option.value);
