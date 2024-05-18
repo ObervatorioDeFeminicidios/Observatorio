@@ -8,3 +8,32 @@ export type User = {
   email: string;
   password: string;
 };
+
+export type OkPacket = {
+  affectedRows: number;
+  insertId: number;
+  error?: string;
+  associatedViolence?: Option;
+};
+
+// Define the type for the result of an individual associated violence insertion
+export interface ViolenceResult {
+  error?: Error;
+  associatedViolence?: Option;
+  affectedRows?: number;
+  insertId?: number;
+}
+
+// Define the type for the function's return value
+export interface InsertDataResult {
+  success: boolean;
+  message?: string;
+  errors?:
+    | string
+    | undefined
+    | Array<{
+        associatedViolence: Option | undefined;
+        error: string | undefined;
+      }>;
+  result?: object;
+}

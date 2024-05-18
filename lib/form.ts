@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+export const FIRST_TABLE = 'feminicidios_tentativas';
+export const SECOND_TABLE = 'feminicidios_violencia_asociada';
+export const VIOLENCIA_ASOCIADA = 'violencia_asociada';
+
 interface ISchema {
   [key: string]: any;
 }
