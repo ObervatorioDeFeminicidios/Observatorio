@@ -1,6 +1,7 @@
 import { env } from '@/config/env';
 import { FieldValues } from 'react-hook-form';
 import mysql from 'serverless-mysql';
+import sql from 'sql-template-strings';
 
 // Define the connection type
 type MySQLConnection = ReturnType<typeof mysql>;
@@ -19,7 +20,7 @@ export const conn: MySQLConnection = mysql({
 // Defining the queries to be used in the SQL transactions
 export const queries = {
   get: {
-    stepOne: `
+    stepOne: sql`
       SELECT
         COLUMN_NAME AS 'id',
         DATA_TYPE AS 'type',
@@ -90,7 +91,7 @@ export const queries = {
       WHERE
         TABLE_NAME='feminicidios_tentativas' AND w.uso='form_1';
     `,
-    stepTwo: `
+    stepTwo: sql`
       SELECT
         COLUMN_NAME AS 'id',
         DATA_TYPE AS 'type',
@@ -143,7 +144,7 @@ export const queries = {
       WHERE
         TABLE_NAME IN ('feminicidios_tentativas', 'feminicidios_violencia_asociada') AND w.uso='form_2';
     `,
-    stepThree: `
+    stepThree: sql`
       SELECT
         COLUMN_NAME AS 'id',
         DATA_TYPE AS 'type',
@@ -204,7 +205,7 @@ export const queries = {
       WHERE
         TABLE_NAME='feminicidios_tentativas' AND w.uso='form_3';
     `,
-    stepFour: `
+    stepFour: sql`
       SELECT
         COLUMN_NAME AS 'id',
         DATA_TYPE AS 'type',
@@ -233,14 +234,14 @@ export const queries = {
       WHERE
         TABLE_NAME='feminicidios_tentativas' AND w.uso='form_4';
     `,
-    lastestIdFromList: (table: string) => `
+    lastestIdFromList: (table: string) => sql`
       SELECT * FROM ${table}
       ORDER BY cod_${table} DESC
       LIMIT 1
     `,
   },
   post: {
-    registry: (table: string, data: FieldValues) => `
+    registry: (table: string, data: FieldValues) => sql`
       INSERT INTO ${table} (
         ${Object.keys(data).join(',')}
       ) VALUES (
@@ -251,7 +252,7 @@ export const queries = {
     `,
   },
   put: {
-    listOption: (table: string, id: number, value: string) => `
+    listOption: (table: string, id: number, value: string) => sql`
       INSERT INTO ${table} (
         cod_${table},
         ${table}

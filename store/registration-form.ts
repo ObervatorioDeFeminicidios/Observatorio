@@ -54,3 +54,12 @@ export const useStepState = create<StepState>()((set) => ({
       }
     }),
 }));
+
+// Selector function to detect whether is the last step or no
+export const useIsLastStep = () => {
+  const { currentStep } = useStepState((state) => ({
+    currentStep: state.currentStep,
+  }));
+
+  return currentStep === TOTAL_STEPS - 1;
+};

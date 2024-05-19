@@ -15,6 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
@@ -41,11 +42,7 @@ export const FieldDate = ({ formField, form }: FieldProps) => {
                     !field.value && 'text-muted-foreground',
                   )}
                 >
-                  {field.value ? (
-                    format(field.value, 'yyyy-MM-dd')
-                  ) : (
-                    <span>YYYY-MM-DD</span>
-                  )}
+                  {field.value ? field.value : <span>YYYY-MM-DD</span>}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-60" />
                 </Button>
               </FormControl>
@@ -53,12 +50,13 @@ export const FieldDate = ({ formField, form }: FieldProps) => {
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
+                locale={es}
                 selected={field.value}
                 onSelect={(value) => {
-                  const formattedValue =
-                    value && value.toISOString().split('T')[0];
-                  field.onChange(formattedValue);
-                  if (formField.id === 'fecha_feminicidio') {
+                  const formattedValue = value && format(value, 'yyyy-MM-dd');
+                  field.onChange(value);
+                  if (formField.id === 'fecha_violencia') {
+                    setValue('fecha_violencia', formattedValue);
                     setValue('ano', Number(formattedValue?.split('-')[0]));
                     setValue('mes', Number(formattedValue?.split('-')[1]));
                   }
