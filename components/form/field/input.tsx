@@ -20,6 +20,7 @@ export const FieldInput = ({ formField, form }: FieldProps) => {
           <FormControl>
             <Input
               {...field}
+              className="font-light"
               onChange={(e) =>
                 field.onChange(
                   formField.type !== 'int'
