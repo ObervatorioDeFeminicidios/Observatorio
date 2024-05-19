@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { useStepState } from '@/store/registration-form';
+import { useIsLastStep, useStepState } from '@/store/registration-form';
+import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Drawer, DrawerTrigger } from '../ui/drawer';
@@ -7,15 +8,18 @@ import { Confirmation } from './confirmation';
 
 type NavigationProps = {
   totalSteps: number;
+  formRef: React.RefObject<HTMLFormElement>;
 };
 
-export const Navigation = ({ totalSteps }: NavigationProps) => {
+export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
+  const [open, setOpen] = React.useState(false);
   const {
     currentStep,
     handlePreviousStep,
     handleNextStep,
     formSchemas: { firstSchema, secondSchema, thirdSchema, fourthSchema },
   } = useStepState();
+  const isLastStep = useIsLastStep();
   const { getValues, setError, clearErrors } = useFormContext();
 
   // Validate the current form data against the zod schema and set the errors
@@ -35,11 +39,25 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
         });
       });
     } else {
-      handleNextStep();
+      // If it's not the last step, navigate to the next step or open the drawer
+      if (!isLastStep) {
+        handleNextStep();
+
+        // Scroll to the top and focus the first form field
+        if (formRef.current) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          const firstInput = formRef.current.querySelector('input');
+          if (firstInput) firstInput.focus();
+        }
+      } else {
+        setOpen(true);
+      }
     }
   };
 
   const handleNextOnClick = () => {
+    console.log('navigating currentStep ::: ', currentStep);
+    // Validating the form schema before navigating
     switch (currentStep) {
       case 0:
         if (firstSchema) validateSchema(firstSchema);
@@ -62,7 +80,7 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
     <div className="flex justify-end gap-4">
       <Button
         variant="ghost"
-        className='text-secondary-foreground'
+        className="text-secondary-foreground"
         onClick={handlePreviousStep}
         disabled={currentStep === 0}
       >
@@ -78,17 +96,18 @@ export const Navigation = ({ totalSteps }: NavigationProps) => {
           Siguiente
         </Button>
       ) : (
-        <Drawer direction="right">
+        <Drawer direction="right" open={open}>
           <DrawerTrigger asChild>
             <Button
               variant="outline"
               className="border-primary text-primary"
               type="button"
+              onClick={handleNextOnClick}
             >
               Registrar
             </Button>
           </DrawerTrigger>
-          <Confirmation data={getValues()} />
+          <Confirmation data={getValues()} setOpen={setOpen} />
         </Drawer>
       )}
     </div>

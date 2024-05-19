@@ -1,5 +1,7 @@
 import { postFormData } from '@/actions/_form';
+import { VIOLENCIA_ASOCIADA } from '@/lib/form';
 import { titleCase } from '@/lib/utils';
+import { useTransition } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Button } from '../ui/button';
 import {
@@ -15,16 +17,19 @@ import { Separator } from '../ui/separator';
 
 type ConfirmationProps = {
   data: any;
+  setOpen: (value: boolean) => void;
 };
 
-export const Confirmation = ({ data }: ConfirmationProps) => {
-  const { formState, getValues } = useFormContext();
+export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
+  const { getValues } = useFormContext();
+  const [pending, startTransition] = useTransition();
 
   const handleDataSubmit = async () => {
     const formData = getValues();
     console.log(formData);
-    const response = await postFormData(formData);
-    console.log('response ::: ', response);
+    startTransition(async () => {
+      const response = await postFormData(formData);
+    });
   };
 
   return (
@@ -40,7 +45,8 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
       <ScrollArea className="m-4">
         {Object.keys(data).map(
           (label, index) =>
-            !label.startsWith('cod_') && (
+            !label.startsWith('cod_') &&
+            label !== VIOLENCIA_ASOCIADA && (
               <div key={`${label}-${index}`}>
                 <div className="flex items-center justify-between p-4 text-sm">
                   <span className="font-medium text-muted-foreground">
@@ -60,7 +66,11 @@ export const Confirmation = ({ data }: ConfirmationProps) => {
           Confirmar
         </Button>
         <DrawerClose asChild>
-          <Button variant="outline" className="text-secondary-foreground">
+          <Button
+            variant="outline"
+            className="text-secondary-foreground"
+            onClick={() => setOpen(false)}
+          >
             Cancelar
           </Button>
         </DrawerClose>
