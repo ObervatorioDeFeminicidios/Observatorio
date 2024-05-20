@@ -241,7 +241,7 @@ export const queries = {
     `,
   },
   post: {
-    registry: (table: string, data: FieldValues) => sql`
+    registry: (table: string, data: FieldValues) => `
       INSERT INTO ${table} (
         ${Object.keys(data).join(',')}
       ) VALUES (
@@ -252,7 +252,7 @@ export const queries = {
     `,
   },
   put: {
-    listOption: (table: string, id: number, value: string) => sql`
+    listOption: (table: string, id: number, value: string) => `
       INSERT INTO ${table} (
         cod_${table},
         ${table}
