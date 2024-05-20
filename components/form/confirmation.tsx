@@ -29,6 +29,7 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     console.log(formData);
     startTransition(async () => {
       const response = await postFormData(formData);
+      console.log(response);
     });
   };
 
@@ -63,7 +64,11 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
       </ScrollArea>
       <DrawerFooter>
         <Button className="bg-primary" onClick={handleDataSubmit}>
-          Confirmar
+          {!pending ? (
+            <span>Confirmar</span>
+          ) : (
+            <div className="ml-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-primary" />
+          )}
         </Button>
         <DrawerClose asChild>
           <Button
