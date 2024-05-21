@@ -14,7 +14,7 @@ export const Steps = ({ steps }: StepProps) => {
 
   return (
     <>
-      <nav aria-label="Progress" className="self-center">
+      <nav aria-label="Progress" className="w-full self-center">
         <ol role="list" className="flex">
           {steps.map((step, index) => (
             <li key={step.name} className="relative md:flex md:flex-1">
