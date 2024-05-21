@@ -1,8 +1,6 @@
-import { signOut } from '@/auth';
-import { ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from './ui/button';
+import { LogoutButton } from './LogoutButton';
 
 export const Header = () => {
   return (
@@ -25,17 +23,7 @@ export const Header = () => {
         </div>
 
         <div className="flex lg:flex-1 lg:justify-end">
-          <form
-            action={async () => {
-              'use server';
-              await signOut();
-            }}
-          >
-            <Button className="bg-primary">
-              <span className="md:text-md text-xs">Logout</span>
-              <ArrowRightStartOnRectangleIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </form>
+          <LogoutButton />
         </div>
       </nav>
     </header>

@@ -30,7 +30,6 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
     // Validating the data
     const validationResult = schema.safeParse(getValues());
     if (!validationResult.success) {
-      console.log('Navigation errors ::: ', validationResult.error.issues);
       validationResult.error.issues.forEach((issue) => {
         // Setting the error for the field that failed validation
         setError(issue.path[0].toString(), {
@@ -56,7 +55,6 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
   };
 
   const handleNextOnClick = () => {
-    console.log('navigating currentStep ::: ', currentStep);
     // Validating the form schema before navigating
     switch (currentStep) {
       case 0:
