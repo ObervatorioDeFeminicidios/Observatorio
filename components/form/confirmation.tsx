@@ -19,6 +19,7 @@ import {
 } from '../ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
+import { useStepState } from '@/store/registration-form';
 
 type ConfirmationProps = {
   data: any;
@@ -34,7 +35,8 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
   const [showResult, setShowResult] = React.useState(false);
   const [insertDataResult, setInsertDataResult] =
     React.useState<InsertDataResult>(INITAL_RESULT);
-  const { getValues } = useFormContext();
+  const { resetStep } = useStepState();
+  const { getValues, reset } = useFormContext();
   const [pending, startTransition] = useTransition();
 
   const handleDataSubmit = async () => {
@@ -124,6 +126,10 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
             onClick={() => {
               setOpen(false);
               setInsertDataResult(INITAL_RESULT);
+              if (showResult) {
+                reset();
+                resetStep();
+              }
               setShowResult(false);
             }}
           >
