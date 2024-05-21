@@ -1,7 +1,12 @@
 import { postFormData } from '@/actions/_form';
+import { InsertDataResult } from '@/lib/definitions';
 import { VIOLENCIA_ASOCIADA } from '@/lib/form';
 import { titleCase } from '@/lib/utils';
-import { useTransition } from 'react';
+import {
+  CheckBadgeIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/react/24/solid';
+import React, { useTransition } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Button } from '../ui/button';
 import {
@@ -20,7 +25,15 @@ type ConfirmationProps = {
   setOpen: (value: boolean) => void;
 };
 
+const INITAL_RESULT: InsertDataResult = {
+  success: false,
+  errors: '',
+};
+
 export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
+  const [showResult, setShowResult] = React.useState(false);
+  const [insertDataResult, setInsertDataResult] =
+    React.useState<InsertDataResult>(INITAL_RESULT);
   const { getValues } = useFormContext();
   const [pending, startTransition] = useTransition();
 
@@ -28,8 +41,9 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     const formData = getValues();
     console.log(formData);
     startTransition(async () => {
-      const response = await postFormData(formData);
-      console.log(response);
+      const response: InsertDataResult = await postFormData(formData);
+      setInsertDataResult(response);
+      setShowResult(true);
     });
   };
 
@@ -39,44 +53,81 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
         <DrawerTitle className="text-primary">
           Registro de Feminicidio
         </DrawerTitle>
-        <DrawerDescription className="text-secondary-foreground">
-          Revisa la información registrada:
-        </DrawerDescription>
-      </DrawerHeader>
-      <ScrollArea className="m-4">
-        {Object.keys(data).map(
-          (label, index) =>
-            !label.startsWith('cod_') &&
-            label !== VIOLENCIA_ASOCIADA && (
-              <div key={`${label}-${index}`}>
-                <div className="flex items-center justify-between p-4 text-sm">
-                  <span className="font-medium text-muted-foreground">
-                    {titleCase(label)}
-                  </span>
-                  <span className="max-w-[45%] text-right font-extralight">
-                    {data[label]}
-                  </span>
-                </div>
-                <Separator />
-              </div>
-            ),
+        {!showResult && (
+          <DrawerDescription className="text-secondary-foreground">
+            Revisa la información registrada:
+          </DrawerDescription>
         )}
-      </ScrollArea>
-      <DrawerFooter>
-        <Button className="bg-primary" onClick={handleDataSubmit}>
-          {!pending ? (
-            <span>Confirmar</span>
+      </DrawerHeader>
+      {!showResult ? (
+        <>
+          <ScrollArea className="m-4">
+            {Object.keys(data).map(
+              (label, index) =>
+                !label.startsWith('cod_') &&
+                label !== VIOLENCIA_ASOCIADA && (
+                  <div key={`${label}-${index}`}>
+                    <div className="flex items-center justify-between p-4 text-sm">
+                      <span className="font-medium text-muted-foreground">
+                        {titleCase(label)}
+                      </span>
+                      <span className="max-w-[45%] text-right font-extralight">
+                        {data[label]}
+                      </span>
+                    </div>
+                    <Separator />
+                  </div>
+                ),
+            )}
+          </ScrollArea>
+        </>
+      ) : (
+        <div className="flex h-full flex-col items-center justify-center gap-2">
+          {insertDataResult.success ? (
+            <>
+              <CheckBadgeIcon className="h-[150px] fill-primary" />
+              <p className="text-md text-secondary-foreground`">
+                El registro ha sido insertado exitosamente!
+              </p>
+            </>
           ) : (
-            <div className="ml-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-primary" />
+            <>
+              <ExclamationTriangleIcon className="h-[150px] fill-destructive" />
+              <p className="text-md text-destructive">
+                Ups - Un error ocurrió al insertar el registro!
+              </p>
+              <p className="text-sm text-secondary-foreground">
+                Por favor, intente más tarde o contacte al administrador.
+              </p>
+            </>
           )}
-        </Button>
+        </div>
+      )}
+      <DrawerFooter>
+        {!showResult && (
+          <Button className="bg-primary" onClick={handleDataSubmit}>
+            {!pending ? (
+              <span>Confirmar</span>
+            ) : (
+              <div className="ml-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-primary" />
+            )}
+          </Button>
+        )}
         <DrawerClose asChild>
           <Button
             variant="outline"
-            className="text-secondary-foreground"
-            onClick={() => setOpen(false)}
+            className={
+              !showResult
+                ? 'text-secondary-foreground'
+                : 'border-primary text-primary'
+            }
+            onClick={() => {
+              setOpen(false);
+              setInsertDataResult(INITAL_RESULT);
+              setShowResult(false);
+            }}
           >
-            Cancelar
+            {!showResult ? 'Cancelar' : 'Cerrar'}
           </Button>
         </DrawerClose>
       </DrawerFooter>
