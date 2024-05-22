@@ -40,6 +40,15 @@ export async function getFormData() {
       const stepFourResponse = await conn.query<DataBaseField[]>(
         queries.get.stepFour,
       );
+      const municipality = await conn.query<MunicipalityPostalCodeType[]>(
+        queries.get.municipality,
+      );
+      const postalCode = await conn.query<MunicipalityPostalCodeType[]>(
+        queries.get.postalCode,
+      );
+
+      // Close the connection
+      await conn.end();
 
       // Mutated the reponses so we get the correct type
       const stepOneMutated = mutateRawData(stepOneResponse);
@@ -52,6 +61,37 @@ export async function getFormData() {
       stepTwo = transformObject(stepTwoMutated);
       stepThree = transformObject(stepThreeMutated);
       stepFour = transformObject(stepFourMutated);
+
+      // Adding data to the municipality and postal code columns
+      if (municipality.length > 0 && postalCode.length > 0) {
+        stepTwo = stepTwo.map((field) => {
+          if (field.id === 'municipio') {
+            const options: Option[] = municipality.map(item => ({
+              ...item,
+              value: Number(item.value),
+            }));
+
+            return {
+              ...field,
+              options,
+            };
+          }
+
+          if (field.id === 'postal') {
+            const options: Option[] = postalCode.map(item => ({
+              ...item,
+              value: Number(item.value),
+            }));
+
+            return {
+              ...field,
+              options,
+            };
+          }
+
+          return field;
+        });
+      }
     } else {
       stepOne = formData1;
       stepTwo = formData2;
@@ -153,7 +193,10 @@ export async function postFormData(
                       ? error.message
                       : 'Error Unknown';
 
-                console.log('Database associated violence Error: ', errorMessage);
+                console.log(
+                  'Database associated violence Error: ',
+                  errorMessage,
+                );
 
                 return {
                   error: errorMessage,
@@ -166,7 +209,10 @@ export async function postFormData(
           const associatedViolencesResults = await Promise.all(
             associatedViolencesPromises,
           );
-          console.log('ACT form associatedViolencesResults ::: ', associatedViolencesResults);
+          console.log(
+            'ACT form associatedViolencesResults ::: ',
+            associatedViolencesResults,
+          );
 
           // Check for errors in the associated violences insertions
           const failedInserts = associatedViolencesResults.filter(

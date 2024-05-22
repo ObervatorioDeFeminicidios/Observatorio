@@ -234,6 +234,30 @@ export const queries = {
       WHERE
         TABLE_NAME='feminicidios_tentativas' AND w.uso='form_4';
     `,
+    municipality: sql`
+      SELECT
+        d.cod_departamento as codDepartamento,
+        m.cod_municipio as value,
+        m.municipio as label
+      FROM
+        departamento d
+      JOIN
+        municipio m ON d.cod_departamento = m.cod_departamento;
+    `,
+    postalCode: sql`
+      SELECT
+        d.cod_departamento as codDepartamento,
+        m.cod_municipio as codMunicipio,
+        cp.cod_postal as value,
+        cp.limite as info,
+        cp.postal as label
+      FROM
+        departamento d
+      JOIN
+        municipio m ON d.cod_departamento = m.cod_departamento
+      JOIN
+        codigo_postal cp ON m.cod_departamento = cp.cod_departamento AND m.cod_municipio = cp.cod_municipio;
+    `,
     lastestIdFromList: (table: string) => sql`
       SELECT * FROM ${table}
       ORDER BY cod_${table} DESC
