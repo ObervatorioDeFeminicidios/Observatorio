@@ -30,10 +30,10 @@ export interface InsertDataResult {
   message?: string;
   errors?:
     | string
-    | undefined
+    | null
     | Array<{
-        associatedViolence: Option | undefined;
-        error: string | undefined;
+        associatedViolence?: Option | null;
+        error?: string | null;
       }>;
   result?: object;
 }

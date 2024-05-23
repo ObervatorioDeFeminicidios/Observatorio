@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { InsertDataResult } from './definitions';
 
 export const FIRST_TABLE = 'feminicidios_tentativas';
 export const SECOND_TABLE = 'feminicidios_violencia_asociada';
@@ -7,6 +8,11 @@ export const VIOLENCIA_ASOCIADA = 'violencia_asociada';
 interface ISchema {
   [key: string]: any;
 }
+
+export const INITAL_RESULT: InsertDataResult = {
+  success: false,
+  errors: '',
+};
 
 // Setting the schema of each field based on the type
 const setFieldSchema = (schema: ISchema, field: TransformedObject) => {
@@ -164,6 +170,7 @@ export function compareByType(a: TransformedObject, b: TransformedObject) {
     int: 1,
     text: 2,
     select: 3,
+    'select-multiple': 4,
   };
 
   const priorityA = typePriority[a.type];
