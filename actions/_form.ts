@@ -66,7 +66,7 @@ export async function getFormData() {
       if (municipality.length > 0 && postalCode.length > 0) {
         stepTwo = stepTwo.map((field) => {
           if (field.id === 'municipio') {
-            const options: Option[] = municipality.map(item => ({
+            const options: Option[] = municipality.map((item) => ({
               ...item,
               value: Number(item.value),
             }));
@@ -78,7 +78,7 @@ export async function getFormData() {
           }
 
           if (field.id === 'postal') {
-            const options: Option[] = postalCode.map(item => ({
+            const options: Option[] = postalCode.map((item) => ({
               ...item,
               value: Number(item.value),
             }));
@@ -285,26 +285,28 @@ export async function postFormData(
 
 // Adding a new option list
 export async function putListOption(data: OptionIntoList) {
-  try {
-    // Getting the form schema
-    const dataSchema: z.Schema = z.object({
-      id: z.string().trim().min(1, { message: `id no puede estar vacío` }),
-      value: z
-        .string()
-        .trim()
-        .min(1, { message: `value no puede estar vacío` }),
-    });
+  // Getting the form schema
+  const dataSchema: z.Schema = z.object({
+    id: z.string().trim().min(1, { message: `id no puede estar vacío` }),
+    value: z.string().trim().min(1, { message: `value no puede estar vacío` }),
+  });
 
-    // Validating the data against the zod schema
-    const validationResult = dataSchema.safeParse(data);
+  // Validating the data against the zod schema
+  const validationResult = dataSchema.safeParse(data);
 
-    if (validationResult.success) {
-      // Handling the environments to test with mocked data if we are in the dev environment
-      if (env.ENV !== 'dev') {
-        // Query to extract the latest id from the reference table
-        const firstQuery = queries.get.lastestIdFromList(data.id);
-        const firstResponse: Array<DBResponse> = await conn.query(firstQuery);
-        const newId = getLatestId(firstResponse[0]) + 1;
+  if (validationResult.success) {
+    // Query to extract the latest id from the reference table
+    const firstQuery = queries.get.lastestIdFromList(data.id);
+
+    // Handling the environments to test with mocked data if we are in the dev environment
+    if (env.ENV !== 'dev') {
+      try {
+        // Start the transaction
+        await conn.query('START TRANSACTION');
+
+        // Get the latest Id to set it to the new option list
+        const firstResult: Array<DBResponse> = await conn.query(firstQuery);
+        const newId = getLatestId(firstResult[0]) + 1;
 
         // Query to insert the new item in the reference table
         const secondQuery = queries.put.listOption(
@@ -312,34 +314,43 @@ export async function putListOption(data: OptionIntoList) {
           newId,
           capitalizeEachWord(data.value),
         );
-        const response2 = await conn.query(secondQuery);
+        const secondResult = await conn.query(secondQuery);
+
+        // Commit the transaction if all inserts succeeded
+        await conn.query('COMMIT');
+        return {
+          success: true,
+          errors: null,
+        };
+      } catch (error) {
+        // Rollback the transaction on any error
+        await conn.query('ROLLBACK');
+
+        // Setting the right error message
+        const errorMessage =
+          typeof error === 'string'
+            ? error
+            : error instanceof Error
+              ? error.message
+              : 'Error Unknown';
+
+        console.log('Database Error: ', errorMessage);
 
         return {
-          success: true,
-          errors: null,
-          result: response2,
+          success: false,
+          errors: errorMessage,
         };
-      } else {
-        return {
-          success: true,
-          errors: null,
-          result: {
-            data,
-          },
-        };
+      } finally {
+        // Close the connection
+        await conn.end();
       }
     } else {
-      throw new Error(validationResult.error.message);
+      return {
+        success: true,
+        errors: null,
+      };
     }
-  } catch (error) {
-    const errorMessage =
-      typeof error === 'string'
-        ? error
-        : error instanceof Error
-          ? error.message
-          : 'Error Unknown';
-
-    console.log('Database Error: ', errorMessage);
-    throw new Error('Error al insertar el registro en la base de datos');
+  } else {
+    throw new Error(validationResult.error.message);
   }
 }
