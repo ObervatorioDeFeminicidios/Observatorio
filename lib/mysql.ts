@@ -27,6 +27,7 @@ export const queries = {
         CHARACTER_MAXIMUM_LENGTH AS 'length',
         IS_NULLABLE AS 'nullable',
         ETIQUETA AS 'label',
+        ACTUALIZABLE AS 'updatable',
         CASE
           WHEN COLUMN_NAME='cod_mujer_gestante_madre' THEN (SELECT GROUP_CONCAT(cod_mujer_gestante_madre) FROM mujer_gestante_madre)
           WHEN COLUMN_NAME='mujer_gestante_madre' THEN (SELECT GROUP_CONCAT(mujer_gestante_madre) FROM mujer_gestante_madre)
@@ -77,6 +78,7 @@ export const queries = {
           x.CHARACTER_MAXIMUM_LENGTH,
           x.IS_NULLABLE,
           z.etiqueta,
+          z.actualizable,
           z.uso,
           z.tabla_referencia
         FROM INFORMATION_SCHEMA.COLUMNS x
@@ -98,6 +100,7 @@ export const queries = {
         CHARACTER_MAXIMUM_LENGTH AS 'length',
         IS_NULLABLE AS 'nullable',
         ETIQUETA AS 'label',
+        ACTUALIZABLE AS 'updatable',
         CASE
           WHEN COLUMN_NAME='cod_departamento' THEN (SELECT GROUP_CONCAT(cod_departamento) FROM departamento)
           WHEN COLUMN_NAME='departamento' THEN (SELECT GROUP_CONCAT(departamento) FROM departamento)
@@ -130,6 +133,7 @@ export const queries = {
           x.CHARACTER_MAXIMUM_LENGTH,
           x.IS_NULLABLE,
           z.etiqueta,
+          z.actualizable,
           z.uso,
           z.tabla_referencia
         FROM INFORMATION_SCHEMA.COLUMNS x
@@ -151,6 +155,7 @@ export const queries = {
         CHARACTER_MAXIMUM_LENGTH AS 'length',
         IS_NULLABLE AS 'nullable',
         ETIQUETA AS 'label',
+        ACTUALIZABLE AS 'updatable',
         CASE
           WHEN COLUMN_NAME='cod_sujeto_feminicida' THEN (SELECT GROUP_CONCAT(cod_sujeto_feminicida) FROM sujeto_feminicida)
           WHEN COLUMN_NAME='sujeto_feminicida' THEN (SELECT GROUP_CONCAT(sujeto_feminicida) FROM sujeto_feminicida)
@@ -191,6 +196,7 @@ export const queries = {
           x.CHARACTER_MAXIMUM_LENGTH,
           x.IS_NULLABLE,
           z.etiqueta,
+          z.actualizable,
           z.uso,
           z.tabla_referencia
         FROM INFORMATION_SCHEMA.COLUMNS x
@@ -211,7 +217,8 @@ export const queries = {
         DATA_TYPE AS 'type',
         CHARACTER_MAXIMUM_LENGTH AS 'length',
         IS_NULLABLE AS 'nullable',
-        ETIQUETA AS 'label'
+        ETIQUETA AS 'label',
+        ACTUALIZABLE AS 'updatable'
       FROM
         (SELECT
           x.TABLE_NAME,
@@ -220,6 +227,7 @@ export const queries = {
           x.CHARACTER_MAXIMUM_LENGTH,
           x.IS_NULLABLE,
           z.etiqueta,
+          z.actualizable,
           z.uso,
           z.tabla_referencia
         FROM INFORMATION_SCHEMA.COLUMNS x
@@ -258,7 +266,7 @@ export const queries = {
       JOIN
         codigo_postal cp ON m.cod_departamento = cp.cod_departamento AND m.cod_municipio = cp.cod_municipio;
     `,
-    lastestIdFromList: (table: string) => sql`
+    lastestIdFromList: (table: string) => `
       SELECT * FROM ${table}
       ORDER BY cod_${table} DESC
       LIMIT 1

@@ -1,6 +1,6 @@
 import { postFormData } from '@/actions/_form';
 import { InsertDataResult } from '@/lib/definitions';
-import { VIOLENCIA_ASOCIADA } from '@/lib/form';
+import { INITAL_RESULT, VIOLENCIA_ASOCIADA } from '@/lib/form';
 import { titleCase } from '@/lib/utils';
 import {
   CheckBadgeIcon,
@@ -24,11 +24,6 @@ import { useStepState } from '@/store/registration-form';
 type ConfirmationProps = {
   data: any;
   setOpen: (value: boolean) => void;
-};
-
-const INITAL_RESULT: InsertDataResult = {
-  success: false,
-  errors: '',
 };
 
 export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
