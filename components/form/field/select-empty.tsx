@@ -24,12 +24,14 @@ type SelectEmptyProps = {
   fieldId: string;
   isUpdatable: boolean;
   closePopover: () => void;
+  onSelectAdd: (option: Option) => void;
 };
 
 export const SelectEmpty = ({
   fieldId,
   isUpdatable,
   closePopover,
+  onSelectAdd,
 }: SelectEmptyProps) => {
   const [showResult, setShowResult] = React.useState(false);
   const [insertDataResult, setInsertDataResult] =
@@ -47,6 +49,7 @@ export const SelectEmpty = ({
       console.log('response ::: ', response);
       setInsertDataResult(response);
       setShowResult(true);
+      onSelectAdd(response.result as Option);
     });
   };
 

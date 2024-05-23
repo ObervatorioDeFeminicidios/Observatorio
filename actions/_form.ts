@@ -307,12 +307,13 @@ export async function putListOption(data: OptionIntoList) {
         // Get the latest Id to set it to the new option list
         const firstResult: Array<DBResponse> = await conn.query(firstQuery);
         const newId = getLatestId(firstResult[0]) + 1;
+        const newLabel = capitalizeEachWord(data.value);
 
         // Query to insert the new item in the reference table
         const secondQuery = queries.put.listOption(
           data.id,
           newId,
-          capitalizeEachWord(data.value),
+          newLabel,
         );
         const secondResult = await conn.query(secondQuery);
 
@@ -321,6 +322,10 @@ export async function putListOption(data: OptionIntoList) {
         return {
           success: true,
           errors: null,
+          result: {
+            value: newId,
+            label: newLabel,
+          }
         };
       } catch (error) {
         // Rollback the transaction on any error

@@ -66,6 +66,44 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
   // Filtering the municipality and postal code options
   const options = filterOptions(getValues(), formField);
 
+  // Setting the selected/added option
+  const onSelectAdd = (option: Option) => {
+    console.log('onSelectAdd option :: ', option);
+    // Adding the new option to the options list
+    const optionIsInOptions = options?.find(
+      (item) => item.value === option.value,
+    );
+    if (!optionIsInOptions) options?.push(option);
+
+    // Setting the new selected/added option
+    form.setValue(formField.id, option.label);
+    switch (formField.id) {
+      case 'departamento':
+        form.setValue(
+          `cod_${formField.id}`,
+          (option.value + '').padStart(2, '0'),
+        );
+        break;
+      case 'municipio':
+        form.setValue(
+          `cod_${formField.id}`,
+          (option.value + '').padStart(3, '0'),
+        );
+        break;
+      case 'postal':
+        form.setValue(
+          `cod_${formField.id}`,
+          (option.value + '').padStart(6, '0'),
+        );
+        break;
+      default:
+        form.setValue(`cod_${formField.id}`, option.value);
+        break;
+    }
+    console.log(form.getValues());
+    setOpen(false);
+  };
+
   return (
     <FormField
       control={form.control}
@@ -105,6 +143,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                     fieldId={formField.id}
                     isUpdatable={formField.updatable}
                     closePopover={() => setOpen(false)}
+                    onSelectAdd={onSelectAdd}
                   />
                 </CommandEmpty>
                 <CommandGroup>
@@ -113,37 +152,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                       <CommandItem
                         key={option.value + '-' + index}
                         value={option.label}
-                        onSelect={() => {
-                          form.setValue(formField.id, option.label);
-                          switch (formField.id) {
-                            case 'departamento':
-                              form.setValue(
-                                `cod_${formField.id}`,
-                                (option.value + '').padStart(2, '0'),
-                              );
-                              break;
-                            case 'municipio':
-                              form.setValue(
-                                `cod_${formField.id}`,
-                                (option.value + '').padStart(3, '0'),
-                              );
-                              break;
-                            case 'postal':
-                              form.setValue(
-                                `cod_${formField.id}`,
-                                (option.value + '').padStart(6, '0'),
-                              );
-                              break;
-                            default:
-                              form.setValue(
-                                `cod_${formField.id}`,
-                                option.value,
-                              );
-                              break;
-                          }
-                          console.log(form.getValues());
-                          setOpen(false);
-                        }}
+                        onSelect={() => onSelectAdd(option)}
                       >
                         {option.label}
                         <CheckIcon
