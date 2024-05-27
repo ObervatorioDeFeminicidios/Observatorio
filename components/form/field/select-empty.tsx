@@ -49,7 +49,7 @@ export const SelectEmpty = ({
       console.log('response ::: ', response);
       setInsertDataResult(response);
       setShowResult(true);
-      onSelectAdd(response.result as Option);
+      response.success && onSelectAdd(response.result as Option);
     });
   };
 
@@ -137,8 +137,8 @@ export const SelectEmpty = ({
                           : 'border-primary text-primary'
                       }
                       onClick={() => {
-                        setInsertDataResult(INITAL_RESULT);
                         setShowResult(false);
+                        setInsertDataResult(INITAL_RESULT);
                       }}
                     >
                       {!showResult ? 'Cancelar' : 'Cerrar'}
