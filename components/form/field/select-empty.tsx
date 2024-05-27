@@ -58,7 +58,7 @@ export const SelectEmpty = ({
       <p className="font-light text-muted-foreground">
         Ninguna opción se encontró
       </p>
-      {isUpdatable && (
+      {!!isUpdatable && (
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap justify-center gap-2">
             <span>Desea crear la opción:</span>
