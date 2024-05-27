@@ -91,7 +91,16 @@ export function getSchema(steps: Step[]) {
 export function getDefaultValues(steps: Step[]) {
   return steps.reduce((values: { [key: string]: string }, step) => {
     step.fields.forEach((field) => {
-      values[field.id] = '';
+      const predifenedIds = [
+        'alias_sujeto_feminicida',
+        'nombre_sujeto_feminicida',
+        'edad_sujeto_feminicida',
+      ];
+      if (predifenedIds.includes(field.id)) {
+        values[field.id] = 'Sin información';
+      } else {
+        values[field.id] = '';
+      }
     });
     return values;
   }, {});
