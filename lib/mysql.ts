@@ -200,33 +200,38 @@ export const queries = {
         TABLE_NAME = 'feminicidios_tentativas' AND w.uso='form_3';
     `,
     stepFour: `
-      SELECT
-        COLUMN_NAME AS 'id',
-        DATA_TYPE AS 'type',
-        CHARACTER_MAXIMUM_LENGTH AS 'length',
-        IS_NULLABLE AS 'nullable',
-        ETIQUETA AS 'label'
-      FROM
-        (SELECT
-          x.TABLE_NAME,
-          x.COLUMN_NAME,
-          x.DATA_TYPE,
-          x.CHARACTER_MAXIMUM_LENGTH,
-          x.IS_NULLABLE,
-          z.etiqueta,
-          z.tabla_referencia
-        FROM INFORMATION_SCHEMA.COLUMNS x
-        INNER JOIN tabla_campos_etiquetas z
-        ON x.TABLE_NAME = z.nombre_tabla
-        AND (
-          (x.COLUMN_NAME LIKE 'cod_%' AND SUBSTRING(x.COLUMN_NAME, 5) = z.nombre_campo)
-          OR
-          (x.COLUMN_NAME NOT LIKE 'cod_%' AND x.COLUMN_NAME = z.nombre_campo)
-          )
-        ) w
-      WHERE
-        TABLE_NAME = 'feminicidios_tentativas' AND
-        COLUMN_NAME IN ('desaparecida', 'causal_atribuido_feminicidio', 'fuente', 'descripcion_informacion_noticia','hipotesis','titular','link_noticia','url_corto_noticia','observaciones','observaciones_comision_cspm', 'fecha_en_prensa');
+    SELECT
+    w.COLUMN_NAME AS 'id',
+    w.DATA_TYPE AS 'type',
+    w.CHARACTER_MAXIMUM_LENGTH AS 'length',
+    w.IS_NULLABLE AS 'nullable',
+    w.etiqueta AS 'label',
+      CASE
+        WHEN w.COLUMN_NAME = 'cod_desaparecida' THEN (SELECT GROUP_CONCAT(cod_desaparecida) FROM desaparecida)
+        WHEN w.COLUMN_NAME = 'desaparecida' THEN (SELECT GROUP_CONCAT(desaparecida) FROM desaparecida)
+        ELSE NULL
+      END AS 'options'
+    FROM
+      (SELECT
+        x.TABLE_NAME,
+        x.COLUMN_NAME,
+        x.DATA_TYPE,
+        x.CHARACTER_MAXIMUM_LENGTH,
+        x.IS_NULLABLE,
+        z.etiqueta,
+        z.tabla_referencia,
+        z.uso
+    FROM INFORMATION_SCHEMA.COLUMNS x
+    INNER JOIN tabla_campos_etiquetas z
+      ON x.TABLE_NAME = z.nombre_tabla
+      AND (
+        (x.COLUMN_NAME LIKE 'cod_%' AND SUBSTRING(x.COLUMN_NAME, 5) = z.nombre_campo)
+        OR
+        (x.COLUMN_NAME NOT LIKE 'cod_%' AND x.COLUMN_NAME = z.nombre_campo)
+      )
+    ) w
+  WHERE
+    w.TABLE_NAME = 'feminicidios_tentativas' AND w.uso='form_4';
     `,
     lastestIdFromList: (table: string) => `
       SELECT * FROM ${table}
