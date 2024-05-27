@@ -23,7 +23,7 @@ export const FieldSelectMultiple = ({ formField, form }: FieldProps) => {
       control={form.control}
       name={formField.id}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="flex flex-col justify-between">
           <FormLabel>{formField.label}</FormLabel>
           <FormControl>
             <MultipleSelector

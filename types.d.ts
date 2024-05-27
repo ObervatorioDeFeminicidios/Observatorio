@@ -9,6 +9,8 @@ type BaseField = {
 interface Option {
   value: number;
   label: string;
+  codDepartamento?: string;
+  codMunicipio?: string;
 }
 
 interface OptionIntoList {
@@ -22,6 +24,15 @@ type DataBaseField = BaseField & {
   type: BaseFieldType;
   options: string | null;
 };
+
+type MunicipalityPostalCodeType = Option & {
+  codDepartamento: string;
+  codMunicipio: string;
+  municipio: string;
+  codPostal: string;
+  limite: string;
+  postal: string;
+}
 
 type SelectField = {
   type: 'select';

@@ -13,6 +13,7 @@ interface StepState {
   updateFormSchemas: (formSchemas: FormSchemas) => void;
   previousStep: number;
   currentStep: number;
+  resetStep: () => void;
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
@@ -29,6 +30,14 @@ export const useStepState = create<StepState>()((set) => ({
   updateFormSchemas: (formSchemas) => set(() => ({ formSchemas })),
   previousStep: 0,
   currentStep: 0,
+  resetStep: () =>
+    set((state) => {
+      return {
+        ...state,
+        previousStep: 0,
+        currentStep: 0,
+      };
+    }),
   handlePreviousStep: () =>
     set((state) => {
       if (state.currentStep > 0) {
@@ -54,3 +63,12 @@ export const useStepState = create<StepState>()((set) => ({
       }
     }),
 }));
+
+// Selector function to detect whether is the last step or no
+export const useIsLastStep = () => {
+  const { currentStep } = useStepState((state) => ({
+    currentStep: state.currentStep,
+  }));
+
+  return currentStep === TOTAL_STEPS - 1;
+};

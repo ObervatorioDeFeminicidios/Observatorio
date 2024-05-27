@@ -21,6 +21,7 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
   const { currentStep, updateFormSchemas } = useStepState();
   const formSchema = getSchema(steps);
   const defaultValues = getDefaultValues(steps);
+  const formRef = React.useRef<HTMLFormElement>(null);
   const totalSteps = steps.length;
 
   // Getting the multi step form schema by step
@@ -40,7 +41,10 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
 
   return (
     <Form {...form}>
-      <form className="flex flex-1 flex-col justify-between gap-10">
+      <form
+        ref={formRef}
+        className="flex flex-1 flex-col justify-between gap-10"
+      >
         <div className="grid gap-6 md:grid-cols-2 md:gap-8">
           {steps[currentStep].fields.map((formField) =>
             formField.type === 'text' || formField.type === 'int' ? (
@@ -67,7 +71,7 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
           )}
         </div>
 
-        <Navigation totalSteps={totalSteps} />
+        <Navigation totalSteps={totalSteps} formRef={formRef} />
       </form>
     </Form>
   );
