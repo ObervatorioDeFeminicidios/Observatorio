@@ -356,6 +356,9 @@ export async function putListOption(data: OptionIntoList) {
       };
     }
   } else {
-    throw new Error(validationResult.error.message);
+    return {
+      success: false,
+      errors: validationResult.error.message,
+    };
   }
 }
