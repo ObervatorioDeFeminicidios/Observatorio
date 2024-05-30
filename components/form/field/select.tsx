@@ -59,6 +59,16 @@ const filterOptions = (
   }
 };
 
+const resetDependentFields = (
+  form: FieldProps['form'],
+  dependentFields: string[],
+) => {
+  dependentFields.forEach((dependentField) => {
+    form.setValue(dependentField, '');
+    form.setValue(`cod_${dependentField}`, '');
+  });
+};
+
 export const FieldSelect = ({ formField, form }: FieldProps) => {
   const [open, setOpen] = React.useState(false);
   const { getValues } = useFormContext();
@@ -83,12 +93,16 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
           `cod_${formField.id}`,
           (option.value + '').padStart(2, '0'),
         );
+        // Reseting the minicipality and postal fields
+        resetDependentFields(form, ['municipio', 'postal']);
         break;
       case 'municipio':
         form.setValue(
           `cod_${formField.id}`,
           (option.value + '').padStart(3, '0'),
         );
+        // Reseting the postal field
+        resetDependentFields(form, ['postal']);
         break;
       case 'postal':
         form.setValue(
