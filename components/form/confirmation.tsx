@@ -80,7 +80,7 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
         </>
       ) : (
         <div className="flex h-full flex-col items-center justify-center gap-2">
-          {insertDataResult.success ? (
+          {insertDataResult?.success ? (
             <>
               <CheckBadgeIcon className="h-[150px] fill-primary" />
               <p className="text-md text-secondary-foreground`">
