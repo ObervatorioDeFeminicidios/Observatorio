@@ -285,6 +285,7 @@ export async function postFormData(
 
 // Adding a new option list
 export async function putListOption(data: OptionIntoList) {
+  console.log('putListOption data ::: ', data);
   // Getting the form schema
   const dataSchema: z.Schema = z.object({
     id: z.string().trim().min(1, { message: `id no puede estar vacío` }),
@@ -293,10 +294,12 @@ export async function putListOption(data: OptionIntoList) {
 
   // Validating the data against the zod schema
   const validationResult = dataSchema.safeParse(data);
+  console.log('putListOption validationResult ::: ', validationResult);
 
   if (validationResult.success) {
     // Query to extract the latest id from the reference table
     const firstQuery = queries.get.lastestIdFromList(data.id);
+    console.log('putListOption firstQuery ::: ', firstQuery);
 
     // Handling the environments to test with mocked data if we are in the dev environment
     if (env.ENV !== 'dev') {
@@ -308,25 +311,31 @@ export async function putListOption(data: OptionIntoList) {
         const firstResult: Array<DBResponse> = await conn.query(firstQuery);
         const newId = getLatestId(firstResult[0]) + 1;
         const newLabel = capitalizeEachWord(data.value);
+        console.log('putListOption firstResult ::: ', firstResult);
+        console.log('putListOption newId ::: ', newId);
+        console.log('putListOption newLabel ::: ', newLabel);
 
         // Query to insert the new item in the reference table
-        const secondQuery = queries.put.listOption(
-          data.id,
-          newId,
-          newLabel,
-        );
-        const secondResult = await conn.query(secondQuery);
+        const secondQuery = queries.put.listOption(data.id, newId, newLabel);
+        console.log('putListOption secondQuery ::: ', secondQuery);
+        const secondResult: OkPacket = await conn.query(secondQuery);
+        console.log('putListOption secondResult ::: ', secondResult);
 
         // Commit the transaction if all inserts succeeded
         await conn.query('COMMIT');
-        return {
-          success: true,
-          errors: null,
-          result: {
-            value: newId,
-            label: newLabel,
-          }
-        };
+
+        if (secondResult.affectedRows === 1) {
+          return {
+            success: true,
+            errors: null,
+            result: {
+              value: newId,
+              label: newLabel,
+            },
+          };
+        } else {
+          throw new Error('Un error ocurrió al insertar la nueva opción');
+        }
       } catch (error) {
         // Rollback the transaction on any error
         await conn.query('ROLLBACK');
@@ -339,7 +348,7 @@ export async function putListOption(data: OptionIntoList) {
               ? error.message
               : 'Error Unknown';
 
-        console.log('Database Error: ', errorMessage);
+        console.log('putListOption errorMessage ::: ', errorMessage);
 
         return {
           success: false,
@@ -350,12 +359,17 @@ export async function putListOption(data: OptionIntoList) {
         await conn.end();
       }
     } else {
+      console.log('putListOption env !== dev');
       return {
         success: true,
         errors: null,
       };
     }
   } else {
+    console.log(
+      'putListOption validationResult.error.message ::: ',
+      validationResult.error.message,
+    );
     return {
       success: false,
       errors: validationResult.error.message,
