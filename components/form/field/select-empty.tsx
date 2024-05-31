@@ -49,7 +49,7 @@ export const SelectEmpty = ({
       console.log('response ::: ', response);
       setInsertDataResult(response);
       setShowResult(true);
-      response.success && onSelectAdd(response.result as Option);
+      response?.success && onSelectAdd(response.result as Option);
     });
   };
 
@@ -105,7 +105,7 @@ export const SelectEmpty = ({
                     </Badge>
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center gap-2">
-                      {insertDataResult.success ? (
+                      {insertDataResult?.success ? (
                         <>
                           <CheckBadgeIcon className="h-[100px] fill-primary" />
                           <p className="text-md text-secondary-foreground`">
