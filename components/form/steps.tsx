@@ -1,7 +1,7 @@
 'use client';
 
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useStepState } from '@/store/registration-form';
+import { useFormStore } from '@/store/registration-form';
 import { CurrentStep, NextStep, PreviousStep } from './step';
 
 type StepProps = {
@@ -10,7 +10,7 @@ type StepProps = {
 
 export const Steps = ({ steps }: StepProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const { currentStep } = useStepState();
+  const { currentStep } = useFormStore();
 
   return (
     <>

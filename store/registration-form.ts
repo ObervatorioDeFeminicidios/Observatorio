@@ -8,19 +8,25 @@ type FormSchemas = {
   fourthSchema: z.Schema | null;
 };
 
-interface StepState {
+type FormData = {
+  [key: string]: string | number;
+};
+
+interface FormState {
   formSchemas: FormSchemas;
   updateFormSchemas: (formSchemas: FormSchemas) => void;
+  formData: FormData;
+  updateFormData: (newData: FormData) => void;
   previousStep: number;
   currentStep: number;
-  resetStep: () => void;
+  resetForm: () => void;
   handlePreviousStep: () => void;
   handleNextStep: () => void;
 }
 
 const TOTAL_STEPS = 4;
 
-export const useStepState = create<StepState>()((set) => ({
+export const useFormStore = create<FormState>()((set) => ({
   formSchemas: {
     firstSchema: null,
     secondSchema: null,
@@ -28,15 +34,18 @@ export const useStepState = create<StepState>()((set) => ({
     fourthSchema: null,
   },
   updateFormSchemas: (formSchemas) => set(() => ({ formSchemas })),
+  formData: {},
+  updateFormData: (newData) =>
+    set((state) => ({
+      formData: { ...state.formData, ...newData },
+    })),
   previousStep: 0,
   currentStep: 0,
-  resetStep: () =>
-    set((state) => {
-      return {
-        ...state,
-        previousStep: 0,
-        currentStep: 0,
-      };
+  resetForm: () =>
+    set({
+      previousStep: 0,
+      currentStep: 0,
+      formData: {},
     }),
   handlePreviousStep: () =>
     set((state) => {
@@ -66,7 +75,7 @@ export const useStepState = create<StepState>()((set) => ({
 
 // Selector function to detect whether is the last step or no
 export const useIsLastStep = () => {
-  const { currentStep } = useStepState((state) => ({
+  const { currentStep } = useFormStore((state) => ({
     currentStep: state.currentStep,
   }));
 

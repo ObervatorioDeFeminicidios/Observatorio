@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { useIsLastStep, useStepState } from '@/store/registration-form';
+import { useFormStore, useIsLastStep } from '@/store/registration-form';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
@@ -18,17 +18,22 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
     handlePreviousStep,
     handleNextStep,
     formSchemas: { firstSchema, secondSchema, thirdSchema, fourthSchema },
-  } = useStepState();
+    updateFormData,
+  } = useFormStore();
   const isLastStep = useIsLastStep();
   const { getValues, setError, clearErrors } = useFormContext();
 
   // Validate the current form data against the zod schema and set the errors
   const validateSchema = (schema: z.Schema) => {
+    // Getting the form data
+    const formData = getValues();
+
     // Reseting the errors
     clearErrors();
 
     // Validating the data
-    const validationResult = schema.safeParse(getValues());
+    const validationResult = schema.safeParse(formData);
+
     if (!validationResult.success) {
       validationResult.error.issues.forEach((issue) => {
         // Setting the error for the field that failed validation
@@ -40,6 +45,7 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
     } else {
       // If it's not the last step, navigate to the next step or open the drawer
       if (!isLastStep) {
+        updateFormData(formData);
         handleNextStep();
 
         // Scroll to the top and focus the first form field
@@ -74,12 +80,19 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
     }
   };
 
+  const handlePreviousOnClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.preventDefault();
+    handlePreviousStep();
+  };
+
   return (
     <div className="flex justify-end gap-4">
       <Button
         variant="ghost"
         className="text-secondary-foreground"
-        onClick={handlePreviousStep}
+        onClick={handlePreviousOnClick}
         disabled={currentStep === 0}
       >
         Atrás
