@@ -2,13 +2,12 @@
 
 import { Form } from '@/components/ui/form';
 import { getDefaultValues, getSchema, getSchemaByStep } from '@/lib/form';
-import { useStepState } from '@/store/registration-form';
+import { useFormStore } from '@/store/registration-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { FieldInput } from './field/input';
-import { FieldSelect } from './field/select';
+import { FormStep } from './form-step';
 import { Navigation } from './navigation';
 
 type RegistrationFormProps = {
@@ -16,12 +15,14 @@ type RegistrationFormProps = {
 };
 
 export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
-  const { currentStep, updateFormSchemas } = useStepState();
+  const { currentStep, updateFormSchemas } =
+    useFormStore();
   const formSchema = getSchema(steps);
   const defaultValues = getDefaultValues(steps);
+  const formRef = React.useRef<HTMLFormElement>(null);
   const totalSteps = steps.length;
 
-  // Getting the multi step form schema by step
+  // Getting the multistep form schema by step
   React.useEffect(() => {
     updateFormSchemas({
       firstSchema: getSchemaByStep(steps[0].fields),
@@ -36,35 +37,17 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     defaultValues,
   });
 
-  const onSubmit = (values) => {
-    console.log('onSubmit values ::: ', values);
-  };
-
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-10"
+        ref={formRef}
+        className="flex flex-1 flex-col justify-between gap-10"
       >
-        <div className="grid grid-cols-2 gap-8">
-          {steps[currentStep].fields.map((formField, index) =>
-            formField.type !== 'select' ? (
-              <FieldInput
-                key={formField.id}
-                formField={formField}
-                form={form}
-              />
-            ) : (
-              <FieldSelect
-                key={formField.id}
-                formField={formField}
-                form={form}
-              />
-            ),
-          )}
+        <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+          <FormStep step={steps[currentStep]} form={form} />
         </div>
 
-        <Navigation totalSteps={totalSteps} />
+        <Navigation totalSteps={totalSteps} formRef={formRef} />
       </form>
     </Form>
   );

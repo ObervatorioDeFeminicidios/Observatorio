@@ -6,12 +6,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { FieldValues, UseFormReturn } from 'react-hook-form';
-
-type FieldProps = {
-  formField: TransformedObject;
-  form: UseFormReturn<FieldValues, any, undefined>;
-};
 
 export const FieldInput = ({ formField, form }: FieldProps) => {
   return (
@@ -20,9 +14,22 @@ export const FieldInput = ({ formField, form }: FieldProps) => {
       name={formField.id}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{formField.label}</FormLabel>
+          <FormLabel className="text-secondary-foreground">
+            {formField.label}
+          </FormLabel>
           <FormControl>
-            <Input {...field} />
+            <Input
+              {...field}
+              className="font-light"
+              onChange={(e) =>
+                field.onChange(
+                  formField.type !== 'int'
+                    ? e.target.value
+                    : Number(e.target.value),
+                )
+              }
+              type={formField.type !== 'int' ? formField.type : 'number'}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
