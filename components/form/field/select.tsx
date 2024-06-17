@@ -94,7 +94,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
           (option.value + '').padStart(2, '0'),
         );
         // Reseting the minicipality and postal fields
-        resetDependentFields(form, ['municipio', 'postal']);
+        resetDependentFields(form, ['municipio', 'comuna', 'postal']);
         break;
       case 'municipio':
         form.setValue(
@@ -102,7 +102,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
           (option.value + '').padStart(3, '0'),
         );
         // Reseting the postal field
-        resetDependentFields(form, ['postal']);
+        resetDependentFields(form, ['comuna', 'postal']);
         break;
       case 'postal':
         form.setValue(
