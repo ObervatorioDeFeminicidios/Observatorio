@@ -16,12 +16,12 @@ export const conn: MySQLConnection = mysql({
     database: env.DB_DATABASE,
   },
   maxRetries: 3,
-  onConnectError: (e: any) => {
-    console.log('There was an error connecting to mysql! ', e);
-  },
-  onConnect: () => {
-    console.log('Connected to mysql with success!');
-  },
+  onConnectError: (e: any) =>
+    console.log('There was an error connecting to mysql! ', e),
+  onConnect: () => console.log('Connected to mysql with success!'),
+  onKillError: () =>
+    console.log('There was an onKillError! '),
+  onError: () => console.log('There was an onError! '),
 });
 
 // Defining the queries to be used in the SQL transactions

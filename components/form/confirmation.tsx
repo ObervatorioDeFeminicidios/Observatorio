@@ -122,7 +122,7 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
             onClick={() => {
               setOpen(false);
               setInsertDataResult(INITAL_RESULT);
-              if (showResult && !insertDataResult.errors) {
+              if (showResult && insertDataResult && !insertDataResult?.errors) {
                 reset();
                 resetForm();
               }
