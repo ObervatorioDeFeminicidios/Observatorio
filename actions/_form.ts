@@ -154,22 +154,25 @@ export async function postFormData(
     // Separating the data as required
     const { violencia_asociada, ...registerData } = data;
     const associatedViolences: Array<Option> = violencia_asociada;
-    console.log('ACT form registerData ::: ', registerData);
-    console.log('ACT form associatedViolences ::: ', associatedViolences);
+    console.log('postFormData registerData ::: ', registerData);
+    console.log('postFormData associatedViolences ::: ', associatedViolences);
 
     // Getting the neccessary queries
     const firstQuery = queries.post.registry(FIRST_TABLE, registerData);
-    console.log('ACT form firstQuery ::: ', firstQuery);
+    console.log('postFormData firstQuery ::: ', firstQuery);
 
     // Handling the environments to test with mocked data if we are in the dev environment
     if (env.ENV !== 'dev') {
+      const db = await conn.connect();
+      console.log('postFormData db ::: ', db);
+
       try {
         // Start the transaction
         await conn.query('START TRANSACTION');
 
         // Insert the first record
         const firstResult: OkPacket = await conn.query(firstQuery);
-        console.log('ACT form firstResult ::: ', firstResult);
+        console.log('postFormData firstResult ::: ', firstResult);
 
         if (firstResult.affectedRows > 0 && firstResult.insertId) {
           // Insert multiple associated violences
@@ -193,7 +196,7 @@ export async function postFormData(
                       ? error.message
                       : 'Error Unknown';
 
-                console.log(
+                console.error(
                   'Database associated violence Error: ',
                   errorMessage,
                 );
@@ -210,7 +213,7 @@ export async function postFormData(
             associatedViolencesPromises,
           );
           console.log(
-            'ACT form associatedViolencesResults ::: ',
+            'postFormData associatedViolencesResults ::: ',
             associatedViolencesResults,
           );
 
@@ -218,7 +221,7 @@ export async function postFormData(
           const failedInserts = associatedViolencesResults.filter(
             (result) => result?.error,
           );
-          console.log('ACT form failedInserts ::: ', failedInserts);
+          console.log('postFormData failedInserts ::: ', failedInserts);
 
           if (failedInserts.length > 0) {
             // Rollback the transaction if any insert failed
@@ -260,7 +263,7 @@ export async function postFormData(
               ? error.message
               : 'Error Unknown';
 
-        console.log('Database Error: ', errorMessage);
+        console.error('Database Error: ', errorMessage);
 
         return {
           success: false,
@@ -279,6 +282,7 @@ export async function postFormData(
       };
     }
   } else {
+    console.error('postFormData failed validation result ::: ', validationResult.error.message);
     throw new Error(validationResult.error.message);
   }
 }

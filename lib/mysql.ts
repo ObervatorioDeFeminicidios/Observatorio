@@ -15,6 +15,13 @@ export const conn: MySQLConnection = mysql({
     port: env.DB_PORT as unknown as number,
     database: env.DB_DATABASE,
   },
+  maxRetries: 3,
+  onConnectError: (e: any) => {
+    console.log('There was an error connecting to mysql! ', e);
+  },
+  onConnect: () => {
+    console.log('Connected to mysql with success!');
+  },
 });
 
 // Defining the queries to be used in the SQL transactions
