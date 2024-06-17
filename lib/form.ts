@@ -33,11 +33,32 @@ const setFieldSchema = (schema: ISchema, field: TransformedObject) => {
           });
       break;
     case 'select-multiple':
+      const arraySchema = z.array(
+        z.object({ value: z.string(), label: z.string() }),
+      );
       schema[field.id] = field.nullable
-        ? z.array(z.object({ value: z.string(), label: z.string() })).optional()
-        : z.array(z.object({ value: z.string(), label: z.string() })).min(1, {
-            message: `Debe elegir una opción para ${field.label}`,
-          });
+        ? z
+            .union([
+              arraySchema,
+              z
+                .string()
+                .refine(() => false, {
+                  message: `Debe elegir una opción para ${field.label}`,
+                }),
+            ])
+            .optional()
+        : z
+            .union([
+              arraySchema,
+              z
+                .string()
+                .refine(() => false, {
+                  message: `Debe elegir una opción para ${field.label}`,
+                }),
+            ])
+            .refine((value) => Array.isArray(value), {
+              message: `Debe elegir una opción para ${field.label}`,
+            });
       break;
     case 'int':
       schema[field.id] = field.nullable
