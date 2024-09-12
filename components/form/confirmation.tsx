@@ -38,9 +38,13 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     const formData = getValues();
     console.log(formData);
     startTransition(async () => {
-      const response: InsertDataResult = await postFormData(formData);
-      console.log('response ::: ', response);
-      setInsertDataResult(response);
+      const response = await fetch("/api/registration", {
+        method: "POST",
+        body: JSON.stringify(formData)
+      })
+      const data: InsertDataResult = await response.json();
+      console.log('data ::: ', data);
+      setInsertDataResult(data);
       setShowResult(true);
     });
   };
@@ -122,7 +126,7 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
             onClick={() => {
               setOpen(false);
               setInsertDataResult(INITAL_RESULT);
-              if (showResult) {
+              if (showResult && insertDataResult && !insertDataResult?.errors) {
                 reset();
                 resetForm();
               }
