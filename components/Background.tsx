@@ -19,7 +19,7 @@ export const Background = ({
           />
         </div>
 
-        <div className="flex min-h-screen flex-col">{children}</div>
+        <div className="min-h-screen">{children}</div>
 
         <div
           className="absolute inset-x-0 bottom-0 -z-10 transform-gpu overflow-hidden blur-3xl"

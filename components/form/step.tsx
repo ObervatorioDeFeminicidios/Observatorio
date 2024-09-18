@@ -42,10 +42,10 @@ export const NextStep = ({ step, isDesktop }: StepProps) => {
   return (
     <div className="flex items-center px-6 py-4 text-sm font-medium">
       <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary">
-        <span className="font-light text-gray-300">{step.id}</span>
+        <span className="font-light text-zinc-100">{step.id}</span>
       </span>
       {isDesktop && (
-        <span className="ml-4 text-sm font-normal text-gray-400">
+        <span className="ml-4 text-sm font-light text-zinc-600">
           {step.name}
         </span>
       )}
