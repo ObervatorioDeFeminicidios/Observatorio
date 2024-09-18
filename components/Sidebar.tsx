@@ -3,6 +3,7 @@
 import { MenuItem, menuItems } from '@/lib/menu-items';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import React from 'react';
 import { LogoutButton } from './LogoutButton';
 import { Button } from './ui/button';
@@ -17,31 +18,35 @@ import {
 const SidebarItem: React.FC<{
   menuItem: MenuItem;
   sidebarIsExpanded: boolean;
-}> = ({ menuItem, sidebarIsExpanded }) => (
-  <TooltipProvider>
-    <Tooltip key={menuItem.name}>
-      <TooltipTrigger asChild>
-        <Button asChild variant="ghost">
-          {sidebarIsExpanded && (
-            <Link href={menuItem.route} passHref legacyBehavior>
-              <a
-                className="text-md flex items-center justify-start gap-2 rounded-lg px-2 py-2.5 text-zinc-950 hover:bg-zinc-950/5"
-                aria-label={menuItem.name}
-              >
-                <menuItem.icon className="size-5" /> {menuItem.name}
-              </a>
-            </Link>
-          )}
-        </Button>
-      </TooltipTrigger>
-      {!sidebarIsExpanded && (
-        <TooltipContent side="right" sideOffset={5}>
-          {menuItem.name}
-        </TooltipContent>
-      )}
-    </Tooltip>
-  </TooltipProvider>
-);
+}> = ({ menuItem, sidebarIsExpanded }) => {
+  const pathname = usePathname();
+
+  return (
+    <TooltipProvider>
+      <Tooltip key={menuItem.name}>
+        <TooltipTrigger asChild>
+          <Button asChild variant="ghost">
+            {sidebarIsExpanded && (
+              <Link href={menuItem.route} passHref legacyBehavior>
+                <a
+                  className={`text-md flex items-center justify-start gap-2 rounded-lg px-2 py-2.5  hover:bg-zinc-950/5 ${pathname === menuItem.route ? 'text-primary bg-zinc-950/5' : 'text-zinc-950 bg-transparent'}`}
+                  aria-label={menuItem.name}
+                >
+                  <menuItem.icon className="size-5" /> {menuItem.name}
+                </a>
+              </Link>
+            )}
+          </Button>
+        </TooltipTrigger>
+        {!sidebarIsExpanded && (
+          <TooltipContent side="right" sideOffset={5}>
+            {menuItem.name}
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 // TODO: Implement the support button, how can we handle the report of issues?
 const Sidebar = () => {
@@ -60,7 +65,7 @@ const Sidebar = () => {
           height={50}
         />
       </div>
-      <nav className="mt-4 grid gap-4">
+      <nav className="mt-6 grid gap-4">
         {menuItems.map((menuItem) => (
           <SidebarItem
             key={menuItem.name}
