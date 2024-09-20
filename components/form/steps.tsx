@@ -15,7 +15,7 @@ export const Steps = ({ steps }: StepProps) => {
   return (
     <>
       <nav aria-label="Progress" className="w-full self-center">
-        <ol role="list" className="flex">
+        <ol role="list" className="flex justify-evenly">
           {steps.map((step, index) => (
             <li key={step.name} className="relative md:flex md:flex-1">
               {currentStep > index ? (

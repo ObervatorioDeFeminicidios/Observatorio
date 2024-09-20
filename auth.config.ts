@@ -7,14 +7,14 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      // Protecting the registration path
-      const isOnRegistration = nextUrl.pathname.startsWith('/registration');
+      // Protecting the path
+      const isOnRegistration = nextUrl.pathname.startsWith('/dashboard');
       if (isOnRegistration) {
         if (isLoggedIn) return true;
         // Redirect unauthenticated users to login page
         return false;
       } else if (isLoggedIn) {
-        return Response.redirect(new URL('/registration', nextUrl));
+        return Response.redirect(new URL('/dashboard/registration', nextUrl));
       }
       return true;
     },
