@@ -1,7 +1,7 @@
 'use server';
 
 import { env } from '@/config/env';
-import { InsertDataResult, OkPacket } from '@/lib/definitions';
+import { InsertDataResult, OkPacket, Register } from '@/lib/definitions';
 import {
   FIRST_TABLE,
   SECOND_TABLE,
@@ -14,6 +14,7 @@ import {
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
 import { conn, queries } from '@/lib/mysql';
 import { capitalizeEachWord } from '@/lib/utils';
+import { unstable_noStore as noStore } from 'next/cache';
 import { FieldValues } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -138,8 +139,9 @@ export async function getFormData() {
   }
 }
 
+// This server function is unused -> Moved to API routes
 // Inserting a new register into the database
-export async function postFormData(
+export async function postRegister(
   data: FieldValues,
 ): Promise<InsertDataResult> {
   // Getting the form schema
@@ -154,22 +156,25 @@ export async function postFormData(
     // Separating the data as required
     const { violencia_asociada, ...registerData } = data;
     const associatedViolences: Array<Option> = violencia_asociada;
-    console.log('ACT form registerData ::: ', registerData);
-    console.log('ACT form associatedViolences ::: ', associatedViolences);
+    console.log('postFormData registerData ::: ', registerData);
+    console.log('postFormData associatedViolences ::: ', associatedViolences);
 
     // Getting the neccessary queries
     const firstQuery = queries.post.registry(FIRST_TABLE, registerData);
-    console.log('ACT form firstQuery ::: ', firstQuery);
+    console.log('postFormData firstQuery ::: ', firstQuery);
 
     // Handling the environments to test with mocked data if we are in the dev environment
     if (env.ENV !== 'dev') {
+      const db = await conn.connect();
+      console.log('postFormData db ::: ', db);
+
       try {
         // Start the transaction
         await conn.query('START TRANSACTION');
 
         // Insert the first record
         const firstResult: OkPacket = await conn.query(firstQuery);
-        console.log('ACT form firstResult ::: ', firstResult);
+        console.log('postFormData firstResult ::: ', firstResult);
 
         if (firstResult.affectedRows > 0 && firstResult.insertId) {
           // Insert multiple associated violences
@@ -193,7 +198,7 @@ export async function postFormData(
                       ? error.message
                       : 'Error Unknown';
 
-                console.log(
+                console.error(
                   'Database associated violence Error: ',
                   errorMessage,
                 );
@@ -210,7 +215,7 @@ export async function postFormData(
             associatedViolencesPromises,
           );
           console.log(
-            'ACT form associatedViolencesResults ::: ',
+            'postFormData associatedViolencesResults ::: ',
             associatedViolencesResults,
           );
 
@@ -218,7 +223,7 @@ export async function postFormData(
           const failedInserts = associatedViolencesResults.filter(
             (result) => result?.error,
           );
-          console.log('ACT form failedInserts ::: ', failedInserts);
+          console.log('postFormData failedInserts ::: ', failedInserts);
 
           if (failedInserts.length > 0) {
             // Rollback the transaction if any insert failed
@@ -260,7 +265,7 @@ export async function postFormData(
               ? error.message
               : 'Error Unknown';
 
-        console.log('Database Error: ', errorMessage);
+        console.error('Database Error: ', errorMessage);
 
         return {
           success: false,
@@ -279,6 +284,10 @@ export async function postFormData(
       };
     }
   } else {
+    console.error(
+      'postFormData failed validation result ::: ',
+      validationResult.error.message,
+    );
     throw new Error(validationResult.error.message);
   }
 }
@@ -374,5 +383,38 @@ export async function putListOption(data: OptionIntoList) {
       success: false,
       errors: validationResult.error.message,
     };
+  }
+}
+
+// Getting the data registered in the database
+export async function fetchRegisters() {
+  noStore();
+  try {
+    // Start the transaction
+    await conn.query('START TRANSACTION');
+
+    const registersData = await conn.query<Register[]>(queries.get.registers);
+
+    // Return the data
+    return JSON.parse(JSON.stringify(registersData));
+  } catch (error) {
+    // Rollback the transaction on any error
+    await conn.query('ROLLBACK');
+
+    const errorMessage =
+      typeof error === 'string'
+        ? error
+        : error instanceof Error
+          ? error.message
+          : 'Error Unknown';
+
+    console.log('Database Error: ', errorMessage);
+    return {
+      success: false,
+      errors: 'Error al traer los registros de la base de datos',
+    };
+  } finally {
+    // Close the connection
+    await conn.end();
   }
 }

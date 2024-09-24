@@ -19,6 +19,8 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { useFormStore } from '@/store/registration-form';
+import { API_ROUTES } from '@/app/api';
+import { Badge } from '../ui/badge';
 
 type ConfirmationProps = {
   data: any;
@@ -37,13 +39,13 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     const formData = getValues();
     console.log(formData);
     startTransition(async () => {
-      const response = await fetch("/api/registration", {
+      const response = await fetch(API_ROUTES.postRegister, {
         method: "POST",
         body: JSON.stringify(formData)
       })
-      const data: InsertDataResult = await response.json();
-      console.log('data ::: ', data);
-      setInsertDataResult(data);
+      const result: InsertDataResult = await response.json();
+      console.log('data ::: ', result);
+      setInsertDataResult(result);
       setShowResult(true);
     });
   };
@@ -90,6 +92,12 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
               <p className="text-md text-secondary-foreground`">
                 El registro ha sido insertado exitosamente!
               </p>
+              <Badge
+                variant="outline"
+                className="border-primary text-lg text-primary"
+              >
+                {insertDataResult.insertId}
+              </Badge>
             </>
           ) : (
             <>

@@ -1,12 +1,14 @@
-import { ClipboardDocumentListIcon } from '@heroicons/react/20/solid';
+import { fetchRegisters } from '@/actions/_form';
+import { Register } from '@/lib/definitions';
+import { columns } from './columns';
+import { DataTable } from './data-table';
 
 export default async function History() {
+  const registersData: Register[] = await fetchRegisters();
+
   return (
-    <section className="flex h-screen flex-col items-center justify-center gap-6 md:gap-8">
-      <ClipboardDocumentListIcon className="size-8" />
-      <span>
-        Muy pronto podrás ver el historial de los registros en ésta sección
-      </span>
-    </section>
+    <div className="container mx-auto py-2">
+      <DataTable columns={columns} data={registersData} />
+    </div>
   );
 }
