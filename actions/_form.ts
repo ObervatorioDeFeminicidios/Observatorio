@@ -14,6 +14,7 @@ import {
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
 import { conn, queries } from '@/lib/mysql';
 import { capitalizeEachWord } from '@/lib/utils';
+import { unstable_noStore as noStore } from 'next/cache';
 import { FieldValues } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -283,7 +284,10 @@ export async function postRegister(
       };
     }
   } else {
-    console.error('postFormData failed validation result ::: ', validationResult.error.message);
+    console.error(
+      'postFormData failed validation result ::: ',
+      validationResult.error.message,
+    );
     throw new Error(validationResult.error.message);
   }
 }
@@ -384,13 +388,12 @@ export async function putListOption(data: OptionIntoList) {
 
 // Getting the data registered in the database
 export async function fetchRegisters() {
+  noStore();
   try {
     // Start the transaction
     await conn.query('START TRANSACTION');
 
-    const registersData = await conn.query<Register[]>(
-      queries.get.registers,
-    );
+    const registersData = await conn.query<Register[]>(queries.get.registers);
 
     // Return the data
     return JSON.parse(JSON.stringify(registersData));
