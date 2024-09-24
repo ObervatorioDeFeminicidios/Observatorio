@@ -123,6 +123,7 @@ export async function POST(request: Request) {
             message:
               'Se insertó el registro y las violencias asociadas exitosamente',
             data,
+            insertId: firstResult.insertId,
           });
         } else {
           // Rollback the transaction if the first insert failed
