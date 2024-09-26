@@ -41,7 +41,7 @@ export const columns: ColumnDef<Register>[] = [
     accessorKey: 'fecha_violencia',
     header: 'Fecha Violencia',
     cell: ({ row }) =>
-      (row.getValue('fecha_violencia') as string).split('T')[0],
+      (row.getValue('fecha_violencia') as string)?.split('T')[0],
   },
   { accessorKey: 'tipo_violencia', header: 'Tipo Violencia' },
   { accessorKey: 'nombre_victima', header: 'Nombre Víctima' },
