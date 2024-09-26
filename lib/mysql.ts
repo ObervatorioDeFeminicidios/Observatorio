@@ -287,7 +287,7 @@ export const queries = {
         feminicidios_tentativas
       ORDER BY
         numero_violencia DESC
-      LIMIT 40;
+      LIMIT 20;
     `,
   },
   post: {
