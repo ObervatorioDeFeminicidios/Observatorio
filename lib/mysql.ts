@@ -284,7 +284,10 @@ export const queries = {
       SELECT
         *
       FROM
-        feminicidios_tentativas;
+        feminicidios_tentativas
+      ORDER BY
+        numero_violencia DESC
+      LIMIT 40;
     `,
   },
   post: {
