@@ -4,6 +4,7 @@ import { InsertDataResult } from './definitions';
 export const FIRST_TABLE = 'feminicidios_tentativas';
 export const SECOND_TABLE = 'feminicidios_violencia_asociada';
 export const VIOLENCIA_ASOCIADA = 'violencia_asociada';
+export const URL_CORTO_NOTICIA = 'url_corto_noticia';
 
 interface ISchema {
   [key: string]: any;
