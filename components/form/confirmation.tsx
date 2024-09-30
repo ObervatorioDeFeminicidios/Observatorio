@@ -1,12 +1,19 @@
+import { API_ROUTES } from '@/app/api';
 import { InsertDataResult } from '@/lib/definitions';
-import { INITAL_RESULT, VIOLENCIA_ASOCIADA } from '@/lib/form';
+import {
+  INITAL_RESULT,
+  URL_CORTO_NOTICIA,
+  VIOLENCIA_ASOCIADA,
+} from '@/lib/form';
 import { titleCase } from '@/lib/utils';
+import { useFormStore } from '@/store/registration-form';
 import {
   CheckBadgeIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid';
 import React, { useTransition } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import {
   DrawerClose,
@@ -18,9 +25,6 @@ import {
 } from '../ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
-import { useFormStore } from '@/store/registration-form';
-import { API_ROUTES } from '@/app/api';
-import { Badge } from '../ui/badge';
 
 type ConfirmationProps = {
   data: any;
@@ -40,9 +44,9 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     console.log(formData);
     startTransition(async () => {
       const response = await fetch(API_ROUTES.postRegister, {
-        method: "POST",
-        body: JSON.stringify(formData)
-      })
+        method: 'POST',
+        body: JSON.stringify(formData),
+      });
       const result: InsertDataResult = await response.json();
       console.log('data ::: ', result);
       setInsertDataResult(result);
@@ -68,16 +72,18 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
             {Object.keys(data).map(
               (label, index) =>
                 !label.startsWith('cod_') &&
-                label !== VIOLENCIA_ASOCIADA && (
-                  <div key={`${label}-${index}`}>
-                    <div className="flex items-center justify-between p-4 text-sm">
-                      <span className="font-medium text-muted-foreground">
-                        {titleCase(label)}
-                      </span>
-                      <span className="max-w-[45%] text-right font-extralight">
-                        {data[label]}
-                      </span>
-                    </div>
+                label !== VIOLENCIA_ASOCIADA &&
+                label !== URL_CORTO_NOTICIA && (
+                  <div
+                    key={`${label}-${index}`}
+                    className="flex flex-col items-start gap-2 p-4 text-sm"
+                  >
+                    <span className="font-medium text-muted-foreground">
+                      {titleCase(label)}
+                    </span>
+                    <span className="font-extralight">
+                      {data[label] !== '' ? data[label] : (<br></br>)}
+                    </span>
                     <Separator />
                   </div>
                 ),
