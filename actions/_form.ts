@@ -1,19 +1,34 @@
 'use server';
 
+import { initialPagination } from '@/app/dashboard/history/page';
 import { env } from '@/config/env';
-import { InsertDataResult, OkPacket, Register } from '@/lib/definitions';
 import {
-  FIRST_TABLE,
-  SECOND_TABLE,
+  InsertDataResult,
+  OkPacket,
+  Register,
+  TotalRecordsResult,
+} from '@/lib/definitions';
+import {
   compareByType,
+  FIRST_TABLE,
   getLatestId,
   getSchema,
   mutateRawData,
+  SECOND_TABLE,
   transformObject,
 } from '@/lib/form';
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
 import { conn, queries } from '@/lib/mysql';
 import { capitalizeEachWord } from '@/lib/utils';
+import {
+  DataBaseField,
+  DBResponse,
+  HistoryFilters,
+  MunicipalityPostalCodeType,
+  OptionField,
+  OptionIntoList,
+  TransformedObject,
+} from '@/types';
 import { unstable_noStore as noStore } from 'next/cache';
 import { FieldValues } from 'react-hook-form';
 import { z } from 'zod';
@@ -67,7 +82,7 @@ export async function getFormData() {
       if (municipality.length > 0 && postalCode.length > 0) {
         stepTwo = stepTwo.map((field) => {
           if (field.id === 'municipio') {
-            const options: Option[] = municipality.map((item) => ({
+            const options: OptionField[] = municipality.map((item) => ({
               ...item,
               value: Number(item.value),
             }));
@@ -79,7 +94,7 @@ export async function getFormData() {
           }
 
           if (field.id === 'postal') {
-            const options: Option[] = postalCode.map((item) => ({
+            const options: OptionField[] = postalCode.map((item) => ({
               ...item,
               value: Number(item.value),
             }));
@@ -155,7 +170,7 @@ export async function postRegister(
   if (validationResult.success) {
     // Separating the data as required
     const { violencia_asociada, ...registerData } = data;
-    const associatedViolences: Array<Option> = violencia_asociada;
+    const associatedViolences: Array<OptionField> = violencia_asociada;
     console.log('postFormData registerData ::: ', registerData);
     console.log('postFormData associatedViolences ::: ', associatedViolences);
 
@@ -386,17 +401,46 @@ export async function putListOption(data: OptionIntoList) {
   }
 }
 
-// Getting the data registered in the database
-export async function fetchRegisters() {
+// Getting the data registered in the database with filters
+export async function fetchRegisters(filters: HistoryFilters) {
   noStore();
+
+  const {
+    pageIndex = initialPagination.pageIndex,
+    pageSize = initialPagination.pageSize,
+  } = filters;
+
   try {
     // Start the transaction
     await conn.query('START TRANSACTION');
 
-    const registersData = await conn.query<Register[]>(queries.get.registers);
+    // Calculate the pagination info
+    const totalRecordsResult = await conn.query<TotalRecordsResult[]>(
+      queries.get.totalRegisters,
+    );
+    const totalRecords = totalRecordsResult[0].totalRecords;
+    const totalPages = Math.ceil(totalRecords / pageSize);
+    const offset = pageIndex * pageSize;
+
+    // Get the registers from the database
+    const paginatedRegistersData = await conn.query<Register[]>(
+      queries.get.registers({ ...filters, offset }),
+    );
+
+    // If you're fetching from MySQL or another database, make sure it's plain data
+    const plainPaginatedRegistersData = paginatedRegistersData?.map((row) => ({
+      ...row,
+    }));
 
     // Return the data
-    return JSON.parse(JSON.stringify(registersData));
+    return {
+      success: true,
+      pageIndex,
+      pageSize,
+      totalRecords,
+      totalPages,
+      results: plainPaginatedRegistersData || [],
+    };
   } catch (error) {
     // Rollback the transaction on any error
     await conn.query('ROLLBACK');

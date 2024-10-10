@@ -1,5 +1,6 @@
 'use client';
 
+import { fetchRegisters } from '@/actions/_form';
 import { DataTablePagination } from '@/components/ui/data-table/pagination';
 import {
   Table,
@@ -9,29 +10,41 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
+  PaginationState,
   useReactTable,
 } from '@tanstack/react-table';
+import React from 'react';
+import { columns } from './columns';
+import { Register } from '@/lib/definitions';
+import { initialPagination } from './page';
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
+export function DataTable() {
+  const [pagination, setPagination] = React.useState<PaginationState>(initialPagination);
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+  const dataQuery = useQuery({
+    queryKey: ['data', pagination],
+    queryFn: () => fetchRegisters(pagination),
+    placeholderData: keepPreviousData,
   });
+
+  const table = useReactTable({
+    data: (dataQuery.data?.results as Register[]) ?? [],
+    columns,
+    rowCount: dataQuery.data?.totalRecords,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    debugTable: true,
+  });
+
+  if (dataQuery.error) return <div>Error: {dataQuery.error.message}</div>;
 
   return (
     <div>
