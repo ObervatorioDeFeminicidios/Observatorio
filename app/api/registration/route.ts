@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { FIRST_TABLE, getSchema, SECOND_TABLE } from '@/lib/form';
 import { env } from '@/config/env';
 import { OkPacket } from '@/lib/definitions';
+import { OptionField } from '@/types';
 
 export async function POST(request: Request) {
   const data = await request.json();
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
   if (validationResult.success) {
     // Separating the data as required
     const { violencia_asociada, ...registerData } = data;
-    const associatedViolences: Array<Option> = violencia_asociada;
+    const associatedViolences: Array<OptionField> = violencia_asociada;
     console.log('POST registerData ::: ', registerData);
     console.log('POST associatedViolences ::: ', associatedViolences);
 
