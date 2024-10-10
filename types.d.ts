@@ -1,12 +1,14 @@
+import { PaginationState } from '@tanstack/react-table';
+
 type BaseField = {
   id: string;
   label: string;
   length: number | null;
   nullable: 'YES' | 'NO';
-  updatable: boolean,
+  updatable: boolean;
 };
 
-interface Option {
+interface OptionField {
   value: number;
   label: string;
   codDepartamento?: string;
@@ -25,18 +27,18 @@ type DataBaseField = BaseField & {
   options: string | null;
 };
 
-type MunicipalityPostalCodeType = Option & {
+type MunicipalityPostalCodeType = OptionField & {
   codDepartamento: string;
   codMunicipio: string;
   municipio: string;
   codPostal: string;
   limite: string;
   postal: string;
-}
+};
 
 type SelectField = {
   type: 'select';
-  options: Option[];
+  options: OptionField[];
 };
 
 type Field = (BaseField & { type: BaseFieldType }) | (BaseField & SelectField);
@@ -55,7 +57,7 @@ type TransformedObject = {
   nullable: boolean;
   updatable: boolean;
   type: BaseFieldType;
-  options?: Option[];
+  options?: OptionField[];
 };
 
 type Step = {
@@ -70,3 +72,6 @@ type FieldProps = {
 };
 
 type DBResponse = { [key: string]: string | number };
+
+// History types
+export type HistoryFilters = Partial<PaginationState>;
