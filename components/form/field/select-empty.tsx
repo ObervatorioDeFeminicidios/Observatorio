@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { InsertDataResult } from '@/lib/definitions';
 import { INITAL_RESULT } from '@/lib/form';
+import { OptionField, OptionIntoList } from '@/types';
 import {
   CheckBadgeIcon,
   ExclamationTriangleIcon,
@@ -24,7 +25,7 @@ type SelectEmptyProps = {
   fieldId: string;
   isUpdatable: boolean;
   closePopover: () => void;
-  onSelectAdd: (option: Option) => void;
+  onSelectAdd: (option: OptionField) => void;
 };
 
 export const SelectEmpty = ({
@@ -49,7 +50,7 @@ export const SelectEmpty = ({
       console.log('response ::: ', response);
       setInsertDataResult(response);
       setShowResult(true);
-      response?.success && onSelectAdd(response.result as Option);
+      response?.success && onSelectAdd(response.result as OptionField);
     });
   };
 

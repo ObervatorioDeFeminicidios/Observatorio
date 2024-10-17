@@ -1,3 +1,5 @@
+import { TransformedObject } from "@/types";
+
 export const formData1: TransformedObject[] = [
   {
     id: 'violencia_asociada',

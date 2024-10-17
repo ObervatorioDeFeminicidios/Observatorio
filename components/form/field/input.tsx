@@ -6,6 +6,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { FieldProps } from '@/types';
 
 export const FieldInput = ({ formField, form }: FieldProps) => {
   return (

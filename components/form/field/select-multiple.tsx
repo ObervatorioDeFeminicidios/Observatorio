@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/form';
 import type { Option } from '@/components/ui/multiple-selector';
 import MultipleSelector from '@/components/ui/multiple-selector';
+import { FieldProps } from '@/types';
 
 export const FieldSelectMultiple = ({ formField, form }: FieldProps) => {
   let defaultOptions: Option[] = [];

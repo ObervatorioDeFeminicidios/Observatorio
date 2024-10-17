@@ -24,6 +24,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 import { FieldValues, useFormContext } from 'react-hook-form';
 import { SelectEmpty } from './select-empty';
+import { FieldProps, OptionField, SelectField, TransformedObject } from '@/types';
 
 const filterOptions = (
   formValues: FieldValues,
@@ -38,18 +39,18 @@ const filterOptions = (
   switch (formField.id) {
     case 'municipio':
       return formValues.cod_departamento
-        ? (formField.options as Option[]).filter(
+        ? (formField.options as OptionField[]).filter(
             (option) => option.codDepartamento === formValues.cod_departamento,
           )
         : formField.options;
     case 'postal':
       if (formValues.cod_departamento) {
-        return (formField.options as Option[]).filter(
+        return (formField.options as OptionField[]).filter(
           (option) => option.codDepartamento === formValues.cod_departamento,
         );
       }
       if (formValues.cod_municipio) {
-        return (formField.options as Option[]).filter(
+        return (formField.options as OptionField[]).filter(
           (option) => option.codMunicipio === formValues.cod_municipio,
         );
       }
@@ -77,7 +78,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
   const options = filterOptions(getValues(), formField);
 
   // Setting the selected/added option
-  const onSelectAdd = (option: Option) => {
+  const onSelectAdd = (option: OptionField) => {
     console.log('onSelectAdd option :: ', option);
     // Adding the new option to the options list
     const optionIsInOptions = options?.find(
@@ -162,7 +163,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
                 </CommandEmpty>
                 <CommandGroup>
                   <ScrollArea className="max-h-72 w-auto overflow-y-auto">
-                    {(options as Option[]).map((option, index) => (
+                    {(options as OptionField[]).map((option, index) => (
                       <CommandItem
                         key={option.value + '-' + index}
                         value={option.label}
