@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Register } from '@/lib/definitions';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
   flexRender,
@@ -18,12 +19,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import React from 'react';
-import { columns } from './columns';
-import { Register } from '@/lib/definitions';
-import { initialPagination } from './page';
+import { columns, initialPagination } from './columns';
 
 export function DataTable() {
-  const [pagination, setPagination] = React.useState<PaginationState>(initialPagination);
+  const [pagination, setPagination] =
+    React.useState<PaginationState>(initialPagination);
 
   const dataQuery = useQuery({
     queryKey: ['data', pagination],

@@ -4,11 +4,8 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-
-import { PaginationState } from '@tanstack/react-table';
+import { initialPagination } from './columns';
 import { DataTable } from './data-table';
-
-export const initialPagination: PaginationState = { pageIndex: 0, pageSize: 10 };
 
 export default async function History() {
   const queryClient = new QueryClient();

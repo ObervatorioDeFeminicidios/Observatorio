@@ -1,6 +1,6 @@
 'use server';
 
-import { initialPagination } from '@/app/dashboard/history/page';
+import { initialPagination } from '@/app/dashboard/history/columns';
 import { env } from '@/config/env';
 import {
   InsertDataResult,

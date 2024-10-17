@@ -1,7 +1,9 @@
 'use client';
 
 import { Register } from '@/lib/definitions';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
+
+export const initialPagination: PaginationState = { pageIndex: 0, pageSize: 10 };
 
 export const columns: ColumnDef<Register>[] = [
   { accessorKey: 'numero_violencia', header: 'Número' },
