@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FormStep } from './form-step';
 import { Navigation } from './navigation';
+import { Step } from '@/types';
 
 type RegistrationFormProps = {
   steps: Step[];

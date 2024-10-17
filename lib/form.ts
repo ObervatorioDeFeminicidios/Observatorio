@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { InsertDataResult } from './definitions';
+import { BaseFieldType, DataBaseField, DBResponse, OptionField, Step, TransformedObject } from '@/types';
 
 export const FIRST_TABLE = 'feminicidios_tentativas';
 export const SECOND_TABLE = 'feminicidios_violencia_asociada';
@@ -153,7 +154,7 @@ export function transformObject(fields: DataBaseField[]): TransformedObject[] {
     // Checking if the field id has the list of values -> cod_
     if (item.id.startsWith('cod_')) {
       const values = item?.options?.split(',');
-      let options: Option[] = [];
+      let options: OptionField[] = [];
 
       if (values) {
         // Matching the value with its corresponding label
