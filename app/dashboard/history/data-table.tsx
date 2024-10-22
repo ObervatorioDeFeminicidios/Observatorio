@@ -21,6 +21,7 @@ import {
 import React from 'react';
 import { columns, initialPagination } from './columns';
 import { useRouter } from 'next/navigation';
+import { API_ROUTES } from '@/app/api';
 
 export function DataTable() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export function DataTable() {
 
   // Handle row click to navigate to the dynamic route
   const handleRowClick = (rowId: number) => {
-    router.push(`/dashboard/registers/${rowId}`);
+    router.push(`${API_ROUTES.registers}/${rowId}`);
   };
 
   return (
