@@ -132,6 +132,7 @@ export type User = {
 export type OkPacket = {
   affectedRows: number;
   insertId: number;
+  changedRows: number;
   error?: string;
   associatedViolence?: OptionField;
 };

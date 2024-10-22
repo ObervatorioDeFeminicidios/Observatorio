@@ -462,3 +462,67 @@ export async function fetchRegisters(filters: HistoryFilters) {
     await conn.end();
   }
 }
+
+// Get a single register data
+export async function fetchRegister(id: string) {
+  noStore();
+
+  console.log('getRegisterData id ::: ', id)
+
+  if (!id) {
+    return {
+      success: false,
+      errors: 'El ID es requerido',
+    };
+  }
+
+  try {
+    // Start the transaction
+    await conn.query('START TRANSACTION');
+
+    // Query to obtain the record based on the id (numero_violencia)
+    const recordData = await conn.query<Register[]>(
+      queries.get.register(id),
+    );
+
+    // Query to obtain the associated violence records based on the id (numero_violencia)
+    const associatedViolenceData = await conn.query<any[]>(
+      queries.get.associatedViolences(id),
+    );
+
+    // If you're fetching from MySQL or another database, make sure it's plain data
+    const plainRecordData = recordData?.map((row) => ({
+      ...row,
+      fecha_violencia: (row['fecha_violencia'] as unknown as Date)?.toISOString()?.split('T')[0],
+    }));
+    const plainAssociatedViolenceData = associatedViolenceData?.map((row) => ({
+      value: row.cod_violencia_asociada.toString(),
+      label: row.violencia_asociada,
+    }));
+
+    // Return the data
+    return {
+      success: true,
+      results: { ...plainRecordData[0], violencia_asociada: plainAssociatedViolenceData } || {},
+    };
+  } catch (error) {
+    // Rollback the transaction on any error
+    await conn.query('ROLLBACK');
+
+    const errorMessage =
+      typeof error === 'string'
+        ? error
+        : error instanceof Error
+          ? error.message
+          : 'Error Unknown';
+
+    console.log('Database Error: ', errorMessage);
+    return {
+      success: false,
+      errors: 'Error al traer el registro de la base de datos',
+    };
+  } finally {
+    // Close the connection
+    await conn.end();
+  }
+}

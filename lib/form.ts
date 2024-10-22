@@ -219,6 +219,24 @@ export function compareByType(a: TransformedObject, b: TransformedObject) {
   }
 }
 
+// Helper function to have an object as a value-key pairs for SQL
+export function objectToSQLUpdate(data: Record<string, any>): string {
+  return Object.keys(data)
+    .filter((key) => data[key] !== undefined && data[key] !== null)
+    .map((key) => {
+      const value = data[key];
+
+      // If the value is a string, wrap it in quotes
+      if (typeof value === 'string') {
+        return `${key} = '${value.replace(/'/g, "''")}'`; // Escape single quotes
+      }
+
+      // For other types (numbers, booleans, etc.), just return the value
+      return `${key} = ${value}`;
+    })
+    .join(', ');
+}
+
 // Getting the latest id of a list to identify the next id to be inserted
 export function getLatestId(data: DBResponse): number {
   let latestId = null;

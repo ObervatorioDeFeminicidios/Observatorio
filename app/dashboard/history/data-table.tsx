@@ -20,17 +20,24 @@ import {
 } from '@tanstack/react-table';
 import React from 'react';
 import { columns, initialPagination } from './columns';
+import { useRouter } from 'next/navigation';
+import { API_ROUTES } from '@/app/api';
 
 export function DataTable() {
+  const router = useRouter();
+
+  // Adding the pagination with backend
   const [pagination, setPagination] =
     React.useState<PaginationState>(initialPagination);
 
+  // Fetching the registers
   const dataQuery = useQuery({
     queryKey: ['data', pagination],
     queryFn: () => fetchRegisters(pagination),
     placeholderData: keepPreviousData,
   });
 
+  // Setting up the table with the registers
   const table = useReactTable({
     data: (dataQuery.data?.results as Register[]) ?? [],
     columns,
@@ -44,7 +51,13 @@ export function DataTable() {
     debugTable: true,
   });
 
+  // Handling any errors
   if (dataQuery.error) return <div>Error: {dataQuery.error.message}</div>;
+
+  // Handle row click to navigate to the dynamic route
+  const handleRowClick = (rowId: number) => {
+    router.push(`${API_ROUTES.registers}/${rowId}`);
+  };
 
   return (
     <div>
@@ -77,8 +90,9 @@ export function DataTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  className="min-h-12 px-4 py-2 odd:bg-zinc-50 even:bg-gray-100
+                  className="min-h-12 px-4 py-2 odd:bg-zinc-50 even:bg-gray-100 cursor-pointer
                   "
+                  onClick={() => handleRowClick(row.original.numero_violencia)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
