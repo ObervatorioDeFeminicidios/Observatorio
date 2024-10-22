@@ -25,6 +25,7 @@ import {
 } from '../ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
+import { useParams } from 'next/navigation';
 
 type ConfirmationProps = {
   data: any;
@@ -32,6 +33,9 @@ type ConfirmationProps = {
 };
 
 export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
+  const params = useParams<{ id: string }>();
+  const isEditMode = !!params?.id;
+
   const [showResult, setShowResult] = React.useState(false);
   const [insertDataResult, setInsertDataResult] =
     React.useState<InsertDataResult>(INITAL_RESULT);
@@ -58,7 +62,7 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     <DrawerContent className="left-auto right-0 top-0 mt-0 h-screen w-[500px] rounded-none">
       <DrawerHeader>
         <DrawerTitle className="text-primary">
-          Registro de Feminicidio
+          {!isEditMode ? 'Registro de Feminicidio' : 'Actualización de Feminicidio'}
         </DrawerTitle>
         {!showResult && (
           <DrawerDescription className="text-secondary-foreground">
