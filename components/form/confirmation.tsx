@@ -11,6 +11,7 @@ import {
   CheckBadgeIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useTransition } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Badge } from '../ui/badge';
@@ -25,7 +26,6 @@ import {
 } from '../ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
-import { useParams } from 'next/navigation';
 
 type ConfirmationProps = {
   data: any;
@@ -33,6 +33,7 @@ type ConfirmationProps = {
 };
 
 export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
+  const router = useRouter();
   const params = useParams<{ id: string }>();
   const isEditMode = !!params?.id;
 
@@ -47,8 +48,8 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     const formData = getValues();
     console.log(formData);
     startTransition(async () => {
-      const response = await fetch(API_ROUTES.postRegister, {
-        method: 'POST',
+      const response = await fetch(API_ROUTES.register, {
+        method: !isEditMode ? 'POST' : 'PUT',
         body: JSON.stringify(formData),
       });
       const result: InsertDataResult = await response.json();
@@ -62,7 +63,9 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
     <DrawerContent className="left-auto right-0 top-0 mt-0 h-screen w-[500px] rounded-none">
       <DrawerHeader>
         <DrawerTitle className="text-primary">
-          {!isEditMode ? 'Registro de Feminicidio' : 'Actualización de Feminicidio'}
+          {!isEditMode
+            ? 'Registro de Feminicidio'
+            : 'Actualización de Feminicidio'}
         </DrawerTitle>
         {!showResult && (
           <DrawerDescription className="text-secondary-foreground">
@@ -86,7 +89,7 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
                       {titleCase(label)}
                     </span>
                     <span className="font-extralight">
-                      {data[label] !== '' ? data[label] : (<br></br>)}
+                      {data[label] !== '' ? data[label] : <br></br>}
                     </span>
                     <Separator />
                   </div>
@@ -100,20 +103,22 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
             <>
               <CheckBadgeIcon className="h-[150px] fill-primary" />
               <p className="text-md text-secondary-foreground`">
-                El registro ha sido insertado exitosamente!
+                El registro ha sido {!isEditMode ? 'insertado' : 'actualizado'}{' '}
+                exitosamente!
               </p>
               <Badge
                 variant="outline"
                 className="border-primary text-lg text-primary"
               >
-                {insertDataResult.insertId}
+                {!isEditMode ? insertDataResult.insertId : params.id}
               </Badge>
             </>
           ) : (
             <>
               <ExclamationTriangleIcon className="h-[150px] fill-destructive" />
               <p className="text-md text-destructive">
-                Ups - Un error ocurrió al insertar el registro!
+                Ups - Un error ocurrió al $
+                {!isEditMode ? 'insertar' : 'actualizar'} el registro!
               </p>
               <p className="text-sm text-secondary-foreground">
                 Por favor, intente más tarde o contacte al administrador.
@@ -148,6 +153,9 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
                 resetForm();
               }
               setShowResult(false);
+              if (isEditMode) {
+                router.push(API_ROUTES.history);
+              }
             }}
           >
             {!showResult ? 'Cancelar' : 'Cerrar'}
