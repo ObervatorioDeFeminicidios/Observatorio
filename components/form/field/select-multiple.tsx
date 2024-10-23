@@ -7,9 +7,16 @@ import {
 } from '@/components/ui/form';
 import type { Option } from '@/components/ui/multiple-selector';
 import MultipleSelector from '@/components/ui/multiple-selector';
+import { useFormStore } from '@/store/registration-form';
+import { FieldProps } from '@/types';
 
 export const FieldSelectMultiple = ({ formField, form }: FieldProps) => {
-  let defaultOptions: Option[] = [];
+  const { initialAssociatedViolences } = useFormStore();
+
+  let defaultOptions: Option[] = initialAssociatedViolences.map(associatedViolence => ({
+    value: associatedViolence.value.toString(),
+    label: associatedViolence.label,
+  }));
 
   if (formField.options) {
     defaultOptions = formField.options.map((option) => ({

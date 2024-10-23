@@ -1,3 +1,4 @@
+import { OptionField } from '@/types';
 import { z } from 'zod';
 import { create } from 'zustand';
 
@@ -17,6 +18,8 @@ interface FormState {
   updateFormSchemas: (formSchemas: FormSchemas) => void;
   formData: FormData;
   updateFormData: (newData: FormData) => void;
+  initialAssociatedViolences: OptionField[];
+  updateInitialAssociatedViolences: (associatedViolences: OptionField[]) => void;
   previousStep: number;
   currentStep: number;
   resetForm: () => void;
@@ -38,6 +41,11 @@ export const useFormStore = create<FormState>()((set) => ({
   updateFormData: (newData) =>
     set((state) => ({
       formData: { ...state.formData, ...newData },
+    })),
+  initialAssociatedViolences: [],
+  updateInitialAssociatedViolences: (associatedViolences) =>
+    set((state) => ({
+      initialAssociatedViolences: associatedViolences,
     })),
   previousStep: 0,
   currentStep: 0,

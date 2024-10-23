@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Drawer, DrawerTrigger } from '../ui/drawer';
 import { Confirmation } from './confirmation';
+import { useParams } from 'next/navigation';
 
 type NavigationProps = {
   totalSteps: number;
@@ -12,6 +13,9 @@ type NavigationProps = {
 };
 
 export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
+  const params = useParams<{ id: string }>();
+  const isEditMode = !!params?.id;
+
   const [open, setOpen] = React.useState(false);
   const {
     currentStep,
@@ -115,7 +119,7 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
               type="button"
               onClick={handleNextOnClick}
             >
-              Registrar
+              {!isEditMode ? 'Registrar' : 'Actualizar'}
             </Button>
           </DrawerTrigger>
           <Confirmation data={getValues()} setOpen={setOpen} />

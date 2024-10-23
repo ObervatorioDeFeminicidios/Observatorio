@@ -3,6 +3,7 @@
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useFormStore } from '@/store/registration-form';
 import { CurrentStep, NextStep, PreviousStep } from './step';
+import { Step } from '@/types';
 
 type StepProps = {
   steps: Step[];

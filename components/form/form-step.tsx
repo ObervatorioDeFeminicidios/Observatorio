@@ -1,3 +1,4 @@
+import { FieldProps, Step } from '@/types';
 import { FieldDate } from './field/date';
 import { FieldInput } from './field/input';
 import { FieldSelect } from './field/select';

@@ -1,4 +1,5 @@
-// Define the type of a register
+import { OptionField } from "@/types";
+
 interface AssociatedViolenceEntity {
   value: string;
   label: string;
@@ -131,14 +132,15 @@ export type User = {
 export type OkPacket = {
   affectedRows: number;
   insertId: number;
+  changedRows: number;
   error?: string;
-  associatedViolence?: Option;
+  associatedViolence?: OptionField;
 };
 
 // Define the type for the result of an individual associated violence insertion
 export interface ViolenceResult {
   error?: Error;
-  associatedViolence?: Option;
+  associatedViolence?: OptionField;
   affectedRows?: number;
   insertId?: number;
 }
@@ -151,9 +153,23 @@ export interface InsertDataResult {
     | string
     | null
     | Array<{
-        associatedViolence?: Option | null;
+        associatedViolence?: OptionField | null;
         error?: string | null;
       }>;
   result?: object;
   insertId?: number;
+}
+
+// Define the type for the paginated history registers
+export type TotalRecordsResult = {
+  totalRecords: number;
+}
+
+export type RegistersResult = {
+  success: boolean;
+  pageIndex: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+  results: Register[];
 }

@@ -1,7 +1,9 @@
 import { env } from '@/config/env';
+import { HistoryFilters } from '@/types';
 import { FieldValues } from 'react-hook-form';
 import mysql from 'serverless-mysql';
 import sql from 'sql-template-strings';
+import { objectToSQLUpdate } from './form';
 
 // Define the connection type
 type MySQLConnection = ReturnType<typeof mysql>;
@@ -280,15 +282,41 @@ export const queries = {
       ORDER BY cod_${table} DESC
       LIMIT 1
     `,
-    registers: sql`
+    registers: (filters: Partial<HistoryFilters & {offset: number}>) => sql`
       SELECT
         *
       FROM
         feminicidios_tentativas
       ORDER BY
         numero_violencia DESC
-      LIMIT 20;
+      OFFSET
+        ${filters.offset}
+      ROWS FETCH NEXT
+        ${filters.pageSize}
+      ROWS ONLY;
     `,
+    totalRegisters: sql`
+      SELECT
+        COUNT(*) as totalRecords
+      FROM
+        feminicidios_tentativas;
+    `,
+    register: (id: string) => sql`
+      SELECT
+        *
+      FROM
+        feminicidios_tentativas
+      WHERE
+        numero_violencia = ${id}
+    `,
+    associatedViolences: (id: string) => sql`
+      SELECT
+        *
+      FROM
+        feminicidios_violencia_asociada
+      WHERE
+        numero_violencia = ${id}
+    `
   },
   post: {
     registry: (table: string, data: FieldValues) => `
@@ -302,6 +330,14 @@ export const queries = {
     `,
   },
   put: {
+    registry: (table: string, id: number, data: FieldValues) => `
+      UPDATE
+        ${table}
+      SET
+        ${objectToSQLUpdate(data)}
+      WHERE
+        numero_violencia = ${id}
+    `,
     listOption: (table: string, id: number, value: string) => `
       INSERT INTO ${table} (
         cod_${table},
@@ -312,4 +348,12 @@ export const queries = {
       );
     `,
   },
+  delete: {
+    associatedViolences: (id: number) => `
+      DELETE FROM
+        feminicidios_violencia_asociada
+      WHERE
+        numero_violencia = ${id}
+    `
+  }
 };

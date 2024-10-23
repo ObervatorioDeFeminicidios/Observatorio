@@ -1,3 +1,4 @@
+import { Step } from '@/types';
 import { CheckIcon } from '@heroicons/react/24/solid';
 
 type StepProps = {
