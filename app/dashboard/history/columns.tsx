@@ -33,7 +33,11 @@ export function getColumns(
       cell: ({ row }) => (
         <Button
           variant="outline"
-          onClick={() => router.push(`${API_ROUTES.registers}/${row.getValue('numero_violencia')}`)}
+          onClick={() =>
+            router.push(
+              `${API_ROUTES.registers}/${row.getValue('numero_violencia')}`,
+            )
+          }
         >
           {row.getValue('numero_violencia')}
         </Button>
@@ -83,7 +87,7 @@ export function getColumns(
               linkArray.map((link, index) => (
                 <a
                   key={index}
-                  className="text-blue-600 hover:underline"
+                  className="whitespace-nowrap text-blue-600 hover:underline"
                   href={`https${link}`}
                   target="_blank"
                   rel="noopener noreferrer"
