@@ -293,6 +293,9 @@ export const queries = {
           ${filters.columnFilters?.find(filter => filter.id === 'numero_violencia')?.value} IS NULL OR numero_violencia LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'numero_violencia')?.value}, '%')
         )
         AND (
+          ${filters.columnFilters?.find(filter => filter.id === 'tipo_violencia')?.value} IS NULL OR tipo_violencia LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'tipo_violencia')?.value}, '%')
+        )
+        AND (
           ${filters.columnFilters?.find(filter => filter.id === 'nombre_victima')?.value} IS NULL OR nombre_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'nombre_victima')?.value}, '%')
         )
         AND (
@@ -332,6 +335,9 @@ export const queries = {
         1 = 1
         AND (
           ${filters.columnFilters?.find(filter => filter.id === 'numero_violencia')?.value} IS NULL OR numero_violencia LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'numero_violencia')?.value}, '%')
+        )
+        AND (
+          ${filters.columnFilters?.find(filter => filter.id === 'tipo_violencia')?.value} IS NULL OR tipo_violencia LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'tipo_violencia')?.value}, '%')
         )
         AND (
           ${filters.columnFilters?.find(filter => filter.id === 'nombre_victima')?.value} IS NULL OR nombre_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'nombre_victima')?.value}, '%')
