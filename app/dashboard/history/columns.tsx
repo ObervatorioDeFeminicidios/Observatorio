@@ -46,20 +46,28 @@ export const columns: CustomColumnDef<Register>[] = [
     accessorKey: 'link_noticia',
     header: 'Noticia',
     cell: ({ row }) => {
-      const newsLink: string = row.getValue('link_noticia');
+      const newsLinks: string = row.getValue('link_noticia');
 
-      if (!newsLink.startsWith('https')) {
-        return <span>{newsLink}</span>;
+      if (!newsLinks.startsWith('https')) {
+        return <span>{newsLinks}</span>;
       }
 
+      const linkArray = newsLinks.split('https').filter(Boolean);
+
       return (
-        <a
-          href={newsLink}
-          className="whitespace-nowrap text-blue-600 hover:underline"
-          target="_blank"
-        >
-          {newsLink}
-        </a>
+        <>
+          {linkArray.length > 0 && linkArray.map((link, index) => (
+            <a
+              key={index}
+              className="text-blue-600 hover:underline"
+              href={`https${link}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {`https${link}`}
+            </a>
+          ))}
+        </>
       );
     },
     meta: {
