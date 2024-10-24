@@ -23,7 +23,14 @@ import {
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { ColumnFilter } from './column-filter';
-import { columns, initialPagination } from './columns';
+import { columns, initialFilters } from './columns';
+
+const initialPagination: PaginationState = {
+  pageIndex: initialFilters.pageIndex,
+  pageSize: initialFilters.pageSize,
+};
+
+const initialColumnFilters: ColumnFiltersState = initialFilters.columnFilters;
 
 export function DataTable() {
   const router = useRouter();
@@ -33,9 +40,8 @@ export function DataTable() {
     React.useState<PaginationState>(initialPagination);
 
   // Adding filtering with backend
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  const [columnFilters, setColumnFilters] =
+    React.useState<ColumnFiltersState>(initialColumnFilters);
 
   // Fetching the registers
   const dataQuery = useQuery({
@@ -57,8 +63,14 @@ export function DataTable() {
       columnFilters,
     },
     onPaginationChange: setPagination,
-    onColumnFiltersChange: setColumnFilters,
-    debugTable: true,
+    onColumnFiltersChange: (updater) => {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: initialPagination.pageIndex,
+      }));
+      setColumnFilters(updater);
+    },
+    debugTable: false,
   });
 
   // Handling any errors
