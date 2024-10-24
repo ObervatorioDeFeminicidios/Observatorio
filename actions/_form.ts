@@ -1,6 +1,6 @@
 'use server';
 
-import { initialPagination } from '@/app/dashboard/history/columns';
+import { initialFilters } from '@/app/dashboard/history/columns';
 import { env } from '@/config/env';
 import {
   InsertDataResult,
@@ -23,7 +23,7 @@ import { capitalizeEachWord } from '@/lib/utils';
 import {
   DataBaseField,
   DBResponse,
-  HistoryFilters,
+  TableFilters,
   MunicipalityPostalCodeType,
   OptionField,
   OptionIntoList,
@@ -402,25 +402,27 @@ export async function putListOption(data: OptionIntoList) {
 }
 
 // Getting the data registered in the database with filters
-export async function fetchRegisters(filters: HistoryFilters) {
+export async function fetchRegisters(filters: TableFilters) {
   noStore();
 
   const {
-    pageIndex = initialPagination.pageIndex,
-    pageSize = initialPagination.pageSize,
+    pageIndex = initialFilters.pageIndex,
+    pageSize = initialFilters.pageSize,
+    columnFilters,
   } = filters;
 
   try {
     // Start the transaction
     await conn.query('START TRANSACTION');
 
+    const offset = pageIndex * pageSize;
+
     // Calculate the pagination info
     const totalRecordsResult = await conn.query<TotalRecordsResult[]>(
-      queries.get.totalRegisters,
+      queries.get.totalRegisters({ ...filters, offset }),
     );
-    const totalRecords = totalRecordsResult[0].totalRecords;
+    const totalRecords = totalRecordsResult[0]?.totalRecords;
     const totalPages = Math.ceil(totalRecords / pageSize);
-    const offset = pageIndex * pageSize;
 
     // Get the registers from the database
     const paginatedRegistersData = await conn.query<Register[]>(
@@ -439,6 +441,7 @@ export async function fetchRegisters(filters: HistoryFilters) {
       pageSize,
       totalRecords,
       totalPages,
+      columnFilters,
       results: plainPaginatedRegistersData || [],
     };
   } catch (error) {
@@ -503,7 +506,10 @@ export async function fetchRegister(id: string) {
     // Return the data
     return {
       success: true,
-      results: { ...plainRecordData[0], violencia_asociada: plainAssociatedViolenceData } || {},
+      results: {
+        ...plainRecordData[0],
+        violencia_asociada: plainAssociatedViolenceData
+      },
     };
   } catch (error) {
     // Rollback the transaction on any error
