@@ -319,6 +319,12 @@ export const queries = {
         AND (
           ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value} IS NULL OR metodo_eliminacion LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value}, '%')
         )
+        AND (
+          ${filters.columnFilters?.find(filter => filter.id === 'lugar_encuentra_cadaver')?.value} IS NULL OR lugar_encuentra_cadaver LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'lugar_encuentra_cadaver')?.value}, '%')
+        )
+        AND (
+          ${filters.columnFilters?.find(filter => filter.id === 'nombre_sujeto_feminicida')?.value} IS NULL OR nombre_sujeto_feminicida LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'nombre_sujeto_feminicida')?.value}, '%')
+        )
       ORDER BY
         numero_violencia DESC
       OFFSET
@@ -362,6 +368,12 @@ export const queries = {
         )
         AND (
           ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value} IS NULL OR metodo_eliminacion LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value}, '%')
+        )
+        AND (
+          ${filters.columnFilters?.find(filter => filter.id === 'lugar_encuentra_cadaver')?.value} IS NULL OR lugar_encuentra_cadaver LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'lugar_encuentra_cadaver')?.value}, '%')
+        )
+        AND (
+          ${filters.columnFilters?.find(filter => filter.id === 'nombre_sujeto_feminicida')?.value} IS NULL OR nombre_sujeto_feminicida LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'nombre_sujeto_feminicida')?.value}, '%')
         );
     `,
     register: (id: string) => sql`
