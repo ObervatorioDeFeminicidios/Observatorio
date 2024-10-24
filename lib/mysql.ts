@@ -311,7 +311,7 @@ export const queries = {
           ${filters.columnFilters?.find(filter => filter.id === 'identidad_etnica')?.value} IS NULL OR identidad_etnica LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'identidad_etnica')?.value}, '%')
         )
         AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica')?.value} IS NULL OR actividad_economica_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica')?.value}, '%')
+          ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica_victima')?.value} IS NULL OR actividad_economica_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica_victima')?.value}, '%')
         )
         AND (
           ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value} IS NULL OR metodo_eliminacion LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value}, '%')
@@ -352,7 +352,7 @@ export const queries = {
           ${filters.columnFilters?.find(filter => filter.id === 'identidad_etnica')?.value} IS NULL OR identidad_etnica LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'identidad_etnica')?.value}, '%')
         )
         AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica')?.value} IS NULL OR actividad_economica_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica')?.value}, '%')
+          ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica_victima')?.value} IS NULL OR actividad_economica_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica_victima')?.value}, '%')
         )
         AND (
           ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value} IS NULL OR metodo_eliminacion LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value}, '%')
