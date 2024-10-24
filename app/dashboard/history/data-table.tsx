@@ -1,7 +1,6 @@
 'use client';
 
 import { fetchRegisters } from '@/actions/_form';
-import { API_ROUTES } from '@/app/api';
 import { DataTablePagination } from '@/components/ui/data-table/pagination';
 import {
   Table,
@@ -23,7 +22,7 @@ import {
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { ColumnFilter } from './column-filter';
-import { columns, initialFilters } from './columns';
+import { getColumns, initialFilters } from './columns';
 
 const initialPagination: PaginationState = {
   pageIndex: initialFilters.pageIndex,
@@ -49,6 +48,9 @@ export function DataTable() {
     queryFn: () => fetchRegisters({ ...pagination, columnFilters }),
     placeholderData: keepPreviousData,
   });
+
+  // Getting the columns structure
+  const columns = React.useMemo(() => getColumns(router), []);
 
   // Setting up the table with the registers
   const table = useReactTable({
@@ -76,13 +78,8 @@ export function DataTable() {
   // Handling any errors
   if (dataQuery.error) return <div>Error: {dataQuery.error.message}</div>;
 
-  // Handle row click to navigate to the dynamic route
-  const handleRowClick = (rowId: number) => {
-    router.push(`${API_ROUTES.registers}/${rowId}`);
-  };
-
   return (
-    <div className='h-full flex flex-col justify-between'>
+    <div className="flex h-full flex-col justify-between">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -116,25 +113,18 @@ export function DataTable() {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="min-h-full cursor-pointer px-6 py-2"
-                onClick={() => handleRowClick(row.original.numero_violencia)}
+                className="min-h-full px-6 py-2"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="h-24"
-              >
+              <TableCell colSpan={columns.length} className="h-52">
                 No se encontraron resultados
               </TableCell>
             </TableRow>
