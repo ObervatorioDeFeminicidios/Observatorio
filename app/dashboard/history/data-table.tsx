@@ -1,6 +1,7 @@
 'use client';
 
 import { fetchRegisters } from '@/actions/_form';
+import { API_ROUTES } from '@/app/api';
 import { DataTablePagination } from '@/components/ui/data-table/pagination';
 import {
   Table,
@@ -13,15 +14,16 @@ import {
 import { Register } from '@/lib/definitions';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   PaginationState,
   useReactTable,
 } from '@tanstack/react-table';
-import React from 'react';
-import { columns, initialPagination } from './columns';
 import { useRouter } from 'next/navigation';
-import { API_ROUTES } from '@/app/api';
+import React from 'react';
+import { ColumnFilter } from './column-filter';
+import { columns, initialPagination } from './columns';
 
 export function DataTable() {
   const router = useRouter();
@@ -30,10 +32,15 @@ export function DataTable() {
   const [pagination, setPagination] =
     React.useState<PaginationState>(initialPagination);
 
+  // Adding filtering with backend
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
   // Fetching the registers
   const dataQuery = useQuery({
-    queryKey: ['data', pagination],
-    queryFn: () => fetchRegisters(pagination),
+    queryKey: ['data', pagination, columnFilters],
+    queryFn: () => fetchRegisters({ ...pagination, columnFilters }),
     placeholderData: keepPreviousData,
   });
 
@@ -42,12 +49,15 @@ export function DataTable() {
     data: (dataQuery.data?.results as Register[]) ?? [],
     columns,
     rowCount: dataQuery.data?.totalRecords,
-    state: {
-      pagination,
-    },
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    manualFiltering: true,
+    state: {
+      pagination,
+      columnFilters,
+    },
+    onPaginationChange: setPagination,
+    onColumnFiltersChange: setColumnFilters,
     debugTable: true,
   });
 
@@ -78,6 +88,11 @@ export function DataTable() {
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
+                      {header.column.getCanFilter() ? (
+                        <div>
+                          <ColumnFilter column={header.column} />
+                        </div>
+                      ) : null}
                     </TableHead>
                   );
                 })}
@@ -90,7 +105,7 @@ export function DataTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  className="min-h-12 px-4 py-2 odd:bg-zinc-50 even:bg-gray-100 cursor-pointer
+                  className="min-h-12 cursor-pointer px-4 py-2 odd:bg-zinc-50 even:bg-gray-100
                   "
                   onClick={() => handleRowClick(row.original.numero_violencia)}
                 >

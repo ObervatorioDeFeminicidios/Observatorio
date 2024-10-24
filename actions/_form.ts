@@ -408,19 +408,21 @@ export async function fetchRegisters(filters: HistoryFilters) {
   const {
     pageIndex = initialPagination.pageIndex,
     pageSize = initialPagination.pageSize,
+    columnFilters,
   } = filters;
 
   try {
     // Start the transaction
     await conn.query('START TRANSACTION');
 
+    const offset = pageIndex * pageSize;
+
     // Calculate the pagination info
     const totalRecordsResult = await conn.query<TotalRecordsResult[]>(
-      queries.get.totalRegisters,
+      queries.get.totalRegisters({ ...filters, offset }),
     );
-    const totalRecords = totalRecordsResult[0].totalRecords;
+    const totalRecords = totalRecordsResult[0]?.totalRecords;
     const totalPages = Math.ceil(totalRecords / pageSize);
-    const offset = pageIndex * pageSize;
 
     // Get the registers from the database
     const paginatedRegistersData = await conn.query<Register[]>(
@@ -439,6 +441,7 @@ export async function fetchRegisters(filters: HistoryFilters) {
       pageSize,
       totalRecords,
       totalPages,
+      columnFilters,
       results: plainPaginatedRegistersData || [],
     };
   } catch (error) {
@@ -503,7 +506,10 @@ export async function fetchRegister(id: string) {
     // Return the data
     return {
       success: true,
-      results: { ...plainRecordData[0], violencia_asociada: plainAssociatedViolenceData } || {},
+      results: {
+        ...plainRecordData[0],
+        violencia_asociada: plainAssociatedViolenceData
+      },
     };
   } catch (error) {
     // Rollback the transaction on any error
