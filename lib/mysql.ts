@@ -1,5 +1,5 @@
 import { env } from '@/config/env';
-import { HistoryFilters } from '@/types';
+import { TableFilters } from '@/types';
 import { FieldValues } from 'react-hook-form';
 import mysql from 'serverless-mysql';
 import sql from 'sql-template-strings';
@@ -282,7 +282,7 @@ export const queries = {
       ORDER BY cod_${table} DESC
       LIMIT 1
     `,
-    registers: (filters: Partial<HistoryFilters & {offset: number}>) => sql`
+    registers: (filters: Partial<TableFilters & {offset: number}>) => sql`
       SELECT
         *
       FROM
@@ -323,7 +323,7 @@ export const queries = {
       FETCH NEXT
         ${filters.pageSize} ROWS ONLY;
     `,
-    totalRegisters: (filters: Partial<HistoryFilters & {offset: number}>) => sql`
+    totalRegisters: (filters: Partial<TableFilters & {offset: number}>) => sql`
       SELECT
         COUNT (*) as totalRecords
       FROM

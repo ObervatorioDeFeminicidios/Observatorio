@@ -73,7 +73,6 @@ type FieldProps = {
 
 type DBResponse = { [key: string]: string | number };
 
-// History types
-export type HistoryFilters = Partial<PaginationState> & {
+export type TableFilters = PaginationState & {
   columnFilters: ColumnFiltersState
 };

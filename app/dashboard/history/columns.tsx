@@ -1,7 +1,8 @@
 'use client';
 
 import { Register } from '@/lib/definitions';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { TableFilters } from '@/types';
+import { ColumnDef } from '@tanstack/react-table';
 
 // Extend the ColumnMeta to include the filterVariant property
 export type CustomColumnMeta = {
@@ -13,7 +14,11 @@ type CustomColumnDef<TData> = ColumnDef<TData, unknown> & {
   meta?: CustomColumnMeta;
 };
 
-export const initialPagination: PaginationState = { pageIndex: 0, pageSize: 10 };
+export const initialFilters: TableFilters = {
+  pageIndex: 0,
+  pageSize: 10,
+  columnFilters: [],
+};
 
 export const columns: CustomColumnDef<Register>[] = [
   { accessorKey: 'numero_violencia', header: 'Número' },
@@ -47,7 +52,7 @@ export const columns: CustomColumnDef<Register>[] = [
       return (
         <a
           href={newsLink}
-          className="text-blue-600 hover:underline whitespace-nowrap"
+          className="whitespace-nowrap text-blue-600 hover:underline"
           target="_blank"
         >
           {newsLink}

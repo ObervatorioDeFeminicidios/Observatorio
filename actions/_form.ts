@@ -1,6 +1,6 @@
 'use server';
 
-import { initialPagination } from '@/app/dashboard/history/columns';
+import { initialFilters } from '@/app/dashboard/history/columns';
 import { env } from '@/config/env';
 import {
   InsertDataResult,
@@ -23,7 +23,7 @@ import { capitalizeEachWord } from '@/lib/utils';
 import {
   DataBaseField,
   DBResponse,
-  HistoryFilters,
+  TableFilters,
   MunicipalityPostalCodeType,
   OptionField,
   OptionIntoList,
@@ -402,12 +402,12 @@ export async function putListOption(data: OptionIntoList) {
 }
 
 // Getting the data registered in the database with filters
-export async function fetchRegisters(filters: HistoryFilters) {
+export async function fetchRegisters(filters: TableFilters) {
   noStore();
 
   const {
-    pageIndex = initialPagination.pageIndex,
-    pageSize = initialPagination.pageSize,
+    pageIndex = initialFilters.pageIndex,
+    pageSize = initialFilters.pageSize,
     columnFilters,
   } = filters;
 
