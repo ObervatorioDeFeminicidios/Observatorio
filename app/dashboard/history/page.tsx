@@ -18,10 +18,10 @@ export default async function History() {
   });
 
   return (
-    <div className="container mx-auto py-2">
+    <section className="container mx-auto h-full py-2">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <DataTable />
       </HydrationBoundary>
-    </div>
+    </section>
   );
 }
