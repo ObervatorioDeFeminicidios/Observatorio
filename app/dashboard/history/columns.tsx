@@ -6,7 +6,7 @@ import { ColumnDef } from '@tanstack/react-table';
 
 // Extend the ColumnMeta to include the filterVariant property
 export type CustomColumnMeta = {
-  filterVariant?: 'range' | 'select' | 'text';
+  filterVariant?: 'range' | 'select' | 'text' | 'none';
 };
 
 // Extend the ColumnDef to include the CustomColumnMeta
@@ -27,6 +27,9 @@ export const columns: CustomColumnDef<Register>[] = [
     header: 'Fecha Violencia',
     cell: ({ row }) =>
       (row.getValue('fecha_violencia') as Date)?.toISOString()?.split('T')[0],
+    meta: {
+      filterVariant: 'none'
+    }
   },
   { accessorKey: 'tipo_violencia', header: 'Tipo Violencia' },
   { accessorKey: 'nombre_victima', header: 'Nombre Víctima' },
@@ -59,5 +62,8 @@ export const columns: CustomColumnDef<Register>[] = [
         </a>
       );
     },
+    meta: {
+      filterVariant: 'none'
+    }
   },
 ];

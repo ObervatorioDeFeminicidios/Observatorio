@@ -8,6 +8,8 @@ export function ColumnFilter({ column }: { column: Column<any, unknown> }) {
     filterVariant?: CustomColumnMeta['filterVariant'];
   };
 
+  if (filterVariant === 'none') return null;
+
   return filterVariant === 'range' ? (
     <div>
       <div className="flex space-x-2">
