@@ -1,4 +1,4 @@
-import { PaginationState } from '@tanstack/react-table';
+import { PaginationState, ColumnFiltersState } from '@tanstack/react-table';
 
 type BaseField = {
   id: string;
@@ -74,4 +74,6 @@ type FieldProps = {
 type DBResponse = { [key: string]: string | number };
 
 // History types
-export type HistoryFilters = Partial<PaginationState>;
+export type HistoryFilters = Partial<PaginationState> & {
+  columnFilters: ColumnFiltersState
+};

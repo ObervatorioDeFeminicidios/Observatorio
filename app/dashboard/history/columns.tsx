@@ -3,9 +3,19 @@
 import { Register } from '@/lib/definitions';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 
+// Extend the ColumnMeta to include the filterVariant property
+export type CustomColumnMeta = {
+  filterVariant?: 'range' | 'select' | 'text';
+};
+
+// Extend the ColumnDef to include the CustomColumnMeta
+type CustomColumnDef<TData> = ColumnDef<TData, unknown> & {
+  meta?: CustomColumnMeta;
+};
+
 export const initialPagination: PaginationState = { pageIndex: 0, pageSize: 10 };
 
-export const columns: ColumnDef<Register>[] = [
+export const columns: CustomColumnDef<Register>[] = [
   { accessorKey: 'numero_violencia', header: 'Número' },
   {
     accessorKey: 'fecha_violencia',
