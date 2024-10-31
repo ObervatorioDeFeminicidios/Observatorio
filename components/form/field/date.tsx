@@ -18,11 +18,30 @@ import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import {
+  ControllerRenderProps,
+  FieldValues,
+  useFormContext,
+} from 'react-hook-form';
 
 export const FieldDate = ({ formField, form }: FieldProps) => {
   const [open, setOpen] = React.useState(false);
   const { setValue } = useFormContext();
+
+  const handleOnSelect = (
+    value: Date | undefined,
+    field: ControllerRenderProps<FieldValues, string>,
+  ) => {
+    const formattedValue = value && format(value, 'yyyy-MM-dd');
+    field.onChange(value);
+    if (formField.id === 'fecha_violencia') {
+      setValue('fecha_violencia', formattedValue);
+      setValue('fecha_en_prensa', formattedValue);
+      setValue('ano', Number(formattedValue?.split('-')[0]));
+      setValue('mes', Number(formattedValue?.split('-')[1]));
+    }
+    setOpen(false);
+  };
 
   return (
     <FormField
@@ -53,16 +72,7 @@ export const FieldDate = ({ formField, form }: FieldProps) => {
                 mode="single"
                 locale={es}
                 selected={field.value}
-                onSelect={(value) => {
-                  const formattedValue = value && format(value, 'yyyy-MM-dd');
-                  field.onChange(value);
-                  if (formField.id === 'fecha_violencia') {
-                    setValue('fecha_violencia', formattedValue);
-                    setValue('ano', Number(formattedValue?.split('-')[0]));
-                    setValue('mes', Number(formattedValue?.split('-')[1]));
-                  }
-                  setOpen(false);
-                }}
+                onSelect={(value) => handleOnSelect(value, field)}
                 disabled={(date) =>
                   date > new Date() || date < new Date('1900-01-01')
                 }
