@@ -5,12 +5,6 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Drawer, DrawerTrigger } from '../ui/drawer';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/tooltip';
 import { Confirmation } from './confirmation';
 
 type NavigationProps = {
@@ -119,29 +113,15 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
       ) : (
         <Drawer direction="right" open={open}>
           <DrawerTrigger asChild>
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Button
-                    variant="outline"
-                    className="border-primary text-primary"
-                    type="button"
-                    onClick={handleNextOnClick}
-                    disabled={isEditMode && !formState.isDirty}
-                  >
-                    {isEditMode ? 'Actualizar' : 'Registrar'}
-                  </Button>
-                </TooltipTrigger>
-                {isEditMode && !formState.isDirty && (
-                  <TooltipContent className="max-w-60">
-                    <p className="text-gray-50">
-                      Modifica cualquier campo del formulario para actualizar el
-                      registro
-                    </p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+            <Button
+              variant="outline"
+              className="border-primary text-primary"
+              type="button"
+              onClick={handleNextOnClick}
+              disabled={isEditMode && !formState.isDirty}
+            >
+              {isEditMode ? 'Actualizar' : 'Registrar'}
+            </Button>
           </DrawerTrigger>
           <Confirmation data={getValues()} setOpen={setOpen} />
         </Drawer>
