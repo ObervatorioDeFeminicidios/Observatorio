@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { useFormStore, useIsLastStep } from '@/store/registration-form';
+import { useParams } from 'next/navigation';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Drawer, DrawerTrigger } from '../ui/drawer';
 import { Confirmation } from './confirmation';
-import { useParams } from 'next/navigation';
 
 type NavigationProps = {
   totalSteps: number;
@@ -25,7 +25,7 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
     updateFormData,
   } = useFormStore();
   const isLastStep = useIsLastStep();
-  const { getValues, setError, clearErrors } = useFormContext();
+  const { getValues, setError, clearErrors, formState } = useFormContext();
 
   // Validate the current form data against the zod schema and set the errors
   const validateSchema = (schema: z.Schema) => {
@@ -118,8 +118,9 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
               className="border-primary text-primary"
               type="button"
               onClick={handleNextOnClick}
+              disabled={isEditMode && !formState.isDirty}
             >
-              {!isEditMode ? 'Registrar' : 'Actualizar'}
+              {isEditMode ? 'Actualizar' : 'Registrar'}
             </Button>
           </DrawerTrigger>
           <Confirmation data={getValues()} setOpen={setOpen} />
