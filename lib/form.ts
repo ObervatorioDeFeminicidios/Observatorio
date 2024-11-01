@@ -233,6 +233,52 @@ export function compareByType(a: TransformedObject, b: TransformedObject) {
   }
 }
 
+export function reorganizeData(fields: TransformedObject[]): TransformedObject[] {
+  const newFieldsOrder = [
+    {
+      id: 'fuente',
+      position: 2,
+    },
+    {
+      id: 'hipotesis',
+      position: 3,
+    },
+    {
+      id: 'desaparecida',
+      position: 4,
+    },
+    {
+      id: 'link_noticia',
+      position: 5,
+    },
+    {
+      id: 'titular',
+      position: 6,
+    },
+    {
+      id: 'descripcion_informacion_noticia',
+      position: 7,
+    },
+    {
+      id: 'causal_atribuido_feminicidio',
+      position: 8,
+    },
+  ]
+
+  newFieldsOrder.forEach(newFieldOrder => {
+    // Find the index of the new field order
+    const index = fields.findIndex(item => item.id === newFieldOrder.id);
+
+    // Remove the item and store it in a variable
+    const [field] = fields.splice(index, 1);
+
+    // Insert the field item at the new index
+    fields.splice(newFieldOrder.position - 1, 0, field);
+  })
+
+  return fields;
+}
+
 // Helper function to have an object as a value-key pairs for SQL
 export function objectToSQLUpdate(data: Record<string, any>): string {
   return Object.keys(data)

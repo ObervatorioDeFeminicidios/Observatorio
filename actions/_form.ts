@@ -14,6 +14,7 @@ import {
   getLatestId,
   getSchema,
   mutateRawData,
+  reorganizeData,
   SECOND_TABLE,
   transformObject,
 } from '@/lib/form';
@@ -135,7 +136,7 @@ export async function getFormData() {
       {
         id: 4,
         name: 'Información Adicional',
-        fields: stepFour.sort(compareByType),
+        fields: reorganizeData(stepFour.sort(compareByType)),
       },
     ];
 
