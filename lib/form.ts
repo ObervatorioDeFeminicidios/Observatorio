@@ -1,6 +1,13 @@
+import {
+  BaseFieldType,
+  DataBaseField,
+  DBResponse,
+  OptionField,
+  Step,
+  TransformedObject,
+} from '@/types';
 import { z } from 'zod';
 import { InsertDataResult } from './definitions';
-import { BaseFieldType, DataBaseField, DBResponse, OptionField, Step, TransformedObject } from '@/types';
 
 export const FIRST_TABLE = 'feminicidios_tentativas';
 export const SECOND_TABLE = 'feminicidios_violencia_asociada';
@@ -42,21 +49,17 @@ const setFieldSchema = (schema: ISchema, field: TransformedObject) => {
         ? z
             .union([
               arraySchema,
-              z
-                .string()
-                .refine(() => false, {
-                  message: `Debe elegir una opción para ${field.label}`,
-                }),
+              z.string().refine(() => false, {
+                message: `Debe elegir una opción para ${field.label}`,
+              }),
             ])
             .optional()
         : z
             .union([
               arraySchema,
-              z
-                .string()
-                .refine(() => false, {
-                  message: `Debe elegir una opción para ${field.label}`,
-                }),
+              z.string().refine(() => false, {
+                message: `Debe elegir una opción para ${field.label}`,
+              }),
             ])
             .refine((value) => Array.isArray(value), {
               message: `Debe elegir una opción para ${field.label}`,
@@ -112,18 +115,29 @@ export function getSchema(steps: Step[]) {
 
 // Getting the default values of the form fields
 export function getDefaultValues(steps: Step[]) {
+  const predifenedIds = [
+    {
+      id: 'alias_sujeto_feminicida',
+      value: 'Sin información',
+    },
+    {
+      id: 'nombre_sujeto_feminicida',
+      value: 'Sin información',
+    },
+    {
+      id: 'edad_sujeto_feminicida',
+      value: 'Sin información',
+    },
+    {
+      id: 'fuente',
+      value: 'Prensa',
+    },
+  ];
+
   return steps.reduce((values: { [key: string]: string }, step) => {
     step.fields.forEach((field) => {
-      const predifenedIds = [
-        'alias_sujeto_feminicida',
-        'nombre_sujeto_feminicida',
-        'edad_sujeto_feminicida',
-      ];
-      if (predifenedIds.includes(field.id)) {
-        values[field.id] = 'Sin información';
-      } else {
-        values[field.id] = '';
-      }
+      const match = predifenedIds.find((predifenedId) => predifenedId.id === field.id);
+      values[field.id] = match ? match.value : '';
     });
     return values;
   }, {});
