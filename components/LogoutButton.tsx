@@ -1,12 +1,15 @@
 'use client';
 
 import { handleSignOut } from '@/actions/_auth';
+import { API_ROUTES } from '@/app/api';
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/navigation';
 import React, { FormEvent } from 'react';
 import { Button } from './ui/button';
 
 export const LogoutButton = () => {
   const [pending, setPending] = React.useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,6 +21,7 @@ export const LogoutButton = () => {
       console.error('Sign out failed', error);
     } finally {
       setPending(false);
+      router.push(API_ROUTES.login);
     }
   };
 

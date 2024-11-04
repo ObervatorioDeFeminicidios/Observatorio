@@ -1,6 +1,7 @@
 'use client';
 
 import { authenticate } from '@/actions/_auth';
+import { API_ROUTES } from '@/app/api';
 import { Button } from '@/components/ui/button';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import {
@@ -8,10 +9,19 @@ import {
   ExclamationCircleIcon,
   KeyIcon,
 } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 
 export default function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  const router = useRouter();
+  const [errorMessage, dispatch] = useFormState(
+    async (prevState: string | undefined, formData: FormData) => {
+      const error = await authenticate(prevState, formData);
+      if (!error) router.push(API_ROUTES.registration);
+      return error;
+    },
+    undefined,
+  );
 
   return (
     <form action={dispatch} className="w-full space-y-3">
