@@ -125,7 +125,9 @@ export function DataTable() {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-52">
-                No se encontraron resultados
+                {dataQuery.isLoading
+                  ? 'Cargando...'
+                  : 'No se encontraron resultados'}
               </TableCell>
             </TableRow>
           )}

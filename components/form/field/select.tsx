@@ -20,11 +20,16 @@ import {
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import {
+  FieldProps,
+  OptionField,
+  SelectField,
+  TransformedObject,
+} from '@/types';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 import { FieldValues, useFormContext } from 'react-hook-form';
 import { SelectEmpty } from './select-empty';
-import { FieldProps, OptionField, SelectField, TransformedObject } from '@/types';
 
 const filterOptions = (
   formValues: FieldValues,
@@ -65,8 +70,8 @@ const resetDependentFields = (
   dependentFields: string[],
 ) => {
   dependentFields.forEach((dependentField) => {
-    form.setValue(dependentField, '');
-    form.setValue(`cod_${dependentField}`, '');
+    form.setValue(dependentField, '', { shouldDirty: true });
+    form.setValue(`cod_${dependentField}`, '', { shouldDirty: true });
   });
 };
 
@@ -87,12 +92,13 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
     if (!optionIsInOptions) options?.push(option);
 
     // Setting the new selected/added option
-    form.setValue(formField.id, option.label);
+    form.setValue(formField.id, option.label, { shouldDirty: true });
     switch (formField.id) {
       case 'departamento':
         form.setValue(
           `cod_${formField.id}`,
           (option.value + '').padStart(2, '0'),
+          { shouldDirty: true },
         );
         // Reseting the minicipality and postal fields
         resetDependentFields(form, ['municipio', 'comuna', 'postal']);
@@ -101,6 +107,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
         form.setValue(
           `cod_${formField.id}`,
           (option.value + '').padStart(3, '0'),
+          { shouldDirty: true },
         );
         // Reseting the postal field
         resetDependentFields(form, ['comuna', 'postal']);
@@ -109,10 +116,13 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
         form.setValue(
           `cod_${formField.id}`,
           (option.value + '').padStart(6, '0'),
+          { shouldDirty: true },
         );
         break;
       default:
-        form.setValue(`cod_${formField.id}`, option.value);
+        form.setValue(`cod_${formField.id}`, option.value, {
+          shouldDirty: true,
+        });
         break;
     }
     console.log(form.getValues());

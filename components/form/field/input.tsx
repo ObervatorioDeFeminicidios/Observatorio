@@ -26,7 +26,7 @@ export const FieldInput = ({
     );
 
     if (field.name === 'direccion_vivienda_victima') {
-      form.setValue(`direccion_hecho`, e.target.value);
+      form.setValue(`direccion_hecho`, e.target.value, { shouldDirty: true });
     }
   };
 
