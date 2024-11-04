@@ -67,6 +67,8 @@ type Step = {
 };
 
 type FieldProps = {
+  stepIndex?: number;
+  formIndex?: number;
   formField: TransformedObject;
   form: UseFormReturn<FieldValues, any, undefined>;
 };

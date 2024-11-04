@@ -10,11 +10,21 @@ type FormStepProps = {
 };
 
 export const FormStep = ({ step, form }: FormStepProps) => {
-  return step.fields.map((formField) =>
+  return step.fields.map((formField, index) =>
     formField.type === 'text' || formField.type === 'int' ? (
-      <FieldInput key={formField.id} formField={formField} form={form} />
+      <FieldInput
+        key={formField.id}
+        stepIndex={step.id}
+        formField={formField}
+        formIndex={index}
+        form={form}
+      />
     ) : formField.type === 'date' ? (
-      <FieldDate key={formField.id} formField={formField} form={form} />
+      <FieldDate
+        key={formField.id}
+        formField={formField}
+        form={form}
+      />
     ) : formField.type === 'select-multiple' ? (
       <FieldSelectMultiple
         key={formField.id}
@@ -22,7 +32,11 @@ export const FormStep = ({ step, form }: FormStepProps) => {
         form={form}
       />
     ) : (
-      <FieldSelect key={formField.id} formField={formField} form={form} />
+      <FieldSelect
+        key={formField.id}
+        formField={formField}
+        form={form}
+      />
     ),
   );
 };
