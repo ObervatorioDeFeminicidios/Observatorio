@@ -91,6 +91,8 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
     handlePreviousStep();
   };
 
+  console.log('Navigation formState.isDirty ::: ', formState.isDirty);
+
   return (
     <div className="flex justify-end gap-4">
       <Button
@@ -118,7 +120,7 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
               className="border-primary text-primary"
               type="button"
               onClick={handleNextOnClick}
-              disabled={isEditMode && !formState.isDirty}
+              // disabled={isEditMode && !formState.isDirty}
             >
               {isEditMode ? 'Actualizar' : 'Registrar'}
             </Button>

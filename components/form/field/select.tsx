@@ -84,7 +84,9 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
 
   // Setting the selected/added option
   const onSelectAdd = (option: OptionField) => {
-    console.log('onSelectAdd option :: ', option);
+    console.log('Select onSelectAdd formField.id :: ', formField.id);
+    console.log('Select onSelectAdd option :: ', option);
+
     // Adding the new option to the options list
     const optionIsInOptions = options?.find(
       (item) => item.value === option.value,
@@ -120,12 +122,14 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
         );
         break;
       default:
-        form.setValue(`cod_${formField.id}`, option.value, {
-          shouldDirty: true,
-        });
+        form.setValue(
+          `cod_${formField.id}`,
+          option.value,
+          { shouldDirty: true }
+        );
         break;
     }
-    console.log(form.getValues());
+    console.log('Select onSelectAdd form.getValues :: ', form.getValues());
     setOpen(false);
   };
 
