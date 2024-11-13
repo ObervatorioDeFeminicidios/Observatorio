@@ -152,10 +152,10 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
                 reset();
                 resetForm();
               }
-              setShowResult(false);
-              if (isEditMode) {
+              if (showResult && isEditMode) {
                 router.push(API_ROUTES.history);
               }
+              setShowResult(false);
             }}
           >
             {!showResult ? 'Cancelar' : 'Cerrar'}
