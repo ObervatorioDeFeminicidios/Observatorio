@@ -4,6 +4,7 @@ import { CustomColumnMeta } from './columns';
 
 export function ColumnFilter({ column }: { column: Column<any, unknown> }) {
   const columnFilterValue = column.getFilterValue();
+  const { header } = column.columnDef;
   const { filterVariant } = (column.columnDef.meta ?? {}) as {
     filterVariant?: CustomColumnMeta['filterVariant'];
   };
@@ -48,12 +49,11 @@ export function ColumnFilter({ column }: { column: Column<any, unknown> }) {
     </select>
   ) : (
     <DebouncedInput
-      className="w-36 rounded border shadow"
+      className="w-100 min-w-32 rounded border border-secondary p-1 text-xs font-light text-primary-foreground"
       onChange={(value) => column.setFilterValue(value)}
-      placeholder={`Search...`}
+      placeholder={`${header}...`}
       type="text"
       value={(columnFilterValue ?? '') as string}
     />
-    // See faceted column filters example for datalist search suggestions
   );
 }

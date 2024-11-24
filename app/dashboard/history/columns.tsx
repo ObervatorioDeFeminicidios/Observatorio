@@ -13,13 +13,13 @@ export type CustomColumnMeta = {
 };
 
 // Extend the ColumnDef to include the CustomColumnMeta
-type CustomColumnDef<TData> = ColumnDef<TData, unknown> & {
+export type CustomColumnDef<TData> = ColumnDef<TData, unknown> & {
   meta?: CustomColumnMeta;
 };
 
 export const initialFilters: TableFilters = {
   pageIndex: 0,
-  pageSize: 10,
+  pageSize: 30,
   columnFilters: [],
 };
 
@@ -29,11 +29,16 @@ export function getColumns(
   const columns: CustomColumnDef<Register>[] = [
     {
       accessorKey: 'numero_violencia',
-      header: 'Número',
+      header: 'Id',
       cell: ({ row }) => (
         <Button
           variant="outline"
-          onClick={() => router.push(`${API_ROUTES.registers}/${row.getValue('numero_violencia')}`)}
+          className="w-full border-primary text-primary"
+          onClick={() =>
+            router.push(
+              `${API_ROUTES.registers}/${row.getValue('numero_violencia')}`,
+            )
+          }
         >
           {row.getValue('numero_violencia')}
         </Button>
@@ -42,29 +47,41 @@ export function getColumns(
     {
       accessorKey: 'fecha_violencia',
       header: 'Fecha Violencia',
-      cell: ({ row }) =>
-        (row.getValue('fecha_violencia') as Date)?.toISOString()?.split('T')[0],
+      cell: ({ row }) => {
+        const formatted = (row.getValue('fecha_violencia') as Date)
+          ?.toISOString()
+          ?.split('T')[0];
+        return <div className="whitespace-nowrap">{formatted}</div>;
+      },
       meta: {
         filterVariant: 'none',
       },
     },
-    { accessorKey: 'tipo_violencia', header: 'Tipo Violencia' },
+    {
+      accessorKey: 'tipo_violencia',
+      header: 'Tipo Violencia',
+    },
     { accessorKey: 'nombre_victima', header: 'Nombre Víctima' },
+    { accessorKey: 'rango_edad_victima', header: 'Rango Edad' },
     { accessorKey: 'departamento', header: 'Departamento' },
     { accessorKey: 'municipio', header: 'Municipio' },
+    { accessorKey: 'barrio', header: 'Barrio' },
     { accessorKey: 'identidad_genero', header: 'Identidad de Género' },
     { accessorKey: 'identidad_social', header: 'Identidad Social' },
     { accessorKey: 'identidad_etnica', header: 'Identidad Étnica' },
-    { accessorKey: 'metodo_eliminacion', header: 'Método de Eliminación' },
     {
       accessorKey: 'actividad_economica_victima',
       header: 'Actividad Económica',
     },
+    { accessorKey: 'nombre_sujeto_feminicida', header: 'Nombre Feminicida' },
+    { accessorKey: 'sujeto_feminicida', header: 'Sujeto Feminicida' },
+    { accessorKey: 'parentesco_o_relacion', header: 'Parentesco' },
+    { accessorKey: 'metodo_eliminacion', header: 'Método de Eliminación' },
+    { accessorKey: 'continuum_violencia_sf', header: 'Continuum' },
     {
       accessorKey: 'lugar_encuentra_cadaver',
       header: 'Lugar Encuentra Cuerpo',
     },
-    { accessorKey: 'nombre_sujeto_feminicida', header: 'Nombre Feminicida' },
     {
       accessorKey: 'link_noticia',
       header: 'Noticia',

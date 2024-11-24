@@ -79,16 +79,16 @@ export function DataTable() {
   if (dataQuery.error) return <div>Error: {dataQuery.error.message}</div>;
 
   return (
-    <div className="flex h-full flex-col justify-between">
-      <Table>
-        <TableHeader>
+    <div className="flex h-full flex-col justify-between gap-4 sm:gap-6 lg:gap-8">
+      <Table className="relative">
+        <TableHeader className="sticky top-0 bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead
                     key={header.id}
-                    className="whitespace-nowrap pb-4 font-semibold text-zinc-900"
+                    className="whitespace-nowrap pb-2 font-semibold text-primary-foreground"
                   >
                     {header.isPlaceholder
                       ? null
@@ -113,7 +113,7 @@ export function DataTable() {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="min-h-full px-6 py-2"
+                className="min-h-full border-none px-6 py-4 text-xs"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -133,9 +133,8 @@ export function DataTable() {
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <DataTablePagination table={table} />
-      </div>
+
+      <DataTablePagination table={table} />
     </div>
   );
 }
