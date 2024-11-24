@@ -18,7 +18,7 @@ export default async function History() {
   });
 
   return (
-    <section className="container mx-auto h-full py-2">
+    <section className="container mx-auto h-full mb-4">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <DataTable />
       </HydrationBoundary>

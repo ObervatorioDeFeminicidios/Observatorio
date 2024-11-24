@@ -6,13 +6,13 @@ import { getDefaultValues, getSchema, getSchemaByStep } from '@/lib/form';
 import { useFormStore } from '@/store/registration-form';
 import { OptionField, Step } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FormStep } from './form-step';
 import { Navigation } from './navigation';
-import { useQuery } from '@tanstack/react-query';
 
 type RegistrationFormProps = {
   steps: Step[];
@@ -22,7 +22,8 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
   const params = useParams<{ id: string }>();
   const isEditMode = !!params?.id;
 
-  const { currentStep, updateFormSchemas, updateInitialAssociatedViolences } = useFormStore();
+  const { currentStep, updateFormSchemas, updateInitialAssociatedViolences } =
+    useFormStore();
   const formSchema = React.useMemo(() => getSchema(steps), [steps]);
   const formRef = React.useRef<HTMLFormElement>(null);
   const totalSteps = steps.length;
@@ -46,7 +47,9 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
   React.useEffect(() => {
     if (dataQuery.data?.results) {
       reset(dataQuery.data.results); // Reset form values with fetched data
-      updateInitialAssociatedViolences(dataQuery.data.results.violencia_asociada as OptionField[]);
+      updateInitialAssociatedViolences(
+        dataQuery.data.results.violencia_asociada as OptionField[],
+      );
     }
   }, [dataQuery.data, reset, updateInitialAssociatedViolences]);
 
@@ -69,9 +72,9 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     <Form {...form}>
       <form
         ref={formRef}
-        className="flex flex-1 flex-col justify-between gap-10"
+        className="flex max-h-[87vh] flex-1 flex-col justify-between gap-10"
       >
-        <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+        <div className="grid gap-4 overflow-y-auto md:grid-cols-2 md:gap-6">
           <FormStep step={steps[currentStep]} form={form} />
         </div>
 
