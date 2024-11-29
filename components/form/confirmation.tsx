@@ -26,6 +26,7 @@ import {
 } from '../ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
+import { LOCAL_STORAGE_KEY } from './form';
 
 type ConfirmationProps = {
   data: any;
@@ -117,11 +118,11 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
             <>
               <ExclamationTriangleIcon className="h-[150px] fill-destructive" />
               <p className="text-md text-destructive">
-                Ups - Un error ocurrió al $
+                Ups - Un error ocurrió al{' '}
                 {!isEditMode ? 'insertar' : 'actualizar'} el registro!
               </p>
               <p className="text-sm text-secondary-foreground">
-                Por favor, intente más tarde o contacte al administrador.
+                Por favor, intenta más tarde o contacta al administrador
               </p>
             </>
           )}
@@ -146,16 +147,20 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
                 : 'border-primary text-primary'
             }
             onClick={() => {
-              setOpen(false);
-              setInsertDataResult(INITAL_RESULT);
-              if (showResult && insertDataResult && !insertDataResult?.errors) {
+              if (showResult && insertDataResult && insertDataResult?.success) {
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
                 reset();
                 resetForm();
               }
-              if (showResult && isEditMode) {
+              if (showResult && isEditMode && insertDataResult?.success) {
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
+                reset();
+                resetForm();
                 router.push(API_ROUTES.history);
               }
               setShowResult(false);
+              setInsertDataResult(INITAL_RESULT);
+              setOpen(false);
             }}
           >
             {!showResult ? 'Cancelar' : 'Cerrar'}
