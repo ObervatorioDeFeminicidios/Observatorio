@@ -120,13 +120,13 @@ export async function getFormData() {
     const formData = [
       {
         id: 1,
-        name: 'Información de la Víctima',
-        fields: stepOne.sort(compareByType),
+        name: 'Información del Feminicidio',
+        fields: stepTwo.sort(compareByType),
       },
       {
         id: 2,
-        name: 'Información del Feminicidio',
-        fields: stepTwo.sort(compareByType),
+        name: 'Información de la Víctima',
+        fields: stepOne.sort(compareByType),
       },
       {
         id: 3,
