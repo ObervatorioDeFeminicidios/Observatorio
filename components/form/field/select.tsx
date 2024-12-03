@@ -60,6 +60,21 @@ const filterOptions = (
         );
       }
       return formField.options;
+    case 'identidad_genero':
+      if (formValues.cod_tipo_violencia === 1) {
+        return (formField.options as OptionField[]).filter(
+          (option) => [1, 4, 5].includes(option.value)
+        );
+      }
+      if (formValues.cod_tipo_violencia === 3) {
+        return (formField.options as OptionField[]).filter(
+          (option) => [2, 3].includes(option.value)
+        );
+      }
+      if (formValues.cod_tipo_violencia === 2) {
+        return formField.options;
+      }
+      return formField.options;
     default:
       return formField.options;
   }
