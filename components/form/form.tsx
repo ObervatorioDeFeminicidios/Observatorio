@@ -64,6 +64,13 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     }
   }, [reset, isEditMode]);
 
+  // Add cleanup effect to clear localStorage when unmounting
+  React.useEffect(() => {
+    return () => {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    };
+  }, []);
+
   // Handle form schemas and reset form values once data is fetched
   React.useEffect(() => {
     if (dataQuery.data?.results) {
