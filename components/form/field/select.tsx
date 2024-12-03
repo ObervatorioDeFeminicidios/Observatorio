@@ -32,9 +32,10 @@ import { FieldValues, useFormContext } from 'react-hook-form';
 import { SelectEmpty } from './select-empty';
 
 const filterOptions = (
-  formValues: FieldValues,
+  form: FieldProps['form'],
   formField: TransformedObject,
 ) => {
+  const formValues = form.getValues();
   const hasOptions = formField.options && formField.options.length > 0;
 
   if (!hasOptions) {
@@ -60,7 +61,30 @@ const filterOptions = (
         );
       }
       return formField.options;
+    case 'identidad_genero':
+      if (formValues.cod_tipo_violencia === 1) {
+        return (formField.options as OptionField[]).filter(
+          (option) => [1, 4, 5].includes(option.value)
+        );
+      }
+      if (formValues.cod_tipo_violencia === 3) {
+        return (formField.options as OptionField[]).filter(
+          (option) => [2, 3].includes(option.value)
+        );
+      }
+      if (formValues.cod_tipo_violencia === 2) {
+        return formField.options;
+      }
+      return formField.options;
     default:
+      const currentLabel = formValues[formField.id];
+      const newLabel = formField.options?.find(option => option.value === formValues[`cod_${formField.id}`])?.label;
+      
+      if (newLabel && currentLabel !== newLabel) {
+        formValues[formField.id] = newLabel;
+        form.setValue(formField.id, newLabel, { shouldDirty: true });
+      }
+      
       return formField.options;
   }
 };
@@ -77,16 +101,12 @@ const resetDependentFields = (
 
 export const FieldSelect = ({ formField, form }: FieldProps) => {
   const [open, setOpen] = React.useState(false);
-  const { getValues } = useFormContext();
 
   // Filtering the municipality and postal code options
-  const options = filterOptions(getValues(), formField);
+  const options = filterOptions(form, formField);
 
   // Setting the selected/added option
   const onSelectAdd = (option: OptionField) => {
-    console.log('Select onSelectAdd formField.id :: ', formField.id);
-    console.log('Select onSelectAdd option :: ', option);
-
     // Adding the new option to the options list
     const optionIsInOptions = options?.find(
       (item) => item.value === option.value,
@@ -95,14 +115,26 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
 
     // Setting the new selected/added option
     form.setValue(formField.id, option.label, { shouldDirty: true });
+    
     switch (formField.id) {
+      case 'rango_edad_victima':
+        form.setValue(`cod_${formField.id}`, option.value, { shouldDirty: true });
+
+        // Set cod_clasifica_edad_victima based on cod_rango_edad_victima value
+        if (option.value >= 1 && option.value <= 4) {
+          form.setValue('cod_clasifica_edad_victima', 2, { shouldDirty: true });
+        } else if (option.value >= 5 && option.value <= 18) {
+          form.setValue('cod_clasifica_edad_victima', 1, { shouldDirty: true });
+        } else if (option.value === 19) {
+          form.setValue('cod_clasifica_edad_victima', 3, { shouldDirty: true });
+        }
+        break;
       case 'departamento':
         form.setValue(
           `cod_${formField.id}`,
           (option.value + '').padStart(2, '0'),
           { shouldDirty: true },
         );
-        // Reseting the minicipality and postal fields
         resetDependentFields(form, ['municipio', 'comuna', 'postal']);
         break;
       case 'municipio':
@@ -111,7 +143,6 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
           (option.value + '').padStart(3, '0'),
           { shouldDirty: true },
         );
-        // Reseting the postal field
         resetDependentFields(form, ['comuna', 'postal']);
         break;
       case 'postal':
@@ -129,7 +160,6 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
         );
         break;
     }
-    console.log('Select onSelectAdd form.getValues :: ', form.getValues());
     setOpen(false);
   };
 

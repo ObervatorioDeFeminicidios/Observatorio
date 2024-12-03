@@ -25,8 +25,8 @@ export const FieldInput = ({
       formField.type !== 'int' ? e.target.value : Number(e.target.value),
     );
 
-    if (field.name === 'direccion_vivienda_victima') {
-      form.setValue(`direccion_hecho`, e.target.value, { shouldDirty: true });
+    if (field.name === 'direccion_hecho') {
+      form.setValue(`direccion_vivienda_victima`, e.target.value, { shouldDirty: true });
     }
   };
 

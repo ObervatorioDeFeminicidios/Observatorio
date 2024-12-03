@@ -4,6 +4,7 @@ import { OkPacket } from '@/lib/definitions';
 import { FIRST_TABLE, getSchema, SECOND_TABLE } from '@/lib/form';
 import { conn, queries } from '@/lib/mysql';
 import { OptionField } from '@/types';
+import * as Sentry from '@sentry/nextjs';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -68,6 +69,16 @@ export async function POST(request: Request) {
                   errorMessage,
                 );
 
+                // Log the validation error to Sentry
+                Sentry.captureException(new Error(errorMessage), {
+                  extra: {
+                    context:
+                      'Database error while trying to insert the associated violences',
+                    requestBody: data,
+                    associatedViolence,
+                  },
+                });
+
                 return {
                   error: errorMessage,
                   associatedViolence,
@@ -93,13 +104,24 @@ export async function POST(request: Request) {
           if (failedInserts.length > 0) {
             // Rollback the transaction if any insert failed
             await conn.query('ROLLBACK');
-            // return {
-            //   success: false,
-            //   errors: failedInserts.map((failed) => ({
-            //     associatedViolence: failed?.associatedViolence,
-            //     error: failed?.error,
-            //   })),
-            // };
+
+            // Log the validation error to Sentry
+            Sentry.captureException(
+              new Error(
+                'Database error while trying to insert the associated violences',
+              ),
+              {
+                extra: {
+                  context:
+                    'Database error while trying to insert the associated violences',
+                  requestBody: data,
+                  errors: failedInserts.map((failed) => ({
+                    associatedViolence: failed?.associatedViolence,
+                    error: failed?.error,
+                  })),
+                },
+              },
+            );
 
             return NextResponse.json({
               success: false,
@@ -114,11 +136,7 @@ export async function POST(request: Request) {
 
           // Commit the transaction if all inserts succeeded
           await conn.query('COMMIT');
-          // return {
-          //   success: true,
-          //   message:
-          //     'Se insertó el registro y las violencias asociadas exitosamente',
-          // };
+
           return NextResponse.json({
             success: true,
             message:
@@ -129,11 +147,17 @@ export async function POST(request: Request) {
         } else {
           // Rollback the transaction if the first insert failed
           await conn.query('ROLLBACK');
-          // return {
-          //   success: false,
-          //   errors:
-          //     'Se produjo un error al intentar insertar un registro en la base de datos',
-          // };
+
+          // Log the validation error to Sentry
+          Sentry.captureException(
+            new Error('Database error while trying to insert the register'),
+            {
+              extra: {
+                context: 'Database error while trying to insert the register',
+                requestBody: data,
+              },
+            },
+          );
 
           return NextResponse.json({
             success: false,
@@ -155,14 +179,17 @@ export async function POST(request: Request) {
 
         console.error('Database Error: ', errorMessage);
 
-        // return {
-        //   success: false,
-        //   errors: errorMessage,
-        // };
+        // Log the validation error to Sentry
+        Sentry.captureException(new Error(errorMessage), {
+          extra: {
+            context: 'Database error while trying to insert the register',
+            requestBody: data,
+          },
+        });
 
         return NextResponse.json({
           success: false,
-          errorMessage: errorMessage,
+          errorMessage,
         });
       } finally {
         // Close the connection
@@ -181,7 +208,19 @@ export async function POST(request: Request) {
       'postFormData failed validation result ::: ',
       validationResult.error.message,
     );
-    throw new Error(validationResult.error.message);
+
+    // Log the validation error to Sentry
+    Sentry.captureException(new Error(validationResult.error.message), {
+      extra: {
+        context: 'Data validation was unsuccesful',
+        requestBody: data,
+      },
+    });
+
+    return NextResponse.json({
+      success: false,
+      errorMessage: validationResult.error.message,
+    });
   }
 }
 
@@ -225,7 +264,10 @@ export async function PUT(request: Request) {
         const firstResult: OkPacket = await conn.query(firstQuery);
         console.log('PUT firstResult ::: ', firstResult);
 
-        if ((firstResult.affectedRows > 0 && firstResult.insertId) || firstResult.changedRows === 1) {
+        if (
+          (firstResult.affectedRows > 0 && firstResult.insertId) ||
+          firstResult.changedRows === 1
+        ) {
           // Insert multiple associated violences
           // const associatedViolencesPromises = associatedViolences.map(
           //   async (associatedViolence) => {
