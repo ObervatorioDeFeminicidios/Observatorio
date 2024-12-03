@@ -212,11 +212,11 @@ export function transformObject(fields: DataBaseField[]): TransformedObject[] {
 export function compareByType(a: TransformedObject, b: TransformedObject) {
   // Defining the priority of order by type
   const typePriority: { [key: string]: number } = {
-    date: 0,
-    int: 1,
-    text: 2,
-    select: 3,
-    'select-multiple': 4,
+    'select-multiple': 0,
+    date: 1,
+    int: 2,
+    text: 3,
+    select: 4,
   };
 
   const priorityA = typePriority[a.type];

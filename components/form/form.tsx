@@ -18,6 +18,8 @@ type RegistrationFormProps = {
   steps: Step[];
 };
 
+export const LOCAL_STORAGE_KEY = 'form-data';
+
 export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
   const params = useParams<{ id: string }>();
   const isEditMode = !!params?.id;
@@ -41,7 +43,33 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     defaultValues: !isEditMode ? getDefaultValues(steps) : undefined,
   });
 
-  const { reset } = form;
+  const { watch, reset } = form;
+  const formData = watch();
+
+  // Save form data to local storage on changes
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [formData]);
+
+  // Load form data from local storage on component mount
+  React.useEffect(() => {
+    if (!isEditMode) {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedData) {
+        reset(JSON.parse(savedData));
+      }
+    }
+  }, [reset, isEditMode]);
+
+  // Add cleanup effect to clear localStorage when unmounting
+  React.useEffect(() => {
+    return () => {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    };
+  }, []);
 
   // Handle form schemas and reset form values once data is fetched
   React.useEffect(() => {
