@@ -79,6 +79,7 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
           <ScrollArea className="m-4">
             {Object.keys(data).map(
               (label, index) =>
+                typeof data[label] !== 'object' &&
                 !label.startsWith('cod_') &&
                 label !== VIOLENCIA_ASOCIADA &&
                 label !== URL_CORTO_NOTICIA && (
