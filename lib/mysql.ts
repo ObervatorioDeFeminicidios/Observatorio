@@ -4,6 +4,7 @@ import { FieldValues } from 'react-hook-form';
 import mysql from 'serverless-mysql';
 import sql from 'sql-template-strings';
 import { objectToSQLUpdate } from './form';
+import { generateFilterConditions } from './table';
 
 // Define the connection type
 type MySQLConnection = ReturnType<typeof mysql>;
@@ -282,56 +283,26 @@ export const queries = {
       ORDER BY cod_${table} DESC
       LIMIT 1
     `,
-    registers: (filters: Partial<TableFilters & {offset: number}>) => sql`
-      SELECT
-        *
-      FROM
-        feminicidios_tentativas
-      WHERE
-        1 = 1
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'numero_violencia')?.value} IS NULL OR numero_violencia LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'numero_violencia')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'tipo_violencia')?.value} IS NULL OR tipo_violencia LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'tipo_violencia')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'nombre_victima')?.value} IS NULL OR nombre_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'nombre_victima')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'departamento')?.value} IS NULL OR departamento LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'departamento')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'municipio')?.value} IS NULL OR municipio LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'municipio')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'identidad_genero')?.value} IS NULL OR identidad_genero LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'identidad_genero')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'identidad_social')?.value} IS NULL OR identidad_social LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'identidad_social')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'identidad_etnica')?.value} IS NULL OR identidad_etnica LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'identidad_etnica')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica_victima')?.value} IS NULL OR actividad_economica_victima LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'actividad_economica_victima')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value} IS NULL OR metodo_eliminacion LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'metodo_eliminacion')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'lugar_encuentra_cadaver')?.value} IS NULL OR lugar_encuentra_cadaver LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'lugar_encuentra_cadaver')?.value}, '%')
-        )
-        AND (
-          ${filters.columnFilters?.find(filter => filter.id === 'nombre_sujeto_feminicida')?.value} IS NULL OR nombre_sujeto_feminicida LIKE CONCAT('%', ${filters.columnFilters?.find(filter => filter.id === 'nombre_sujeto_feminicida')?.value}, '%')
-        )
-      ORDER BY
-        numero_violencia DESC
-      OFFSET
-        ${filters.offset} ROWS
-      FETCH NEXT
-        ${filters.pageSize} ROWS ONLY;
-    `,
+    registers: (filters: Partial<TableFilters & {offset: number}>) => {
+      const baseQuery = sql`
+        SELECT
+          *
+        FROM
+          feminicidios_tentativas
+      `;
+
+      const conditions = filters.columnFilters && generateFilterConditions(filters.columnFilters);
+
+      const finalQuery = sql`
+        ${baseQuery}
+        ${conditions}
+        ORDER BY numero_violencia DESC
+        OFFSET ${filters.offset} ROWS
+        FETCH NEXT ${filters.pageSize} ROWS ONLY;
+      `;
+
+      return finalQuery;
+    },
     totalRegisters: (filters: Partial<TableFilters & {offset: number}>) => sql`
       SELECT
         COUNT (*) as totalRecords
