@@ -21,6 +21,7 @@ type RegistrationFormProps = {
 export const LOCAL_STORAGE_KEY = 'form-data';
 
 export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
+  // console.log('RegistrationForm steps ::: ', steps);
   const params = useParams<{ id: string }>();
   const isEditMode = !!params?.id;
 
