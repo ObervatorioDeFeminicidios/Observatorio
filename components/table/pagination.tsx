@@ -19,6 +19,12 @@ interface DataTablePaginationProps<TData> {
   pageSizeOptions?: number[];
 }
 
+/**
+ * DataTablePagination is a component that renders a pagination for a table.
+ * @param table - The table to paginate.
+ * @param pageSizeOptions - The options for the page size.
+ * @returns A React component that renders a pagination for the table.
+ */
 export function DataTablePagination<TData>({
   table,
   pageSizeOptions = [10, 20, 30, 40, 50],
