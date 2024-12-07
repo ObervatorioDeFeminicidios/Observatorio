@@ -1,7 +1,9 @@
 'use client';
 
 import { fetchRegisters } from '@/actions/_form';
-import { DataTablePagination } from '@/components/ui/data-table/pagination';
+import { getColumns, initialFilters } from '@/components/table/columns';
+import { DataTablePagination } from '@/components/table/pagination';
+import { ColumnFilter } from '@/components/table/filters/column-filter';
 import {
   Table,
   TableBody,
@@ -21,8 +23,6 @@ import {
 } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import { ColumnFilter } from './column-filter';
-import { getColumns, initialFilters } from './columns';
 
 const initialPagination: PaginationState = {
   pageIndex: initialFilters.pageIndex,

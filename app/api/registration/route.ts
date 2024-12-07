@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/nextjs';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+// Inserting a new register into the database
 export async function POST(request: Request) {
   const data = await request.json();
 
@@ -204,11 +205,6 @@ export async function POST(request: Request) {
       });
     }
   } else {
-    console.error(
-      'postFormData failed validation result ::: ',
-      validationResult.error.message,
-    );
-
     // Log the validation error to Sentry
     Sentry.captureException(new Error(validationResult.error.message), {
       extra: {
@@ -224,6 +220,7 @@ export async function POST(request: Request) {
   }
 }
 
+// Updating a register
 export async function PUT(request: Request) {
   const data = await request.json();
 
@@ -255,11 +252,6 @@ export async function PUT(request: Request) {
         // Start the transaction
         await conn.query('START TRANSACTION');
 
-        // TODO: Integrate the associated violences logic here
-        // Delete first all the associated violences
-        // const deleteResult = await conn.query(queries.delete.associatedViolences(id));
-        // console.log('PUT deleteResult ::: ', deleteResult);
-
         // Insert the first record
         const firstResult: OkPacket = await conn.query(firstQuery);
         console.log('PUT firstResult ::: ', firstResult);
@@ -268,69 +260,6 @@ export async function PUT(request: Request) {
           (firstResult.affectedRows > 0 && firstResult.insertId) ||
           firstResult.changedRows === 1
         ) {
-          // Insert multiple associated violences
-          // const associatedViolencesPromises = associatedViolences.map(
-          //   async (associatedViolence) => {
-          //     try {
-          //       const result = (await conn.query(
-          //         queries.post.registry(SECOND_TABLE, {
-          //           numero_violencia: firstResult.insertId,
-          //           cod_violencia_asociada: associatedViolence.value,
-          //           violencia_asociada: associatedViolence.label,
-          //         }),
-          //       )) as OkPacket;
-          //       return result;
-          //     } catch (error) {
-          //       // Setting the right error message
-          //       const errorMessage =
-          //         typeof error === 'string'
-          //           ? error
-          //           : error instanceof Error
-          //             ? error.message
-          //             : 'Error Unknown';
-
-          //       console.error(
-          //         'Database associated violence Error: ',
-          //         errorMessage,
-          //       );
-
-          //       return {
-          //         error: errorMessage,
-          //         associatedViolence,
-          //       };
-          //     }
-          //   },
-          // );
-
-          // const associatedViolencesResults = await Promise.all(
-          //   associatedViolencesPromises,
-          // );
-          // console.log(
-          //   'PUT associatedViolencesResults ::: ',
-          //   associatedViolencesResults,
-          // );
-
-          // // Check for errors in the associated violences insertions
-          // const failedInserts = associatedViolencesResults.filter(
-          //   (result) => result?.error,
-          // );
-          // console.log('PUT failedInserts ::: ', failedInserts);
-
-          // if (failedInserts.length > 0) {
-          //   // Rollback the transaction if any insert failed
-          //   await conn.query('ROLLBACK');
-
-          //   return NextResponse.json({
-          //     success: false,
-          //     errorMessage:
-          //       'Algo ocurrió al insertar el registro en la base de datos',
-          //     errors: failedInserts.map((failed) => ({
-          //       associatedViolence: failed?.associatedViolence,
-          //       error: failed?.error,
-          //     })),
-          //   });
-          // }
-
           // Commit the transaction if all inserts succeeded
           await conn.query('COMMIT');
 
@@ -344,10 +273,20 @@ export async function PUT(request: Request) {
           // Rollback the transaction if the first insert failed
           await conn.query('ROLLBACK');
 
+          const errorMessage =
+            'Se produjo un error al intentar actualizar el registro en la base de datos';
+
+          Sentry.captureException(new Error(errorMessage), {
+            extra: {
+              context:
+                'Database error while trying to update the register',
+              requestBody: data,
+            },
+          });
+
           return NextResponse.json({
             success: false,
-            errorMessage:
-              'Se produjo un error al intentar insertar un registro en la base de datos',
+            errorMessage,
           });
         }
       } catch (error) {
@@ -362,11 +301,16 @@ export async function PUT(request: Request) {
               ? error.message
               : 'Error Unknown';
 
-        console.error('Database Error: ', errorMessage);
+        Sentry.captureException(new Error(errorMessage), {
+          extra: {
+            context: 'Database error while trying to update the register',
+            requestBody: data,
+          },
+        });
 
         return NextResponse.json({
           success: false,
-          errorMessage: errorMessage,
+          errorMessage,
         });
       } finally {
         // Close the connection
@@ -381,10 +325,17 @@ export async function PUT(request: Request) {
       });
     }
   } else {
-    console.error(
-      'putFormData failed validation result ::: ',
-      validationResult.error.message,
-    );
-    throw new Error(validationResult.error.message);
+    // Log the validation error to Sentry
+    Sentry.captureException(new Error(validationResult.error.message), {
+      extra: {
+        context: 'Data validation was unsuccesful',
+        requestBody: data,
+      },
+    });
+
+    return NextResponse.json({
+      success: false,
+      errorMessage: validationResult.error.message,
+    });
   }
 }
