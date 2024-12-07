@@ -10,6 +10,7 @@ export type TableColumn = {
 
 export type TableColumns = Record<string, TableColumn>;
 
+//tableColumns is an object that contains the columns for the table.
 export const tableColumns: TableColumns = {
   numero_violencia: { key: 'numero_violencia', label: 'Id', type: 'text' },
   fecha_violencia: {
@@ -32,8 +33,8 @@ export const tableColumns: TableColumns = {
     label: 'Rango Edad',
     type: 'select',
   },
-  departamento: { key: 'departamento', label: 'Departamento', type: 'select' },
-  municipio: { key: 'municipio', label: 'Municipio', type: 'select' },
+  departamento: { key: 'departamento', label: 'Departamento', type: 'text' },
+  municipio: { key: 'municipio', label: 'Municipio', type: 'text' },
   barrio: { key: 'barrio', label: 'Barrio', type: 'text' },
   identidad_genero: {
     key: 'identidad_genero',
@@ -78,7 +79,7 @@ export const tableColumns: TableColumns = {
   continuum_violencia_sf: {
     key: 'continuum_violencia_sf',
     label: 'Continuum',
-    type: 'select',
+    type: 'text',
   },
   lugar_encuentra_cadaver: {
     key: 'lugar_encuentra_cadaver',
@@ -88,37 +89,86 @@ export const tableColumns: TableColumns = {
   link_noticia: { key: 'link_noticia', label: 'Noticia', type: 'none' },
 };
 
+// Helper function to generate SQL statements for the select filters
+export const generateSelectFilters = () => {
+  // This will store the column names that are of type 'select'
+  let columnNames = sql``;
+
+  // This will store the SQL statements for the select filters
+  const columnswithOptions = Object.values(tableColumns).filter(({ type }) => type === 'select');
+  const sqlStatements = Object.values(columnswithOptions).flatMap(({ key }, index) => {
+    if (index !== 0) columnNames = columnNames.append(',');
+    columnNames = columnNames.append(`'${key}','cod_${key}'`);
+
+    let idColumn = '';
+    switch (key) {
+      case 'rango_edad_victima':
+        idColumn = 'rango_edad'
+        break;
+      case 'lugar_encuentra_cadaver':
+        idColumn = 'lugar'
+        break;
+      default:
+        idColumn = key;
+        break;
+    }
+
+    let selectFilterQuery = sql``;
+    selectFilterQuery = selectFilterQuery.append(`WHEN COLUMN_NAME = 'cod_${key}' THEN (SELECT GROUP_CONCAT(cod_${idColumn}) FROM ${idColumn})`);
+    selectFilterQuery = selectFilterQuery.append(`WHEN COLUMN_NAME = '${key}' THEN (SELECT GROUP_CONCAT(${idColumn}) FROM ${idColumn})`);
+    return selectFilterQuery;
+  });
+
+  // Combine all query parts using append
+  const columnOptionsQuery = sqlStatements.length > 0
+    ? sqlStatements.reduce((acc, part, index) => {
+      if (index === 0) {
+        return acc.append(sql`CASE `).append(part);
+      }
+      if (index === sqlStatements.length - 1) {
+        return acc.append(part).append(sql` END AS 'options'`);
+      }
+      return acc.append(part);
+    }, sql``)
+    : sql``;
+
+  return {
+    columnNames,
+    columnOptionsQuery,
+  };
+};
+
 // Helper function to generate SQL conditions dynamically, where the column filtering is centralized and easier to mantain
 export const generateFilterConditions = (columnFilters: ColumnFiltersState) => {
-  const queryParts = Object.values(tableColumns).flatMap(({ key, type }) => {
+  const sqlStatements = Object.values(tableColumns).flatMap(({ key, type }) => {
     const filterValue = columnFilters.find(
       (filter) => filter.id === key,
     )?.value;
 
     if (!filterValue) return [];
 
-    let filterQuery;
+    let filterQuery = sql``;
     switch (type) {
       case 'select':
-        filterQuery = sql`${key} = ${filterValue}`;
+        filterQuery = filterQuery.append(`${key} = `).append(sql`${filterValue}`);
         break;
       case 'text':
-        filterQuery = sql`${key} LIKE CONCAT('%', ${filterValue}, '%')`;
+        filterQuery = filterQuery
+          .append(`${key} LIKE CONCAT('%', `)
+          .append(sql`${filterValue}`)
+          .append(`, '%')`);
         break;
       default:
         return [];
     }
 
-    return sql`AND ${filterQuery}`;
+    return filterQuery;
   });
 
-  // Combine all query parts into a single SQL string
-  const combinedQuery = queryParts.reduce(
-    (acc, part) => sql`${acc} ${part}`,
-    sql`WHERE 1 = 1`
-  );
+  // Combine all query parts using append
+  const query = sqlStatements.length > 0
+    ? sqlStatements.reduce((acc, part) => acc.append(' AND ').append(part), sql``)
+    : sql``;
 
-  console.log('Generated SQL Query Conditions:', combinedQuery.text);
-
-  return combinedQuery;
+  return query;
 };

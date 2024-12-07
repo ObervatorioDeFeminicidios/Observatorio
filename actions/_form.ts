@@ -1,21 +1,17 @@
 'use server';
 
-import { initialFilters } from '@/app/dashboard/history/columns';
+import { initialFilters } from '@/components/table/columns';
 import { env } from '@/config/env';
 import {
-  InsertDataResult,
   OkPacket,
   Register,
   TotalRecordsResult,
 } from '@/lib/definitions';
 import {
   compareByType,
-  FIRST_TABLE,
   getLatestId,
-  getSchema,
   mutateRawData,
   reorganizeData,
-  SECOND_TABLE,
   transformObject,
 } from '@/lib/form';
 import { formData1, formData2, formData3, formData4 } from '@/lib/mock-data';
@@ -31,8 +27,8 @@ import {
   TransformedObject,
 } from '@/types';
 import { unstable_noStore as noStore } from 'next/cache';
-import { FieldValues } from 'react-hook-form';
 import { z } from 'zod';
+import * as Sentry from '@sentry/nextjs';
 
 // Getting the form fields from the database schema
 export async function getFormData() {
@@ -150,167 +146,18 @@ export async function getFormData() {
           ? error.message
           : 'Error Unknown';
 
-    console.log('Database Error: ', errorMessage);
-    throw new Error('Error al cargar el formulario');
-  }
-}
+    Sentry.captureException(new Error(errorMessage), {
+      extra: {
+        context: 'Database error while trying to get the form data',
+      },
+    });
 
-// This server function is unused -> Moved to API routes
-// Inserting a new register into the database
-export async function postRegister(
-  data: FieldValues,
-): Promise<InsertDataResult> {
-  // Getting the form schema
-  const formData = await getFormData();
-  const formSchema: z.Schema = getSchema(formData);
-
-  // Validating the data against the zod schema
-  const validationResult = formSchema.safeParse(data);
-
-  // Validating wether the data has the correct values
-  if (validationResult.success) {
-    // Separating the data as required
-    const { violencia_asociada, ...registerData } = data;
-    const associatedViolences: Array<OptionField> = violencia_asociada;
-    console.log('postFormData registerData ::: ', registerData);
-    console.log('postFormData associatedViolences ::: ', associatedViolences);
-
-    // Getting the neccessary queries
-    const firstQuery = queries.post.registry(FIRST_TABLE, registerData);
-    console.log('postFormData firstQuery ::: ', firstQuery);
-
-    // Handling the environments to test with mocked data if we are in the dev environment
-    if (env.ENV !== 'dev') {
-      const db = await conn.connect();
-      console.log('postFormData db ::: ', db);
-
-      try {
-        // Start the transaction
-        await conn.query('START TRANSACTION');
-
-        // Insert the first record
-        const firstResult: OkPacket = await conn.query(firstQuery);
-        console.log('postFormData firstResult ::: ', firstResult);
-
-        if (firstResult.affectedRows > 0 && firstResult.insertId) {
-          // Insert multiple associated violences
-          const associatedViolencesPromises = associatedViolences.map(
-            async (associatedViolence) => {
-              try {
-                const result = (await conn.query(
-                  queries.post.registry(SECOND_TABLE, {
-                    numero_violencia: firstResult.insertId,
-                    cod_violencia_asociada: associatedViolence.value,
-                    violencia_asociada: associatedViolence.label,
-                  }),
-                )) as OkPacket;
-                return result;
-              } catch (error) {
-                // Setting the right error message
-                const errorMessage =
-                  typeof error === 'string'
-                    ? error
-                    : error instanceof Error
-                      ? error.message
-                      : 'Error Unknown';
-
-                console.error(
-                  'Database associated violence Error: ',
-                  errorMessage,
-                );
-
-                return {
-                  error: errorMessage,
-                  associatedViolence,
-                };
-              }
-            },
-          );
-
-          const associatedViolencesResults = await Promise.all(
-            associatedViolencesPromises,
-          );
-          console.log(
-            'postFormData associatedViolencesResults ::: ',
-            associatedViolencesResults,
-          );
-
-          // Check for errors in the associated violences insertions
-          const failedInserts = associatedViolencesResults.filter(
-            (result) => result?.error,
-          );
-          console.log('postFormData failedInserts ::: ', failedInserts);
-
-          if (failedInserts.length > 0) {
-            // Rollback the transaction if any insert failed
-            await conn.query('ROLLBACK');
-            return {
-              success: false,
-              errors: failedInserts.map((failed) => ({
-                associatedViolence: failed?.associatedViolence,
-                error: failed?.error,
-              })),
-            };
-          }
-
-          // Commit the transaction if all inserts succeeded
-          await conn.query('COMMIT');
-          return {
-            success: true,
-            message:
-              'Se insertó el registro y las violencias asociadas exitosamente',
-          };
-        } else {
-          // Rollback the transaction if the first insert failed
-          await conn.query('ROLLBACK');
-          return {
-            success: false,
-            errors:
-              'Se produjo un error al intentar insertar un registro en la base de datos',
-          };
-        }
-      } catch (error) {
-        // Rollback the transaction on any error
-        await conn.query('ROLLBACK');
-
-        // Setting the right error message
-        const errorMessage =
-          typeof error === 'string'
-            ? error
-            : error instanceof Error
-              ? error.message
-              : 'Error Unknown';
-
-        console.error('Database Error: ', errorMessage);
-
-        return {
-          success: false,
-          errors: errorMessage,
-        };
-      } finally {
-        // Close the connection
-        await conn.end();
-      }
-    } else {
-      return {
-        success: true,
-        result: {
-          firstQuery,
-        },
-      };
-    }
-  } else {
-    console.error(
-      'postFormData failed validation result ::: ',
-      validationResult.error.message,
-    );
-    throw new Error(validationResult.error.message);
+    throw new Error(errorMessage);
   }
 }
 
 // Adding a new option list
 export async function putListOption(data: OptionIntoList) {
-  console.log('putListOption data ::: ', data);
   // Getting the form schema
   const dataSchema: z.Schema = z.object({
     id: z.string().trim().min(1, { message: `id no puede estar vacío` }),
@@ -359,7 +206,19 @@ export async function putListOption(data: OptionIntoList) {
             },
           };
         } else {
-          throw new Error('Un error ocurrió al insertar la nueva opción');
+          const errorMessage = 'Un error ocurrió al insertar la nueva opción';
+          Sentry.captureException(new Error(errorMessage), {
+            extra: {
+              context:
+                'Database error while trying to insert the new option',
+              query: queries.put.listOption(data.id, newId, newLabel),
+            },
+          });
+
+          return {
+            success: false,
+            errors: errorMessage,
+          };
         }
       } catch (error) {
         // Rollback the transaction on any error
@@ -373,7 +232,11 @@ export async function putListOption(data: OptionIntoList) {
               ? error.message
               : 'Error Unknown';
 
-        console.log('putListOption errorMessage ::: ', errorMessage);
+        Sentry.captureException(new Error(errorMessage), {
+          extra: {
+            context: 'Database error while trying to insert the new option',
+          },
+        });
 
         return {
           success: false,
@@ -384,21 +247,75 @@ export async function putListOption(data: OptionIntoList) {
         await conn.end();
       }
     } else {
-      console.log('putListOption env !== dev');
       return {
         success: true,
         errors: null,
       };
     }
   } else {
-    console.log(
-      'putListOption validationResult.error.message ::: ',
-      validationResult.error.message,
-    );
+    Sentry.captureException(new Error(validationResult.error.message), {
+      extra: {
+        context: 'Validation error while trying to insert the new option',
+      },
+    });
+
     return {
       success: false,
       errors: validationResult.error.message,
     };
+  }
+}
+
+// Getting the table filters
+export async function fetchSelectFilters() {
+  try {
+    // Start the transaction
+    await conn.query('START TRANSACTION');
+
+    const filtersResponse = await conn.query<any>(
+      queries.get.selectFilters(),
+    );
+
+    // Commit the transaction if successful
+    await conn.query('COMMIT');
+
+    // Mutated the reponse so we get the correct type
+    const filtersMutated = mutateRawData(filtersResponse);
+
+    // Transformed the objects so we get the correct list of options
+    const filters = transformObject(filtersMutated);
+
+    // Return the data
+    return {
+      success: true,
+      results: filters
+    };
+  } catch (error) {
+    // Rollback the transaction on any error
+    await conn.query('ROLLBACK');
+
+    const errorMessage =
+      typeof error === 'string'
+        ? error
+        : error instanceof Error
+          ? error.message
+          : 'Error Unknown';
+
+    Sentry.captureException(new Error(errorMessage), {
+      extra: {
+        context:
+          'Database error while trying to get the table filters',
+        query: queries.get.selectFilters(),
+      },
+    });
+
+    return {
+      success: false,
+      errors: 'Error al traer los filtros de la tabla',
+    };
+  } finally {
+    // Close the connection
+    await conn.end();
   }
 }
 
@@ -430,6 +347,9 @@ export async function fetchRegisters(filters: TableFilters) {
       queries.get.registers({ ...filters, offset }),
     );
 
+    // Commit the transaction if successful
+    await conn.query('COMMIT');
+
     // If you're fetching from MySQL or another database, make sure it's plain data
     const plainPaginatedRegistersData = paginatedRegistersData?.map((row) => ({
       ...row,
@@ -456,7 +376,16 @@ export async function fetchRegisters(filters: TableFilters) {
           ? error.message
           : 'Error Unknown';
 
-    console.log('Database Error: ', errorMessage);
+    Sentry.captureException(new Error(errorMessage), {
+      extra: {
+        context:
+          'Database error while trying to get the registers',
+        pageIndex,
+        pageSize,
+        columnFilters,
+      },
+    });
+
     return {
       success: false,
       errors: 'Error al traer los registros de la base de datos',
@@ -470,8 +399,6 @@ export async function fetchRegisters(filters: TableFilters) {
 // Get a single register data
 export async function fetchRegister(id: string) {
   noStore();
-
-  console.log('getRegisterData id ::: ', id)
 
   if (!id) {
     return {
@@ -493,6 +420,9 @@ export async function fetchRegister(id: string) {
     const associatedViolenceData = await conn.query<any[]>(
       queries.get.associatedViolences(id),
     );
+
+    // Commit the transaction if successful
+    await conn.query('COMMIT');
 
     // If you're fetching from MySQL or another database, make sure it's plain data
     const plainRecordData = recordData?.map((row) => ({
@@ -523,7 +453,15 @@ export async function fetchRegister(id: string) {
           ? error.message
           : 'Error Unknown';
 
-    console.log('Database Error: ', errorMessage);
+    Sentry.captureException(new Error(errorMessage), {
+      extra: {
+        context:
+          'Database error while trying to get the register by id',
+        registerQuery: queries.get.register(id),
+        associatedViolenceQuery: queries.get.associatedViolences(id),
+      },
+    });
+
     return {
       success: false,
       errors: 'Error al traer el registro de la base de datos',
