@@ -24,6 +24,11 @@ export const initialFilters: TableFilters = {
   columnFilters: [],
 };
 
+/**
+ * getColumns is a function that returns the columns for the table.
+ * @param router - The router to navigate to the register page.
+ * @returns An array of CustomColumnDef objects.
+ */
 export function getColumns(
   router: AppRouterInstance,
 ): CustomColumnDef<Register>[] {

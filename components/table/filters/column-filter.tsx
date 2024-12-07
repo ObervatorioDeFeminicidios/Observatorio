@@ -7,6 +7,11 @@ export type ColumnFilterProps = {
   column: Column<any, unknown>;
 };
 
+/**
+ * ColumnFilter is a component that renders a filter for a column based on the filterVariant.
+ * @param column - The column to filter.
+ * @returns A React component that renders a filter for the column.
+ */
 export const ColumnFilter: React.FC<ColumnFilterProps> = ({ column }) => {
   const { filterVariant } = (column.columnDef.meta ?? {}) as {
     filterVariant?: CustomColumnMeta['filterVariant'];

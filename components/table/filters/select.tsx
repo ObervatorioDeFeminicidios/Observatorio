@@ -13,74 +13,50 @@ import {
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { OptionField, TransformedObject } from '@/types';
+import { OptionField } from '@/types';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 import { ColumnFilterProps } from './column-filter';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSelectFilters } from '@/actions/_form';
 
-const mockedfilters: Partial<TransformedObject>[] = [
-  {
-    id: 'tipo_violencia',
-    options: [
-      {
-        value: 1,
-        label: 'Feminicidio',
-      },
-      {
-        value: 2,
-        label: 'Feminicidio en grado de tentativa',
-      },
-      {
-        value: 3,
-        label: 'Transfeminicidio',
-      },
-    ],
-  },
-  {
-    id: 'identidad_genero',
-    options: [
-      {
-        value: 1,
-        label: 'Mujer Cis',
-      },
-      {
-        value: 2,
-        label: 'Mujer Trans',
-      },
-      {
-        value: 3,
-        label: 'Hombre Trans',
-      },
-      {
-        value: 4,
-        label: 'Sin información',
-      },
-      {
-        value: 5,
-        label: 'No Binario',
-      },
-    ],
-  },
-];
-
+/**
+ * Select is a component that renders a select input for a column.
+ * @param column - The column to select.
+ * @returns A React component that renders a select input for the column.
+ */
 export const Select: React.FC<ColumnFilterProps> = ({ column }) => {
   const [open, setOpen] = React.useState(false);
-
   const { header } = column.columnDef;
+  const columnId = column.id;
 
   // Getting the applied filter for an specific column
   const columnFilterValue = column.getFilterValue() as string;
 
-  // Getting the options list for the column
-  const columnId = column.id;
-  const options =
-    mockedfilters.find((filters) => filters.id === columnId)?.options || [];
+  // Fetching the select options for the table filters
+  const { data: selectFiltersData} = useQuery({
+    queryKey: ['selectFilters'],
+    queryFn: fetchSelectFilters,
+    staleTime: 1000 * 60 * 60 * 24,
+    refetchOnWindowFocus: false,
+  });
 
-  // console.log('Select filter data ::: ', {
-  //   columnFilterValue,
-  //   columnId,
-  //   options,
-  // });
+  // Getting the options list for the column
+  const options = React.useMemo(
+    () =>
+      selectFiltersData?.results?.find((filters) => filters.id === columnId)
+        ?.options || [],
+    [selectFiltersData, columnId],
+  );
+
+  const handleSelect = React.useCallback(
+    (label: string, option: OptionField ) => {
+      const isOptionSelected = option.label.toLowerCase() === columnFilterValue;
+      column.setFilterValue(!isOptionSelected ? label : '');
+      setOpen(false);
+    },
+    [column, columnFilterValue],
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -120,12 +96,7 @@ export const Select: React.FC<ColumnFilterProps> = ({ column }) => {
                 <CommandItem
                   key={option.value + '-' + index}
                   value={option.label}
-                  onSelect={(label) => {
-                    const isOptionSelected =
-                      option.label.toLowerCase() === columnFilterValue;
-                    column.setFilterValue(!isOptionSelected ? label : '');
-                    setOpen(false);
-                  }}
+                  onSelect={(label) => handleSelect(label, option)}
                 >
                   {option.label}
                   <CheckIcon

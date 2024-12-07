@@ -2,6 +2,11 @@ import { DebouncedInput } from '@/util/debounced-input'
 import React from 'react'
 import { ColumnFilterProps } from './column-filter';
 
+/**
+ * Search is a component that renders a search input for a column.
+ * @param column - The column to search.
+ * @returns A React component that renders a search input for the column.
+ */
 export const Search: React.FC<ColumnFilterProps> = ({ column }) => {
   const { header } = column.columnDef;
   const columnFilterValue = column.getFilterValue();
