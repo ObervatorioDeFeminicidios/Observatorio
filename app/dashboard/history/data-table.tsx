@@ -114,7 +114,7 @@ export function DataTable() {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="min-h-full border-none px-6 py-4 text-xs"
+                className="min-h-full border-none px-6 py-4 text-sm"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
