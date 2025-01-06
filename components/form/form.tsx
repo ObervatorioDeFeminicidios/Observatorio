@@ -21,7 +21,6 @@ type RegistrationFormProps = {
 export const LOCAL_STORAGE_KEY = 'form-data';
 
 export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
-  // console.log('RegistrationForm steps ::: ', steps);
   const params = useParams<{ id: string }>();
   const isEditMode = !!params?.id;
 
@@ -92,9 +91,8 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     });
   }, [steps, updateFormSchemas]);
 
-  // TODO: Implement skeleton
   if (dataQuery.isLoading) {
-    return <div>Loading...</div>;
+    return <div>Cargando...</div>;
   }
 
   return (

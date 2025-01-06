@@ -60,6 +60,10 @@ export const FieldInput = ({
               <Textarea
                 {...field}
                 className="h-32 w-full resize-y overflow-auto break-words text-left"
+                onChange={(e) => {
+                  const value = e.target.value.replace(/'/g, '"');
+                  field.onChange(value);
+                }}
               />
             )}
           </FormControl>
