@@ -2,8 +2,9 @@
 
 import { fetchRegisters } from '@/actions/_form';
 import { getColumns, initialFilters } from '@/components/table/columns';
-import { DataTablePagination } from '@/components/table/pagination';
 import { ColumnFilter } from '@/components/table/filters/column-filter';
+import { RowLoader } from '@/components/table/loaders/rows';
+import { DataTablePagination } from '@/components/table/pagination';
 import {
   Table,
   TableBody,
@@ -125,9 +126,11 @@ export function DataTable() {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-52">
-                {dataQuery.isLoading
-                  ? 'Cargando...'
-                  : 'No se encontraron resultados'}
+                {dataQuery.isLoading ? (
+                  <RowLoader />
+                ) : (
+                  'No se encontraron resultados'
+                )}
               </TableCell>
             </TableRow>
           )}

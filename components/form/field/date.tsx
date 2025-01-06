@@ -48,7 +48,7 @@ export const FieldDate = ({ formField, form }: FieldProps) => {
       control={form.control}
       name={formField.id}
       render={({ field }) => (
-        <FormItem className="flex flex-col justify-end gap-2">
+        <FormItem className="flex flex-col justify-end gap-2 mx-2">
           <FormLabel className="text-secondary-foreground">
             {formField.label}
           </FormLabel>

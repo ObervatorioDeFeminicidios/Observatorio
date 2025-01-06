@@ -16,7 +16,6 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 
-// TODO: Implement the collapse state with tooltip
 const SidebarItem: React.FC<{
   menuItem: MenuItem;
   sidebarIsExpanded: boolean;
@@ -72,49 +71,14 @@ const SidebarContent: React.FC<{ expanded: boolean }> = ({ expanded }) => (
       ))}
     </nav>
     <nav className="mt-auto grid gap-1">
-      {/* <div className="flex items-center justify-between border-b pb-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`mt-auto rounded-lg ${expanded ? 'justify-start px-2' : ''}`}
-                  aria-label="Account"
-                >
-                  <ChevronLeftIcon className="size-5" />
-                  {expanded && <span>Account</span>}
-                </Button>
-              </TooltipTrigger>
-              {!expanded && (
-                <TooltipContent side="right" sideOffset={5}>
-                  Account
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
-        </div> */}
       <div className="mt-4">
         <LogoutButton />
       </div>
-      {/* <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setExpanded(!expanded)}
-          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          {expanded ? (
-            <ChevronLeftIcon className="size-5" />
-          ) : (
-            <ChevronRightIcon className="size-5" />
-          )}
-        </Button> */}
     </nav>
   </>
 );
 
 // Sidebar on desktop
-// TODO: Implement the collapsible behavior
 function DesktopSidebar() {
   const [expanded, setExpanded] = React.useState(true);
 
@@ -148,7 +112,6 @@ function MobileSidebar() {
   );
 }
 
-// TODO: Implement the support button, how can we handle the report of issues?
 const Sidebar = () => (
   <>
     <DesktopSidebar />

@@ -30,10 +30,13 @@ export const FieldSelectMultiple = ({ formField, form }: FieldProps) => {
       control={form.control}
       name={formField.id}
       render={({ field }) => (
-        <FormItem className="flex flex-col justify-between">
-          <FormLabel>{formField.label}</FormLabel>
+        <FormItem className="flex flex-col justify-between mx-2">
+          <FormLabel className="text-secondary-foreground">{formField.label}</FormLabel>
           <FormControl>
             <MultipleSelector
+              commandProps={{
+                className: 'h-auto',
+              }}
               value={field.value}
               onChange={field.onChange}
               defaultOptions={defaultOptions}
@@ -41,7 +44,7 @@ export const FieldSelectMultiple = ({ formField, form }: FieldProps) => {
               hidePlaceholderWhenSelected
               emptyIndicator={
                 <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                  no results found.
+                  No se encontraron resultados
                 </p>
               }
             />
