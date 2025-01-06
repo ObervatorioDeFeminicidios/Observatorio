@@ -32,9 +32,12 @@ export const FieldInput = ({
 
   const isStepFourField = stepIndex === 4 && (formIndex as number) > 3;
 
-  const itemClassName = cn({
-    'col-span-2': isStepFourField,
-  });
+  const itemClassName = cn(
+    'mx-2',
+    {
+      'col-span-2': isStepFourField,
+    },
+  );
 
   return (
     <FormField
