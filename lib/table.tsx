@@ -16,7 +16,7 @@ export const tableColumns: TableColumns = {
   fecha_violencia: {
     key: 'fecha_violencia',
     label: 'Fecha Violencia',
-    type: 'none',
+    type: 'range',
   },
   tipo_violencia: {
     key: 'tipo_violencia',
@@ -157,6 +157,16 @@ export const generateFilterConditions = (columnFilters: ColumnFiltersState) => {
           .append(`${key} LIKE CONCAT('%', `)
           .append(sql`${filterValue}`)
           .append(`, '%')`);
+        break;
+      case 'range':
+        const { from, to } = filterValue as { from?: string; to?: string };
+        if (from) {
+          filterQuery = filterQuery.append(`${key} >= `).append(sql`${from}`);
+        }
+        if (to) {
+          if (from) filterQuery = filterQuery.append(' AND ');
+          filterQuery = filterQuery.append(`${key} <= `).append(sql`${to}`);
+        }
         break;
       default:
         return [];
