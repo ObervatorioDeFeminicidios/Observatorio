@@ -79,12 +79,12 @@ const filterOptions = (
     default:
       const currentLabel = formValues[formField.id];
       const newLabel = formField.options?.find(option => option.value === formValues[`cod_${formField.id}`])?.label;
-      
+
       if (newLabel && currentLabel !== newLabel) {
         formValues[formField.id] = newLabel;
         form.setValue(formField.id, newLabel, { shouldDirty: true });
       }
-      
+
       return formField.options;
   }
 };
@@ -115,7 +115,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
 
     // Setting the new selected/added option
     form.setValue(formField.id, option.label, { shouldDirty: true });
-    
+
     switch (formField.id) {
       case 'rango_edad_victima':
         form.setValue(`cod_${formField.id}`, option.value, { shouldDirty: true });
@@ -168,7 +168,7 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
       control={form.control}
       name={formField.id}
       render={({ field }) => (
-        <FormItem className="flex flex-col justify-between">
+        <FormItem className="flex flex-col justify-between mx-2">
           <FormLabel className="text-secondary-foreground">
             {formField.label}
           </FormLabel>

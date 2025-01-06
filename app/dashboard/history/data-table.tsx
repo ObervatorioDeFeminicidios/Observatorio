@@ -2,8 +2,9 @@
 
 import { fetchRegisters } from '@/actions/_form';
 import { getColumns, initialFilters } from '@/components/table/columns';
-import { DataTablePagination } from '@/components/table/pagination';
 import { ColumnFilter } from '@/components/table/filters/column-filter';
+import { RowLoader } from '@/components/table/loaders/rows';
+import { DataTablePagination } from '@/components/table/pagination';
 import {
   Table,
   TableBody,
@@ -113,7 +114,7 @@ export function DataTable() {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="min-h-full border-none px-6 py-4 text-xs"
+                className="min-h-full border-none px-6 py-4 text-sm"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -125,9 +126,11 @@ export function DataTable() {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-52">
-                {dataQuery.isLoading
-                  ? 'Cargando...'
-                  : 'No se encontraron resultados'}
+                {dataQuery.isLoading ? (
+                  <RowLoader />
+                ) : (
+                  'No se encontraron resultados'
+                )}
               </TableCell>
             </TableRow>
           )}

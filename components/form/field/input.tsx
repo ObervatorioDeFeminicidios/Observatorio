@@ -32,9 +32,12 @@ export const FieldInput = ({
 
   const isStepFourField = stepIndex === 4 && (formIndex as number) > 3;
 
-  const itemClassName = cn({
-    'col-span-2': isStepFourField,
-  });
+  const itemClassName = cn(
+    'mx-2',
+    {
+      'col-span-2': isStepFourField,
+    },
+  );
 
   return (
     <FormField
@@ -57,6 +60,10 @@ export const FieldInput = ({
               <Textarea
                 {...field}
                 className="h-32 w-full resize-y overflow-auto break-words text-left"
+                onChange={(e) => {
+                  const value = e.target.value.replace(/'/g, '"');
+                  field.onChange(value);
+                }}
               />
             )}
           </FormControl>
