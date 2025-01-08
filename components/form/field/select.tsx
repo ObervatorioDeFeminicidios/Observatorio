@@ -129,6 +129,14 @@ export const FieldSelect = ({ formField, form }: FieldProps) => {
           form.setValue('cod_clasifica_edad_victima', 3, { shouldDirty: true });
         }
         break;
+      case 'nacionalidad':
+        form.setValue(`cod_${formField.id}`, option.value, { shouldDirty: true });
+        if (option.label === 'Venezuela') {
+          form.setValue('cod_identidad_social', 3, { shouldDirty: true });
+        } else {
+          resetDependentFields(form, ['identidad_social']);
+        }
+        break;
       case 'departamento':
         form.setValue(
           `cod_${formField.id}`,
