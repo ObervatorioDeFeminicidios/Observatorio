@@ -94,7 +94,7 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
   console.log('Navigation formState.isDirty ::: ', formState.isDirty);
 
   return (
-    <div className="flex justify-end gap-4">
+    <div className="mx-2 flex justify-end gap-4">
       <Button
         variant="ghost"
         className="text-secondary-foreground"
