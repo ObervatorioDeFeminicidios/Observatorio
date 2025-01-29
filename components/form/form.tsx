@@ -79,7 +79,7 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
         dataQuery.data.results.violencia_asociada as OptionField[],
       );
     }
-  }, [dataQuery.data, reset, updateInitialAssociatedViolences]);
+  }, []);
 
   // Updating the multistep form schema by step and default data
   React.useEffect(() => {
