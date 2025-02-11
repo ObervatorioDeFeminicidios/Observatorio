@@ -25,6 +25,27 @@ export const initialFilters: TableFilters = {
 };
 
 /**
+ * formatDate is a function that returns a formatted date string.
+ * @param dateKey - The date to format.
+ * @returns A formatted date string.
+ */
+const formatDate = (dateKey: any) => {
+  if (!dateKey) return '-';
+
+  try {
+    const date = new Date(dateKey);
+    if (isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  } catch {
+    return '-';
+  }
+}
+
+/**
  * getColumns is a function that returns the columns for the table.
  * @param router - The router to navigate to the register page.
  * @returns An array of CustomColumnDef objects.
@@ -57,11 +78,7 @@ export function getColumns(
       accessorKey: tableColumns.fecha_violencia.key,
       header: tableColumns.fecha_violencia.label,
       cell: ({ row }) => {
-        const formatted = (
-          row.getValue(tableColumns.fecha_violencia.key) as Date
-        )
-          ?.toISOString()
-          ?.split('T')[0];
+        const formatted = formatDate(row.getValue(tableColumns.fecha_violencia.key));
         return <div className="whitespace-nowrap">{formatted}</div>;
       },
       meta: {
