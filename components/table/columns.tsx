@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Register } from '@/lib/definitions';
 import { TableColumn, tableColumns } from '@/lib/table';
 import { TableFilters } from '@/types';
+import { formatDate } from '@/util/format-date';
 import { ColumnDef } from '@tanstack/react-table';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
@@ -23,27 +24,6 @@ export const initialFilters: TableFilters = {
   pageSize: 30,
   columnFilters: [],
 };
-
-/**
- * formatDate is a function that returns a formatted date string.
- * @param dateKey - The date to format.
- * @returns A formatted date string.
- */
-const formatDate = (dateKey: any) => {
-  if (!dateKey) return '-';
-
-  try {
-    const date = new Date(dateKey);
-    if (isNaN(date.getTime())) return '-';
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  } catch {
-    return '-';
-  }
-}
 
 /**
  * getColumns is a function that returns the columns for the table.

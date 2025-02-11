@@ -29,6 +29,7 @@ import {
 import { unstable_noStore as noStore } from 'next/cache';
 import { z } from 'zod';
 import * as Sentry from '@sentry/nextjs';
+import { formatDate } from '@/util/format-date';
 
 // Getting the form fields from the database schema
 export async function getFormData() {
@@ -427,7 +428,7 @@ export async function fetchRegister(id: string) {
     // If you're fetching from MySQL or another database, make sure it's plain data
     const plainRecordData = recordData?.map((row) => ({
       ...row,
-      fecha_violencia: (row['fecha_violencia'] as unknown as Date)?.toISOString()?.split('T')[0],
+      fecha_violencia: formatDate(row['fecha_violencia']),
     }));
     const plainAssociatedViolenceData = associatedViolenceData?.map((row) => ({
       value: row.cod_violencia_asociada.toString(),
