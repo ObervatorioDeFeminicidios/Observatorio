@@ -32,9 +32,11 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
 
   // Fetching the register
   const dataQuery = useQuery({
-    queryKey: ['data', params.id],
+    queryKey: ['register', params.id],
     queryFn: () => fetchRegister(params.id),
     enabled: isEditMode,
+    refetchOnMount: true,
+    staleTime: 0,
   });
 
   // Initialize form with zod resolver and default values
@@ -79,7 +81,7 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
         dataQuery.data.results.violencia_asociada as OptionField[],
       );
     }
-  }, []);
+  }, [dataQuery.data, reset, updateInitialAssociatedViolences]);
 
   // Updating the multistep form schema by step and default data
   React.useEffect(() => {
@@ -91,7 +93,7 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     });
   }, [steps, updateFormSchemas]);
 
-  if (dataQuery.isLoading) {
+  if (dataQuery?.isLoading) {
     return <div>Cargando...</div>;
   }
 
