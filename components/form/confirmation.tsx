@@ -11,6 +11,7 @@ import {
   CheckBadgeIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid';
+import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useTransition } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -44,10 +45,12 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
   const { resetForm } = useFormStore();
   const { getValues, reset } = useFormContext();
   const [pending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
 
   const handleDataSubmit = async () => {
     const formData = getValues();
     console.log(formData);
+
     startTransition(async () => {
       const response = await fetch(API_ROUTES.register, {
         method: !isEditMode ? 'POST' : 'PUT',
@@ -55,6 +58,12 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
       });
       const result: InsertDataResult = await response.json();
       console.log('data ::: ', result);
+
+      if (result.success && isEditMode) {
+        // If successful, invalidate queries to get fresh data
+        await queryClient.invalidateQueries({ queryKey: ['data'] });
+      }
+
       setInsertDataResult(result);
       setShowResult(true);
     });

@@ -91,8 +91,6 @@ export const Navigation = ({ totalSteps, formRef }: NavigationProps) => {
     handlePreviousStep();
   };
 
-  console.log('Navigation formState.isDirty ::: ', formState.isDirty);
-
   return (
     <div className="mx-2 flex justify-end gap-4">
       <Button
