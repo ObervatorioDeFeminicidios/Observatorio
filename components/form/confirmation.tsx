@@ -28,6 +28,7 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { LOCAL_STORAGE_KEY } from './form';
+import { format, parse } from 'date-fns';
 
 type ConfirmationProps = {
   data: any;
@@ -50,6 +51,18 @@ export const Confirmation = ({ data, setOpen }: ConfirmationProps) => {
   const handleDataSubmit = async () => {
     const formData = getValues();
     console.log(formData);
+
+    // Parse and format the date if it exists
+    if (formData.fecha_violencia) {
+      try {
+        // Parse the date from DD/MM/YYYY format
+        const parsedDate = parse(formData.fecha_violencia, 'dd/MM/yyyy', new Date());
+        // Format to YYYY-MM-DD
+        formData.fecha_violencia = format(parsedDate, 'yyyy-MM-dd');
+      } catch (error) {
+        console.error('Error formatting date:', error);
+      }
+    }
 
     startTransition(async () => {
       const response = await fetch(API_ROUTES.register, {
