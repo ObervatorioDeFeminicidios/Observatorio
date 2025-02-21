@@ -35,8 +35,10 @@ export const RegistrationForm = ({ steps }: RegistrationFormProps) => {
     queryKey: ['register', params.id],
     queryFn: () => fetchRegister(params.id),
     enabled: isEditMode,
-    refetchOnMount: true,
-    staleTime: 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false, // Prevent refetch when switching tabs
+    refetchInterval: false, // Disable automatic refetching
+    staleTime: Infinity, // Keep data fresh indefinitely while editing
   });
 
   // Initialize form with zod resolver and default values
